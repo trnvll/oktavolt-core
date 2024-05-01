@@ -1,0 +1,27 @@
+{
+  "name": "infra",
+  "version": "0.0.0",
+  "main": "./lib/index.ts",
+  "types": "./lib/index.ts",
+  "license": "MIT",
+  "exports": {
+    ".": "./lib/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\"",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "eslint": "^7.32.0",
+    "eslint-config-custom": "*",
+    "tsconfig": "*",
+    "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "aws-cdk": "^2.139.1",
+    "aws-cdk-lib": "^2.139.1",
+    "constructs": "^10.3.0"
+  }
+}

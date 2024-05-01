@@ -15,6 +15,6 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe())
   app.useGlobalFilters(new PrismaErrorFilter())
 
-  await app.listen(process.env.PORT || 8000)
+  await app.listen(process.env.PORT || 8080)
 }
 void bootstrap()
