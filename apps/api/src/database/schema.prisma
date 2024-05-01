@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  auth0Id     String   @unique
+  username    String   @unique
+  phoneNumber String?  @unique
+  profile     Profile?
+  createdAt   DateTime @default(now())
+  Event       Event?   @relation(fields: [eventId], references: [id])
+  eventId     Int?
+}
+
+model Profile {
+  id          Int          @id @default(autoincrement())
+  userId      Int?         @unique
+  firstName   String
+  lastName    String
+  location    String?
+  skills      Skill[]
+  interests   Interest[]
+  projects    Project[]
+  user        User?        @relation(fields: [userId], references: [id])
+  connections Connection[]
+  createdAt   DateTime     @default(now())
+}
+
+model Skill {
+  id        Int     @id @default(autoincrement())
+  name      String
+  profileId Int
+  profile   Profile @relation(fields: [profileId], references: [id])
+}
+
+model Interest {
+  id        Int     @id @default(autoincrement())
+  name      String
+  profileId Int
+  profile   Profile @relation(fields: [profileId], references: [id])
+}
+
+model Project {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String
+  profileId   Int
+  profile     Profile @relation(fields: [profileId], references: [id])
+}
+
+model Connection {
+  id          Int      @id @default(autoincrement())
+  connectedTo Int
+  profileId   Int
+  profile     Profile  @relation(fields: [profileId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  date        DateTime
+  attendees   User[]
+  createdAt   DateTime @default(now())
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  content   String
+  createdAt DateTime @default(now())
+}
