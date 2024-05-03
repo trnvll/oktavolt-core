@@ -1,38 +1,50 @@
-build:
-	npx turbo run build --filter=api
+# Default to development environment unless specified otherwise
+ENV ?= dev
 
-dev:
+# Detect environment from the shell
+ifeq ($(ENV),prod)
+	NODE_ENV=production
+	DB_MIGRATE_CMD=prisma migrate deploy
+	CDK_DEPLOY_FLAGS=--require-approval never
+else
+	NODE_ENV=development
+	DB_MIGRATE_CMD=prisma migrate dev
+	CDK_DEPLOY_FLAGS=
+endif
+
+# Install dependencies and configure environment
+setup:
+	@echo "Setting up environment $(ENV)..."
+	aws secretsmanager get-secret-value --secret-id $(ENV)/api/env | jq -r ".SecretString | fromjson | to_entries | .[] | .key + \"=\" + .value" > .env
+	npm ci
+
+# Run the application
+dev: setup
+	@echo "Running dev in $(ENV) environment..."
 	npx turbo run dev --filter=api
 
-install:
-	npm install
+# Build the application
+build: setup
+	@echo "Building in $(ENV) environment..."
+	npx turbo run build --filter=api
 
-start_prod:
-	node dist/main
-
-db_migrate_dev:
-	prisma migrate dev
-
-db_migrate_prod:
-	prisma migrate deploy
-
-db_studio:
-	npx prisma studio
-
-cdk_deploy:
-	cdk deploy --all
-
-cdk_build_deploy:
-	make build && cdk deploy
-
-test:
+# Run tests
+test: build
+	@echo "Running tests..."
 	jest
 
-test_watch:
-	jest --watch
+# Database migrations
+migrate:
+	@echo "Running database migrations for $(ENV)..."
+	$(DB_MIGRATE_CMD)
 
-test_cov:
-	jest --coverage
+# Deploy to AWS using CDK
+deploy-cdk:
+	@echo "Deploying to AWS with CDK for $(ENV)..."
+	cdk deploy --all $(CDK_DEPLOY_FLAGS)
 
-test_e2e:
-	jest --config ./test/jest-e2e.json
+# Full deployment pipeline
+deploy: test migrate deploy-cdk
+	@echo "Deployment complete for $(ENV)."
+
+.PHONY: setup build dev test migrate deploy-cdk deploy
