@@ -33,18 +33,13 @@ test: build
 	@echo "Running tests..."
 	jest
 
-# Database migrations
-migrate:
-	@echo "Running database migrations for $(ENV)..."
-	$(DB_MIGRATE_CMD)
-
 # Deploy to AWS using CDK
 deploy-cdk:
 	@echo "Deploying to AWS with CDK for $(ENV)..."
 	cdk deploy --all $(CDK_DEPLOY_FLAGS)
 
 # Full deployment pipeline
-deploy: test migrate deploy-cdk
+deploy: test deploy-cdk
 	@echo "Deployment complete for $(ENV)."
 
-.PHONY: setup build dev test migrate deploy-cdk deploy
+.PHONY: setup build dev test deploy-cdk deploy
