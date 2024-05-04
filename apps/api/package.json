@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
+    "@nestjs/config": "^3.2.2",
     "@nestjs/core": "^9.0.0",
     "@nestjs/passport": "^10.0.0",
     "@nestjs/platform-express": "^9.0.0",
@@ -34,15 +35,17 @@
     "aws-lambda": "^1.0.7",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "database": "*",
     "dotenv": "^16.3.1",
+    "drizzle-orm": "^0.30.10",
+    "infra": "*",
     "jwks-rsa": "^3.0.1",
     "module-alias": "^2.2.2",
     "nodemon": "^2.0.22",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.2.0",
-    "infra": "*"
+    "rxjs": "^7.2.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

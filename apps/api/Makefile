@@ -16,7 +16,7 @@ endif
 setup:
 	@echo "Setting up environment $(ENV)..."
 	aws secretsmanager get-secret-value --secret-id $(ENV)/api/env | jq -r ".SecretString | fromjson | to_entries | .[] | .key + \"=\" + .value" > .env
-	npm ci
+	npm install
 
 # Run the application
 dev: setup
