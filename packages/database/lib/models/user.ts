@@ -1,12 +1,11 @@
-import { serial, text, timestamp, pgTable } from 'drizzle-orm/pg-core'
+import { serial, text, timestamp, pgTable, varchar } from 'drizzle-orm/pg-core'
 
-export const user = pgTable('user', {
-  id: serial('id'),
-  name: text('name'),
-  email: text('email'),
-  password: text('password'),
+export const Users = pgTable('users', {
+  userId: serial('user_id').primaryKey(),
   authzUserId: text('authz_user_id'),
-  role: text('role').$type<'admin' | 'customer'>(),
-  createdAt: timestamp('created_at'),
-  updatedAt: timestamp('updated_at'),
+  name: text('name'),
+  email: text('email').unique(),
+  phone: varchar('phone', { length: 15 }),
+  dob: timestamp('dob'),
+  created_at: timestamp('created_at'),
 })

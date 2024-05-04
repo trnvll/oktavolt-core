@@ -1,6 +1,6 @@
 # Default to development environment unless specified otherwise
 ENV ?= dev
-DB_MIGRATE_CMD = drizzle-kit generate:pg
+DB_MIGRATE_CMD = ts-node ./lib/utils/migrate.ts
 GEN_DB_MIGRATE_CMD = drizzle-kit generate:pg
 
 # Detect environment from the shell

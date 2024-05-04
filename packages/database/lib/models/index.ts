@@ -1,1 +1,6 @@
-export { user } from './user'
+export { Users } from './user'
+export { Communications } from './communication'
+export { DigitalMedia } from './digital-media'
+export { FinancialTransactions as FinTxs } from './financial-transactions'
+export { Preferences } from './preference'
+export { Relationships } from './relationship'

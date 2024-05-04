@@ -11,6 +11,10 @@ if (!connectionString) {
 const sql = postgres(connectionString, { max: 1 })
 const db = drizzle(sql)
 
-await migrate(db, { migrationsFolder: 'drizzle' })
-
-await sql.end()
+migrate(db, { migrationsFolder: 'drizzle' })
+  .then(() => sql.end())
+  .then(() => console.log('Migration completed and connection closed.'))
+  .catch((error) => {
+    console.error('Error during migration:', error)
+    void sql.end()
+  })
