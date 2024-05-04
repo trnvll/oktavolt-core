@@ -1,6 +1,6 @@
 import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
-import { Users } from './user'
-import { Relationships } from './relationship'
+import { Users } from '@/models/user/user'
+import { Relationships } from '@/models/relationship/relationship'
 
 export const FinancialTransactions = pgTable('financial_transactions', {
   transId: serial('trans_id').primaryKey(),
