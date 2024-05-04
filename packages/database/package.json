@@ -1,0 +1,25 @@
+{
+  "name": "database",
+  "version": "0.0.1",
+  "main": "./lib/index.ts",
+  "types": "./lib/index.ts",
+  "license": "MIT",
+  "exports": {
+    ".": "./lib/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\"",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.20.17",
+    "eslint": "^7.32.0",
+    "eslint-config-custom": "*",
+    "tsconfig": "*",
+    "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.30.10",
+    "postgres": "^3.4.4"
+  }
+}
