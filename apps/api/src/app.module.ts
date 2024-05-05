@@ -4,6 +4,7 @@ import { RelationshipsModule } from '@/modules/relationships/relationships.modul
 import { UsersModule } from '@/modules/users/users.module'
 import { CommsModule } from '@/modules/comms/comms.module'
 import { PrefsModule } from '@/modules/prefs/prefs.module'
+import { AuthModule } from './modules/auth/auth.module'
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { PrefsModule } from '@/modules/prefs/prefs.module'
     CommsModule,
     RelationshipsModule,
     PrefsModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

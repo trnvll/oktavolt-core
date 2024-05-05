@@ -1,5 +1,5 @@
 import {
-  ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
@@ -59,7 +59,7 @@ export class CommsService {
     }
 
     if (comm.userId !== user.userId) {
-      throw new ConflictException('Communication does not belong to user.')
+      throw new ForbiddenException('Communication does not belong to user.')
     }
 
     return this.drizzle.db

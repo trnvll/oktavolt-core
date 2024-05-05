@@ -28,6 +28,11 @@ import {
   SelectRelationships,
   RelationshipTypeEnum,
 } from '@/models/relationship/relationship'
+import {
+  Authentication,
+  InsertAuthentication,
+  SelectAuthentication,
+} from '@/models/authentication/authentication'
 
 const schema = {
   Users,
@@ -36,6 +41,7 @@ const schema = {
   FinTxs: FinancialTransactions,
   Preferences,
   Relationships,
+  Authentication,
 }
 
 export {
@@ -46,6 +52,7 @@ export {
   Preferences,
   Relationships,
   Communications,
+  Authentication,
   DigitalMediaTypeEnum,
   CommunicationProviderEnum,
   CommunicationTypeEnum,
@@ -64,4 +71,6 @@ export type {
   InsertPreferences,
   InsertRelationships,
   SelectRelationships,
+  InsertAuthentication,
+  SelectAuthentication,
 }
