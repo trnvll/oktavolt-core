@@ -9,10 +9,12 @@ export enum RelationshipTypeEnum {
 }
 
 export const Relationships = pgTable('relationships', {
-  relationshipId: serial('relationship_id').primaryKey(),
-  userId: integer('user_id').references(() => Users.userId),
-  name: text('name'),
-  relationType: text('relation_type'),
+  relationshipId: serial('relationship_id').notNull().primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => Users.userId),
+  name: text('name').notNull(),
+  relationType: text('relation_type').notNull().$type<RelationshipTypeEnum>(),
   email: text('email'),
   phone: varchar('phone', { length: 15 }),
   address: text('address'),

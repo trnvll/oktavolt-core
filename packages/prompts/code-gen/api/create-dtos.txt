@@ -1,0 +1,153 @@
+I'm building a nest js api with CRUD functionality for some core data in my database. I have made the following dtos that will be used in a service based off of an entity:
+```
+// create-comms.dto.ts
+import {
+  IsArray,
+  IsDate,
+  IsEnum,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator'
+import {
+  CommunicationTypeEnum,
+  CommunicationProviderEnum,
+  InsertCommunications,
+} from 'database'
+import { Transform, Type } from 'class-transformer'
+
+export class CreateCommsDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateCommDto)
+  data: CreateCommDto[]
+
+  static toEntity(userId: number, dto: CreateCommDto[]) {
+    return dto.map((comm) => CreateCommDto.toEntity(userId, comm))
+  }
+}
+
+export class CreateCommDto {
+  @IsEnum(CommunicationTypeEnum)
+  type: CommunicationTypeEnum
+
+  @IsString()
+  content: string
+
+  @IsOptional()
+  @IsDate()
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  timestamp?: Date
+
+  @IsOptional()
+  @IsString()
+  sender?: string
+
+  @IsString()
+  receiver: string
+
+  @IsEnum(CommunicationProviderEnum)
+  provider: CommunicationProviderEnum
+
+  static toEntity(userId: number, dto: CreateCommDto): InsertCommunications {
+    return {
+      userId,
+      type: dto.type,
+      content: dto.content,
+      sender: dto.sender,
+      receiver: dto.receiver,
+      provider: dto.provider,
+      timestamp: dto.timestamp,
+    }
+  }
+}
+
+// find-all-comms.dto.ts
+import { SelectCommunications } from 'database'
+import { FindOneCommDto } from '@/modules/comms/dtos/find-one-comm.dto'
+
+export class FindAllCommsDto {
+  static fromEntity(entities: SelectCommunications[]) {
+    return entities.map(FindOneCommDto.fromEntity)
+  }
+}
+
+// find-one-comm.dto.ts
+import {
+  CommunicationProviderEnum,
+  CommunicationTypeEnum,
+  SelectCommunications,
+} from 'database'
+
+export class FindOneCommDto {
+  commId: number
+  type: CommunicationTypeEnum
+  content: string
+  timestamp: Date | null
+  sender: string | null
+  receiver: string
+  provider: CommunicationProviderEnum
+
+  static fromEntity(entity: SelectCommunications) {
+    const dto = new FindOneCommDto()
+
+    dto.commId = entity.commId
+    dto.type = entity.type
+    dto.content = entity.content
+    dto.timestamp = entity.timestamp
+    dto.sender = entity.sender
+    dto.receiver = entity.receiver
+    dto.provider = entity.provider
+
+    return dto
+  }
+}
+```
+here is the entity:
+```
+import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
+import { Users } from '@/models/user/user'
+import { Relationships } from '@/models/relationship/relationship'
+import { InferInsertModel, InferSelectModel } from 'drizzle-orm'
+
+export enum CommunicationTypeEnum {
+  TEXT = 'TEXT',
+  EMAIL = 'EMAIL',
+}
+
+export enum CommunicationProviderEnum {
+  ICLOUD = 'ICLOUD',
+  LINKED_IN = 'LINKED_IN',
+  GMAIL = 'GMAIL',
+  OUTLOOK = 'OUTLOOK',
+  TEAMS = 'TEAMS',
+  SLACK = 'SLACK',
+  DISCORD = 'DISCORD',
+  IMESSAGE = 'IMESSAGE',
+}
+
+export const Communications = pgTable('communications', {
+  commId: serial('comm_id').notNull().primaryKey(),
+  relationshipId: integer('relationship_id').references(
+    () => Relationships.relationshipId,
+  ),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => Users.userId),
+  type: text('type').notNull().$type<CommunicationTypeEnum>(),
+  content: text('content').notNull(),
+  timestamp: timestamp('timestamp'),
+  sender: text('sender'),
+  receiver: text('receiver').notNull(),
+  provider: text('provider').notNull().$type<CommunicationProviderEnum>(),
+})
+
+export type SelectCommunications = InferSelectModel<typeof Communications>
+export type InsertCommunications = InferInsertModel<typeof Communications>
+```
+Could you make all the dtos (create, find all, find one) my relationships entity in similar fashion?:
+```
+##################################################################
+CODE FOR ENTITY
+##################################################################
+```
