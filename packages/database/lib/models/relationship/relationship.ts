@@ -1,6 +1,12 @@
 import { integer, pgTable, serial, text, varchar } from 'drizzle-orm/pg-core'
 import { Users } from '@/models/user/user'
 
+export enum RelationshipTypeEnum {
+  FRIEND = 'FRIEND',
+  ROMANTIC = 'ROMANTIC',
+  FWB = 'FWB',
+}
+
 export const Relationships = pgTable('relationships', {
   relationshipId: serial('relationship_id').primaryKey(),
   userId: integer('user_id').references(() => Users.userId),

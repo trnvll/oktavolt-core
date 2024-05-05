@@ -1,5 +1,5 @@
 import { FinancialTransactions } from '@/models/financial-transactions/financial-transactions'
-import { Users } from '@/models/user/user'
+import { Users, SelectUser, InsertUser } from '@/models/user/user'
 import {
   Communications,
   CommunicationProviderEnum,
@@ -33,3 +33,4 @@ export {
   CommunicationProviderEnum,
   CommunicationTypeEnum,
 }
+export type { SelectUser, InsertUser }

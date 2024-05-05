@@ -8,10 +8,14 @@ export enum CommunicationTypeEnum {
 }
 
 export enum CommunicationProviderEnum {
-  APPLE = 'APPLE',
+  ICLOUD = 'ICLOUD',
   LINKED_IN = 'LINKED_IN',
-  GOOGLE = 'GOOGLE',
-  MICROSOFT = 'MICROSOFT',
+  GMAIL = 'GMAIL',
+  OUTLOOK = 'OUTLOOK',
+  TEAMS = 'TEAMS',
+  SLACK = 'SLACK',
+  DISCORD = 'DISCORD',
+  IMESSAGE = 'IMESSAGE',
 }
 
 export const Communications = pgTable('communications', {

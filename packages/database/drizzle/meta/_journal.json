@@ -15,6 +15,13 @@
       "when": 1714855204852,
       "tag": "0001_flat_blur",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1714906044670,
+      "tag": "0002_light_fat_cobra",
+      "breakpoints": true
     }
   ]
 }
