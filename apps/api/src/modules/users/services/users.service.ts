@@ -33,4 +33,20 @@ export class UsersService {
     await this.drizzle.db.insert(Users).values(entity)
     return entity
   }
+
+  async delete(userId: number) {
+    const users = await this.drizzle.db
+      .select()
+      .from(Users)
+      .where(eq(Users.userId, userId))
+
+    if (!users.length) {
+      throw new NotFoundException('User not found.')
+    }
+
+    return this.drizzle.db
+      .delete(Users)
+      .where(eq(Users.userId, userId))
+      .returning({ userId: Users.userId })
+  }
 }

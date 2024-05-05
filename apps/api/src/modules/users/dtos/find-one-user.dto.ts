@@ -1,6 +1,7 @@
 import { SelectUser } from 'database'
 
 export class FindOneUserDto {
+  userId: number
   firstName: string
   lastName: string
   email: string
@@ -11,6 +12,7 @@ export class FindOneUserDto {
   static fromEntity(entity: SelectUser) {
     const dto = new FindOneUserDto()
 
+    dto.userId = entity.userId
     dto.firstName = entity.firstName
     dto.lastName = entity.lastName
     dto.email = entity.email
