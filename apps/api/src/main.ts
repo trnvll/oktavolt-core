@@ -1,3 +1,5 @@
+import { DatabaseExceptionFilter } from '@/filters/database-exception.filter'
+
 if (!process.env.IS_TS_NODE) {
   require('module-alias/register')
 }
@@ -12,6 +14,7 @@ async function bootstrap() {
 
   app.enableCors()
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }))
+  app.useGlobalFilters(new DatabaseExceptionFilter())
 
   await app.listen(process.env.PORT || 8080)
 }
