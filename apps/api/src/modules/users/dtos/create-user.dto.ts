@@ -1,6 +1,24 @@
-import { IsDate, IsEmail, IsPhoneNumber, IsString } from 'class-validator'
+import {
+  IsArray,
+  IsDate,
+  IsEmail,
+  IsPhoneNumber,
+  IsString,
+  ValidateNested,
+} from 'class-validator'
 import { InsertUser } from 'database'
-import { Transform } from 'class-transformer'
+import { Transform, Type } from 'class-transformer'
+
+export class CreateUsersDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateUserDto)
+  data: CreateUserDto[]
+
+  static toEntity(dto: CreateUserDto[]) {
+    return dto.map(CreateUserDto.toEntity)
+  }
+}
 
 export class CreateUserDto {
   @IsString()

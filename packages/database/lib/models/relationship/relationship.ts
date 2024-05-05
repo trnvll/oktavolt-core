@@ -1,5 +1,6 @@
 import { integer, pgTable, serial, text, varchar } from 'drizzle-orm/pg-core'
 import { Users } from '@/models/user/user'
+import { InferInsertModel, InferSelectModel } from 'drizzle-orm'
 
 export enum RelationshipTypeEnum {
   FRIEND = 'FRIEND',
@@ -17,3 +18,6 @@ export const Relationships = pgTable('relationships', {
   address: text('address'),
   notes: text('notes'),
 })
+
+export type SelectRelationships = InferSelectModel<typeof Relationships>
+export type InsertRelationships = InferInsertModel<typeof Relationships>

@@ -4,7 +4,7 @@ import { Users } from 'database'
 import { eq } from 'drizzle-orm'
 import { FindOneUserDto } from '@/modules/users/dtos/find-one-user.dto'
 import { FindAllUsersDto } from '@/modules/users/dtos/find-all-users.dto'
-import { CreateUserDto } from '@/modules/users/dtos/create-user.dto'
+import { CreateUsersDto } from '@/modules/users/dtos/create-user.dto'
 
 @Injectable()
 export class UsersService {
@@ -27,8 +27,8 @@ export class UsersService {
     return FindOneUserDto.fromEntity(plainUser)
   }
 
-  async create(userDto: CreateUserDto) {
-    const entity = CreateUserDto.toEntity(userDto)
+  async create(userDto: CreateUsersDto) {
+    const entity = CreateUsersDto.toEntity(userDto.data)
     console.log(entity)
     await this.drizzle.db.insert(Users).values(entity)
     return entity

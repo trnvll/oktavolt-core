@@ -1,0 +1,206 @@
+I'm building a NestJS API with some basic CRUD functionality. I have the following entity:
+```
+export const Users = pgTable('users', {
+  userId: serial('user_id').notNull().primaryKey(),
+  authzUserId: text('authz_user_id'),
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
+  email: text('email').notNull().unique(),
+  phone: varchar('phone', { length: 15 }).notNull(),
+  dob: timestamp('dob').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+})
+
+export type SelectUser = InferSelectModel<typeof Users>
+export type InsertUser = InferInsertModel<typeof Users>
+```
+For this I have created a controller, a service and a couple of dtos to support the CRUD functionality:
+```
+// users.service.ts
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common'
+import { UsersService } from '@/modules/users/services/users.service'
+import { CreateUserDto } from '@/modules/users/dtos/create-user.dto'
+
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  findAll() {
+    return this.usersService.findAll()
+  }
+
+  @Get(':userId')
+  findOne(@Param('userId', ParseIntPipe) userId: number) {
+    return this.usersService.findOne(userId)
+  }
+
+  @Post()
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.create(createUserDto)
+  }
+
+  @Delete(':userId')
+  delete(@Param('userId', ParseIntPipe) userId: number) {
+    return this.usersService.delete(userId)
+  }
+}
+```
+and the controller:
+```
+// users.controller.ts
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common'
+import { UsersService } from '@/modules/users/services/users.service'
+import { CreateUserDto } from '@/modules/users/dtos/create-user.dto'
+
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  findAll() {
+    return this.usersService.findAll()
+  }
+
+  @Get(':userId')
+  findOne(@Param('userId', ParseIntPipe) userId: number) {
+    return this.usersService.findOne(userId)
+  }
+
+  @Post()
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.create(createUserDto)
+  }
+
+  @Delete(':userId')
+  delete(@Param('userId', ParseIntPipe) userId: number) {
+    return this.usersService.delete(userId)
+  }
+}
+```
+Here are the DTOs:
+```
+// create-user.dto.ts
+import { IsDate, IsEmail, IsPhoneNumber, IsString } from 'class-validator'
+import { InsertUser } from 'database'
+import { Transform } from 'class-transformer'
+
+export class CreateUserDto {
+  @IsString()
+  firstName: string
+
+  @IsString()
+  lastName: string
+
+  @IsEmail()
+  email: string
+
+  @IsPhoneNumber()
+  phone: string
+
+  @IsDate()
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  dateOfBirth: Date
+
+  static toEntity(dto: CreateUserDto): InsertUser {
+    return {
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      email: dto.email,
+      phone: dto.phone,
+      dob: dto.dateOfBirth,
+    }
+  }
+}
+```
+```
+// find-all-users.dto.ts
+import { SelectUser } from 'database'
+import { FindOneUserDto } from '@/modules/users/dtos/find-one-user.dto'
+
+export class FindAllUsersDto {
+  static fromEntity(entities: SelectUser[]) {
+    return entities.map(FindOneUserDto.fromEntity)
+  }
+}
+```
+```
+// find-one-user.dto.ts
+import { SelectUser } from 'database'
+
+export class FindOneUserDto {
+  userId: number
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  dateOfBirth: Date
+  createdAt: Date
+
+  static fromEntity(entity: SelectUser) {
+    const dto = new FindOneUserDto()
+
+    dto.userId = entity.userId
+    dto.firstName = entity.firstName
+    dto.lastName = entity.lastName
+    dto.email = entity.email
+    dto.phone = entity.phone
+    dto.dateOfBirth = entity.dob
+    dto.createdAt = entity.createdAt
+
+    return dto
+  }
+}
+```
+Could you please, with best practices in mind, build on the same patterns for the following entity:
+```
+import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
+import { Users } from '@/models/user/user'
+import { Relationships } from '@/models/relationship/relationship'
+
+export enum CommunicationTypeEnum {
+  TEXT = 'TEXT',
+  EMAIL = 'EMAIL',
+}
+
+export enum CommunicationProviderEnum {
+  ICLOUD = 'ICLOUD',
+  LINKED_IN = 'LINKED_IN',
+  GMAIL = 'GMAIL',
+  OUTLOOK = 'OUTLOOK',
+  TEAMS = 'TEAMS',
+  SLACK = 'SLACK',
+  DISCORD = 'DISCORD',
+  IMESSAGE = 'IMESSAGE',
+}
+
+export const Communications = pgTable('communications', {
+  commId: serial('comm_id').primaryKey(),
+  relationshipId: integer('relationship_id').references(
+    () => Relationships.relationshipId,
+  ),
+  userId: integer('user_id').references(() => Users.userId),
+  type: text('type').$type<CommunicationTypeEnum>(),
+  content: text('content'),
+  timestamp: timestamp('timestamp'),
+  sender: text('sender'),
+  receiver: text('receiver'),
+  provider: text('provider').$type<CommunicationProviderEnum>(),
+})
+```
