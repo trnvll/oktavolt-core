@@ -1,0 +1,11 @@
+For reference, this is the general idea that I'm working on.
+```
+Imagine having a DB with all of your data (emails, passwords, bank transactions, schedule - everything of digital footprint) then an LLM working as a smart search engine and being able to perform actions with the data (responding to emails, do taxes, show relevant emails, schedule meetings, manage relationships etc). Working in similar way where each user is just shipped the “OS” or infrastructure and has its own aws account (meaning a completely separate copy of infrastructure and with that full ownership of data). Also ideas of generating dynamic visual UI based off of returned data, and adjusting responses through more conversation, making it more personalized.
+
+The long term idea is to, similarly to "texts.com", combine everything with simple actions into one single place. The user becomes the owner of its data. On top of this layer, there will be an LLM that basically makes everything possible from simple natural language queries - essentially becoming JARVIS as in Iron Man.
+
+This will to a large extent be based off of data from big companies (google, apple etc) and will likely be in different structures. However, the aim is to make this data into a robust format that can be used in the way that I have aimed for this case.
+```
+###########################################
+QUESTION
+###########################################
