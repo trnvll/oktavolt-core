@@ -1,105 +1,73 @@
-I'm building a nest js api with CRUD functionality for some core data in my database. I have made the following dtos that will be used in a service based off of an entity:
+I'm building a nest js api with CRUD functionality for some core data in my database. I have made the following service based off of an entity:
 ```
-// create-comms.dto.ts
 import {
-  IsArray,
-  IsDate,
-  IsEnum,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator'
-import {
-  CommunicationTypeEnum,
-  CommunicationProviderEnum,
-  InsertCommunications,
-} from 'database'
-import { Transform, Type } from 'class-transformer'
-
-export class CreateCommsDto {
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateCommDto)
-  data: CreateCommDto[]
-
-  static toEntity(userId: number, dto: CreateCommDto[]) {
-    return dto.map((comm) => CreateCommDto.toEntity(userId, comm))
-  }
-}
-
-export class CreateCommDto {
-  @IsEnum(CommunicationTypeEnum)
-  type: CommunicationTypeEnum
-
-  @IsString()
-  content: string
-
-  @IsOptional()
-  @IsDate()
-  @Transform(({ value }) => (value ? new Date(value) : undefined))
-  timestamp?: Date
-
-  @IsOptional()
-  @IsString()
-  sender?: string
-
-  @IsString()
-  receiver: string
-
-  @IsEnum(CommunicationProviderEnum)
-  provider: CommunicationProviderEnum
-
-  static toEntity(userId: number, dto: CreateCommDto): InsertCommunications {
-    return {
-      userId,
-      type: dto.type,
-      content: dto.content,
-      sender: dto.sender,
-      receiver: dto.receiver,
-      provider: dto.provider,
-      timestamp: dto.timestamp,
-    }
-  }
-}
-
-// find-all-comms.dto.ts
-import { SelectCommunications } from 'database'
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
+import { Communications, SelectUser, Users } from 'database'
+import { CreateCommsDto } from '@/modules/comms/dtos/create-comms.dto'
+import { DrizzleService } from '@/core/drizzle/drizzle.service'
+import { and, eq } from 'drizzle-orm'
+import { FindAllCommsDto } from '@/modules/comms/dtos/find-all-comms.dto'
 import { FindOneCommDto } from '@/modules/comms/dtos/find-one-comm.dto'
 
-export class FindAllCommsDto {
-  static fromEntity(entities: SelectCommunications[]) {
-    return entities.map(FindOneCommDto.fromEntity)
+@Injectable()
+export class CommsService {
+  constructor(private readonly drizzle: DrizzleService) {}
+
+  async findAll(user: SelectUser) {
+    const comms = await this.drizzle.db.query.Communications.findMany({
+      where: eq(Communications.userId, user.userId),
+    })
+
+    return FindAllCommsDto.fromEntity(comms)
   }
-}
 
-// find-one-comm.dto.ts
-import {
-  CommunicationProviderEnum,
-  CommunicationTypeEnum,
-  SelectCommunications,
-} from 'database'
+  async findOne(user: SelectUser, commId: number) {
+    const comm = await this.drizzle.db.query.Communications.findFirst({
+      where: and(
+        eq(Communications.userId, user.userId),
+        eq(Communications.commId, commId),
+      ),
+    })
 
-export class FindOneCommDto {
-  commId: number
-  type: CommunicationTypeEnum
-  content: string
-  timestamp: Date | null
-  sender: string | null
-  receiver: string
-  provider: CommunicationProviderEnum
+    if (!comm) {
+      throw new NotFoundException('Communication not found.')
+    }
 
-  static fromEntity(entity: SelectCommunications) {
-    const dto = new FindOneCommDto()
+    return FindOneCommDto.fromEntity(comm)
+  }
 
-    dto.commId = entity.commId
-    dto.type = entity.type
-    dto.content = entity.content
-    dto.timestamp = entity.timestamp
-    dto.sender = entity.sender
-    dto.receiver = entity.receiver
-    dto.provider = entity.provider
+  async create(user: SelectUser, createCommsDto: CreateCommsDto) {
+    const entities = CreateCommsDto.toEntity(user.userId, createCommsDto.data)
 
-    return dto
+    return this.drizzle.db
+      .insert(Communications)
+      .values(entities)
+      .returning({ commId: Communications.commId })
+  }
+
+  async delete(user: SelectUser, commId: number) {
+    const comm = await this.drizzle.db.query.Communications.findFirst({
+      where: and(
+        eq(Users.userId, user.userId),
+        eq(Communications.commId, commId),
+      ),
+    })
+
+    if (!comm) {
+      throw new NotFoundException('Communication not found.')
+    }
+
+    if (comm.userId !== user.userId) {
+      throw new ConflictException('Communication does not belong to user.')
+    }
+
+    return this.drizzle.db
+      .delete(Communications)
+      .where(eq(Communications.commId, commId))
+      .returning({ commId: Communications.commId })
   }
 }
 ```
@@ -145,7 +113,7 @@ export const Communications = pgTable('communications', {
 export type SelectCommunications = InferSelectModel<typeof Communications>
 export type InsertCommunications = InferInsertModel<typeof Communications>
 ```
-Could you make all the dtos (create, find all, find one) my relationships entity in similar fashion?:
+Could you make a similar service for the following entity:
 ```
 #############################################################################
 CODE FOR ENTITY

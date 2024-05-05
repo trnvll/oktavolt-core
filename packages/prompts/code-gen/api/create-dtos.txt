@@ -147,7 +147,7 @@ export type InsertCommunications = InferInsertModel<typeof Communications>
 ```
 Could you make all the dtos (create, find all, find one) my relationships entity in similar fashion?:
 ```
-##################################################################
+#############################################################################
 CODE FOR ENTITY
-##################################################################
+#############################################################################
 ```
