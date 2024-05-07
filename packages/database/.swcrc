@@ -1,0 +1,20 @@
+{
+  "jsc": {
+    "parser": {
+      "syntax": "typescript",
+      "tsx": true,
+      "decorators": true,
+      "dynamicImport": true
+    },
+    "target": "es2020",
+    "externalHelpers": true,
+    "keepClassNames": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./lib/*"]
+    }
+  },
+  "module": {
+    "type": "commonjs"
+  }
+}

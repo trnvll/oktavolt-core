@@ -1,0 +1,15 @@
+{
+  "extends": "tsconfig/base.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist/types",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./lib/*"]
+    },
+    "module": "commonjs",
+    "target": "es2017",
+  },
+  "include": ["lib/**/*"]
+}

@@ -19,6 +19,9 @@
     "strictBindCallApply": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@/*": ["./lib/*"]
+    }
   },
   "ts-node": {
     "require": ["tsconfig-paths/register"]

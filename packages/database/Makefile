@@ -29,6 +29,7 @@ migrate:
 
 build: setup migrate
 	@echo "Building in $(ENV) environment..."
+	npm run build:types
 	npx turbo run build --filter=database
 
 .PHONY: setup migrate build
