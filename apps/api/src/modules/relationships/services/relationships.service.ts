@@ -15,7 +15,7 @@ export class RelationshipsService {
   constructor(private readonly drizzle: DrizzleService) {}
 
   async findAll(user: SelectUser) {
-    const relationships = await this.drizzle.db.query.Relationships.findMany({
+    const relationships = await this.drizzle.db.query.relations.findMany({
       where: eq(Relationships.userId, user.userId),
     })
 
@@ -23,7 +23,7 @@ export class RelationshipsService {
   }
 
   async findOne(user: SelectUser, relationshipId: number) {
-    const relationship = await this.drizzle.db.query.Relationships.findFirst({
+    const relationship = await this.drizzle.db.query.relations.findFirst({
       where: and(
         eq(Relationships.userId, user.userId),
         eq(Relationships.relationshipId, relationshipId),
@@ -53,7 +53,7 @@ export class RelationshipsService {
   }
 
   async delete(user: SelectUser, relationshipId: number) {
-    const relationship = await this.drizzle.db.query.Relationships.findFirst({
+    const relationship = await this.drizzle.db.query.relations.findFirst({
       where: and(
         eq(Users.userId, user.userId),
         eq(Relationships.relationshipId, relationshipId),

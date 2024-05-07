@@ -35,13 +35,13 @@ import {
 } from '@/models/authentication/authentication'
 
 const schema = {
-  Users,
-  Communications,
-  DigitalMedia,
-  FinTxs: FinancialTransactions,
-  Preferences,
-  Relationships,
-  Authentication,
+  users: Users,
+  comms: Communications,
+  digitalmedia: DigitalMedia,
+  fintxs: FinancialTransactions,
+  prefs: Preferences,
+  relations: Relationships,
+  auth: Authentication,
 }
 
 export {

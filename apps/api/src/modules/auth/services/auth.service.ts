@@ -16,7 +16,7 @@ export class AuthService {
   constructor(private readonly drizzle: DrizzleService) {}
 
   async findAll(user: SelectUser) {
-    const auths = await this.drizzle.db.query.Authentication.findMany({
+    const auths = await this.drizzle.db.query.auth.findMany({
       where: eq(Authentication.userId, user.userId),
     })
 
@@ -24,7 +24,7 @@ export class AuthService {
   }
 
   async findOne(user: SelectUser, authId: number) {
-    const auth = await this.drizzle.db.query.Authentication.findFirst({
+    const auth = await this.drizzle.db.query.auth.findFirst({
       where: and(
         eq(Authentication.userId, user.userId),
         eq(Authentication.authId, authId),
@@ -66,7 +66,7 @@ export class AuthService {
    */
 
   async delete(user: SelectUser, authId: number) {
-    const auth = await this.drizzle.db.query.Authentication.findFirst({
+    const auth = await this.drizzle.db.query.auth.findFirst({
       where: and(
         eq(Users.userId, user.userId),
         eq(Authentication.authId, authId),

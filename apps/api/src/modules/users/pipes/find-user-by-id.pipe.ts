@@ -14,7 +14,7 @@ export class FindUserByIdPipe
       throw new NotFoundException('No user ID provided.')
     }
 
-    const user = await this.drizzle.db.query.Users.findFirst({
+    const user = await this.drizzle.db.query.users.findFirst({
       where: eq(Users.userId, userId),
     })
 

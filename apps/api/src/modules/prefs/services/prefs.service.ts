@@ -11,7 +11,7 @@ export class PrefsService {
   constructor(private readonly drizzle: DrizzleService) {}
 
   async findAll(user: SelectUser) {
-    const prefs = await this.drizzle.db.query.Preferences.findMany({
+    const prefs = await this.drizzle.db.query.prefs.findMany({
       where: eq(Preferences.userId, user.userId),
     })
 
@@ -19,7 +19,7 @@ export class PrefsService {
   }
 
   async findOne(user: SelectUser, prefId: number) {
-    const pref = await this.drizzle.db.query.Preferences.findFirst({
+    const pref = await this.drizzle.db.query.prefs.findFirst({
       where: and(
         eq(Preferences.prefId, prefId),
         eq(Preferences.userId, user.userId),
@@ -73,7 +73,7 @@ export class PrefsService {
    */
 
   async delete(user: SelectUser, prefId: number) {
-    const pref = await this.drizzle.db.query.Preferences.findFirst({
+    const pref = await this.drizzle.db.query.prefs.findFirst({
       where: eq(Preferences.prefId, prefId),
     })
 

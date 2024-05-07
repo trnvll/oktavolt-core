@@ -16,7 +16,7 @@ export class UsersService {
   }
 
   async findOne(userId: number) {
-    const plainUser = await this.drizzle.db.query.Users.findFirst({
+    const plainUser = await this.drizzle.db.query.users.findFirst({
       where: eq(Users.userId, userId),
     })
 

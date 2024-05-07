@@ -15,7 +15,7 @@ export class CommsService {
   constructor(private readonly drizzle: DrizzleService) {}
 
   async findAll(user: SelectUser) {
-    const comms = await this.drizzle.db.query.Communications.findMany({
+    const comms = await this.drizzle.db.query.comms.findMany({
       where: eq(Communications.userId, user.userId),
     })
 
@@ -23,7 +23,7 @@ export class CommsService {
   }
 
   async findOne(user: SelectUser, commId: number) {
-    const comm = await this.drizzle.db.query.Communications.findFirst({
+    const comm = await this.drizzle.db.query.comms.findFirst({
       where: and(
         eq(Communications.userId, user.userId),
         eq(Communications.commId, commId),
@@ -47,7 +47,7 @@ export class CommsService {
   }
 
   async delete(user: SelectUser, commId: number) {
-    const comm = await this.drizzle.db.query.Communications.findFirst({
+    const comm = await this.drizzle.db.query.comms.findFirst({
       where: and(
         eq(Users.userId, user.userId),
         eq(Communications.commId, commId),
