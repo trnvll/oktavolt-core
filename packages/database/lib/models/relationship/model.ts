@@ -1,14 +1,10 @@
 import { integer, pgTable, serial, text, varchar } from 'drizzle-orm/pg-core'
-import { Users } from '@/models/user/user'
-import { InferInsertModel, InferSelectModel } from 'drizzle-orm'
-
-export enum RelationshipTypeEnum {
-  FRIEND = 'FRIEND',
-  ROMANTIC = 'ROMANTIC',
-  FWB = 'FWB',
-}
+import { Users } from '@/models/user/model'
+import { RelationshipTypeEnum } from '@/models/relationship/enums'
+import { timestamps } from '@/utils/timestamps'
 
 export const Relationships = pgTable('relationships', {
+  ...timestamps,
   relationshipId: serial('relationship_id').notNull().primaryKey(),
   userId: integer('user_id')
     .notNull()
@@ -20,6 +16,3 @@ export const Relationships = pgTable('relationships', {
   address: text('address'),
   notes: text('notes'),
 })
-
-export type SelectRelationships = InferSelectModel<typeof Relationships>
-export type InsertRelationships = InferInsertModel<typeof Relationships>

@@ -1,15 +1,10 @@
 import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
-import { Users } from '@/models/user/user'
-import { InferInsertModel, InferSelectModel } from 'drizzle-orm'
-
-export enum DigitalMediaTypeEnum {
-  VIDEO = 'VIDEO',
-  MUSIC = 'MUSIC',
-  BOOK = 'BOOK',
-  WEBSITE = 'WEBSITE',
-}
+import { Users } from '@/models/user/model'
+import { DigitalMediaTypeEnum } from '@/models/digital-media/enums'
+import { timestamps } from '@/utils/timestamps'
 
 export const DigitalMedia = pgTable('digital_media', {
+  ...timestamps,
   mediaId: serial('media_id').notNull().primaryKey(),
   userId: integer('user_id')
     .notNull()
@@ -21,6 +16,3 @@ export const DigitalMedia = pgTable('digital_media', {
   duration: text('duration'),
   timestamp: timestamp('timestamp'),
 })
-
-export type SelectDigitalMedia = InferSelectModel<typeof DigitalMedia>
-export type InsertDigitalMedia = InferInsertModel<typeof DigitalMedia>

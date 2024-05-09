@@ -43,6 +43,13 @@
       "when": 1714940510834,
       "tag": "0005_certain_shaman",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1715276528320,
+      "tag": "0006_left_zaran",
+      "breakpoints": true
     }
   ]
 }

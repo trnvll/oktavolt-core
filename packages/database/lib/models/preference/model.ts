@@ -1,8 +1,9 @@
 import { integer, pgTable, serial, text } from 'drizzle-orm/pg-core'
-import { Users } from '@/models/user/user'
-import { InferInsertModel, InferSelectModel } from 'drizzle-orm'
+import { Users } from '@/models/user/model'
+import { timestamps } from '@/utils/timestamps'
 
 export const Preferences = pgTable('preferences', {
+  ...timestamps,
   prefId: serial('pref_id').notNull().primaryKey(),
   userId: integer('user_id')
     .notNull()
@@ -10,6 +11,3 @@ export const Preferences = pgTable('preferences', {
   preferenceType: text('preference_type').notNull(),
   value: text('value'),
 })
-
-export type SelectPreferences = InferSelectModel<typeof Preferences>
-export type InsertPreferences = InferInsertModel<typeof Preferences>

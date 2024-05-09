@@ -1,7 +1,8 @@
 import { serial, text, timestamp, pgTable, varchar } from 'drizzle-orm/pg-core'
-import { InferInsertModel, InferSelectModel } from 'drizzle-orm'
+import { timestamps } from '@/utils/timestamps'
 
 export const Users = pgTable('users', {
+  ...timestamps,
   userId: serial('user_id').notNull().primaryKey(),
   authzUserId: text('authz_user_id'),
   firstName: text('first_name').notNull(),
@@ -9,8 +10,4 @@ export const Users = pgTable('users', {
   email: text('email').notNull().unique(),
   phone: varchar('phone', { length: 15 }).notNull(),
   dob: timestamp('dob').notNull(),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
 })
-
-export type SelectUser = InferSelectModel<typeof Users>
-export type InsertUser = InferInsertModel<typeof Users>

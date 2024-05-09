@@ -1,9 +1,10 @@
 import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
-import { Users } from '@/models/user/user'
-import { Relationships } from '@/models/relationship/relationship'
-import { InferInsertModel, InferSelectModel } from 'drizzle-orm'
+import { Users } from '@/models/user/model'
+import { Relationships } from '@/models/relationship/model'
+import { timestamps } from '@/utils/timestamps'
 
 export const FinancialTransactions = pgTable('financial_transactions', {
+  ...timestamps,
   transId: serial('trans_id').notNull().primaryKey(),
   userId: integer('user_id')
     .notNull()
@@ -16,10 +17,3 @@ export const FinancialTransactions = pgTable('financial_transactions', {
   timestamp: timestamp('timestamp').notNull(),
   description: text('description'),
 })
-
-export type SelectFinancialTransactions = InferSelectModel<
-  typeof FinancialTransactions
->
-export type InsertFinancialTransactions = InferInsertModel<
-  typeof FinancialTransactions
->
