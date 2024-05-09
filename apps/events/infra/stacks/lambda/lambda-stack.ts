@@ -21,6 +21,7 @@ export class EventsLambdaStack extends Stack {
       entry: 'dist/entries/lambdas/events-handler.js',
       handler: 'handler',
       environment: {
+        IS_TS_NODE: 'true',
         EVENTS_BUCKET_NAME: eventsBucket.bucketName,
       },
       bundling: {
