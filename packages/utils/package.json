@@ -1,0 +1,25 @@
+{
+  "name": "utils",
+  "version": "0.0.1",
+  "main": "./dist/lib/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": "./dist/lib/index.js"
+  },
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\"",
+    "build": "swc . -d dist --config-file .swcrc",
+    "build:types": "tsc -p tsconfig.declarations.json && tsc-alias -p tsconfig.declarations.json",
+    "build:tsc": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "eslint": "^7.32.0",
+    "eslint-config-custom": "*",
+    "tsconfig": "*",
+    "typescript": "^4.5.2"
+  },
+  "dependencies": {
+  }
+}

@@ -1,5 +1,5 @@
 import { defineConfig } from 'drizzle-kit'
-import { config } from './lib/utils/config'
+import { config } from '@/utils/config'
 
 export default defineConfig({
   schema: './lib/models/index.ts',

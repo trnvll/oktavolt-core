@@ -12,6 +12,7 @@ import {
   InsertCommunications,
 } from 'database'
 import { Transform, Type } from 'class-transformer'
+import { LogActivity } from 'utils'
 
 export class CreateCommsDto {
   @IsArray()
@@ -19,6 +20,7 @@ export class CreateCommsDto {
   @Type(() => CreateCommDto)
   data: CreateCommDto[]
 
+  @LogActivity({ level: 'debug' })
   static toEntity(userId: number, dto: CreateCommDto[]) {
     return dto.map((comm) => CreateCommDto.toEntity(userId, comm))
   }

@@ -9,11 +9,13 @@ import { DrizzleService } from '@/core/drizzle/drizzle.service'
 import { and, eq } from 'drizzle-orm'
 import { FindAllCommsDto } from '@/modules/comms/dtos/find-all-comms.dto'
 import { FindOneCommDto } from '@/modules/comms/dtos/find-one-comm.dto'
+import { LogActivity } from 'utils'
 
 @Injectable()
 export class CommsService {
   constructor(private readonly drizzle: DrizzleService) {}
 
+  @LogActivity()
   async findAll(user: SelectUser) {
     const comms = await this.drizzle.db.query.comms.findMany({
       where: eq(Communications.userId, user.userId),
@@ -22,6 +24,7 @@ export class CommsService {
     return FindAllCommsDto.fromEntity(comms)
   }
 
+  @LogActivity()
   async findOne(user: SelectUser, commId: number) {
     const comm = await this.drizzle.db.query.comms.findFirst({
       where: and(
@@ -37,6 +40,7 @@ export class CommsService {
     return FindOneCommDto.fromEntity(comm)
   }
 
+  @LogActivity()
   async create(user: SelectUser, createCommsDto: CreateCommsDto) {
     const entities = CreateCommsDto.toEntity(user.userId, createCommsDto.data)
 
@@ -46,6 +50,7 @@ export class CommsService {
       .returning({ commId: Communications.commId })
   }
 
+  @LogActivity()
   async delete(user: SelectUser, commId: number) {
     const comm = await this.drizzle.db.query.comms.findFirst({
       where: and(

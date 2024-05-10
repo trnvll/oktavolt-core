@@ -8,6 +8,7 @@ import {
 } from 'class-validator'
 import { Type } from 'class-transformer'
 import { InsertAuthentication } from 'database'
+import { LogActivity } from 'utils'
 
 export class CreateAuthsDto {
   @IsArray()
@@ -15,6 +16,7 @@ export class CreateAuthsDto {
   @Type(() => CreateAuthDto)
   data: CreateAuthDto[]
 
+  @LogActivity({ level: 'debug' })
   static toEntity(userId: number, dto: CreateAuthDto[]) {
     return dto.map((auth) => CreateAuthDto.toEntity(userId, auth))
   }

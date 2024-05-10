@@ -11,7 +11,7 @@ endif
 build:
 	@echo "Building in $(ENV) environment..."
 	npm run build:types
-	npx turbo run build --filter=infra
+	npx turbo run build --filter=utils
 
 install:
 	npm install

@@ -10,11 +10,13 @@ import { Authentication } from 'database'
 import { CreateAuthsDto } from '@/modules/auth/dtos/create-auths.dto'
 import { FindOneAuthDto } from '@/modules/auth/dtos/find-one-auth.dto'
 import { FindAllAuthsDto } from '@/modules/auth/dtos/find-all-auth.dto'
+import { LogActivity } from 'utils'
 
 @Injectable()
 export class AuthService {
   constructor(private readonly drizzle: DrizzleService) {}
 
+  @LogActivity()
   async findAll(user: SelectUser) {
     const auths = await this.drizzle.db.query.auth.findMany({
       where: eq(Authentication.userId, user.userId),
@@ -23,6 +25,7 @@ export class AuthService {
     return FindAllAuthsDto.fromEntity(auths)
   }
 
+  @LogActivity()
   async findOne(user: SelectUser, authId: number) {
     const auth = await this.drizzle.db.query.auth.findFirst({
       where: and(
@@ -38,6 +41,7 @@ export class AuthService {
     return FindOneAuthDto.fromEntity(auth)
   }
 
+  @LogActivity()
   async create(user: SelectUser, createAuthsDto: CreateAuthsDto) {
     const entities = CreateAuthsDto.toEntity(user.userId, createAuthsDto.data)
     return this.drizzle.db
@@ -65,6 +69,7 @@ export class AuthService {
   }
    */
 
+  @LogActivity()
   async delete(user: SelectUser, authId: number) {
     const auth = await this.drizzle.db.query.auth.findFirst({
       where: and(

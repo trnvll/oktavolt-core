@@ -9,6 +9,7 @@ import {
 } from 'class-validator'
 import { InsertRelationships, RelationshipTypeEnum } from 'database'
 import { Type } from 'class-transformer'
+import { LogActivity } from 'utils'
 
 export class CreateRelationshipsDto {
   @IsArray()
@@ -16,6 +17,7 @@ export class CreateRelationshipsDto {
   @Type(() => CreateRelationshipDto)
   data: CreateRelationshipDto[]
 
+  @LogActivity({ level: 'debug' })
   static toEntity(userId: number, dto: CreateRelationshipDto[]) {
     return dto.map((relation) =>
       CreateRelationshipDto.toEntity(userId, relation),

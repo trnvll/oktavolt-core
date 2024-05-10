@@ -1,6 +1,7 @@
 import { IsString, ValidateNested, IsOptional, IsArray } from 'class-validator'
 import { Type } from 'class-transformer'
 import { InsertPreferences } from 'database'
+import { LogActivity } from 'utils'
 
 export class CreatePrefsDto {
   @IsArray()
@@ -8,6 +9,7 @@ export class CreatePrefsDto {
   @Type(() => CreatePrefDto)
   data: CreatePrefDto[]
 
+  @LogActivity({ level: 'debug' })
   static toEntity(userId: number, dto: CreatePrefDto[]) {
     return dto.map((pref) => CreatePrefDto.toEntity(userId, pref))
   }

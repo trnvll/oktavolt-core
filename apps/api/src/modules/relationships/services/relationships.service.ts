@@ -9,11 +9,13 @@ import { DrizzleService } from '@/core/drizzle/drizzle.service'
 import { and, eq } from 'drizzle-orm'
 import { Relationships, SelectUser, Users } from 'database'
 import { CreateRelationshipsDto } from '@/modules/relationships/dtos/create-relationships.dto'
+import { LogActivity } from 'utils'
 
 @Injectable()
 export class RelationshipsService {
   constructor(private readonly drizzle: DrizzleService) {}
 
+  @LogActivity()
   async findAll(user: SelectUser) {
     const relationships = await this.drizzle.db.query.relations.findMany({
       where: eq(Relationships.userId, user.userId),
@@ -22,6 +24,7 @@ export class RelationshipsService {
     return FindAllRelationshipsDto.fromEntity(relationships)
   }
 
+  @LogActivity()
   async findOne(user: SelectUser, relationshipId: number) {
     const relationship = await this.drizzle.db.query.relations.findFirst({
       where: and(
@@ -37,6 +40,7 @@ export class RelationshipsService {
     return FindOneRelationshipDto.fromEntity(relationship)
   }
 
+  @LogActivity()
   async create(
     user: SelectUser,
     createRelationshipsDto: CreateRelationshipsDto,
@@ -52,6 +56,7 @@ export class RelationshipsService {
       .returning({ relationshipId: Relationships.relationshipId })
   }
 
+  @LogActivity()
   async delete(user: SelectUser, relationshipId: number) {
     const relationship = await this.drizzle.db.query.relations.findFirst({
       where: and(
