@@ -32,6 +32,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.3.8",
     "@nestjs/platform-fastify": "^10.3.8",
+    "@nestjs/throttler": "^5.1.2",
     "@prisma/client": "^5.4.2",
     "@vendia/serverless-express": "^4.10.4",
     "aws-cdk-lib": "^2.101.0",

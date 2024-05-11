@@ -6,11 +6,24 @@ import { PrefsModule } from '@/modules/prefs/prefs.module'
 import { AuthModule } from '@/modules/auth/auth.module'
 import { AuthzModule } from '@/core/authz/authz.module'
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager'
-import { APP_INTERCEPTOR } from '@nestjs/core'
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 
 @Module({
   imports: [
     CacheModule.register(),
+    ThrottlerModule.forRoot([
+      {
+        name: 'medium',
+        ttl: 10_000,
+        limit: 200,
+      },
+      {
+        name: 'long',
+        ttl: 60_000,
+        limit: 500,
+      },
+    ]),
     AuthzModule,
     UsersModule,
     CommsModule,
@@ -22,6 +35,10 @@ import { APP_INTERCEPTOR } from '@nestjs/core'
     {
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
   ],
 })
