@@ -5,7 +5,7 @@ if (!process.env.IS_TS_NODE) {
 }
 
 import { NestFactory } from '@nestjs/core'
-import { ValidationPipe } from '@nestjs/common'
+import { ValidationPipe, VersioningType } from '@nestjs/common'
 
 import { AppModule } from '@/app.module'
 
@@ -17,6 +17,10 @@ async function bootstrap() {
   app.enableCors()
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }))
   app.useGlobalFilters(new DatabaseExceptionFilter())
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  })
 
   await app.listen(process.env.PORT || 8080)
 }

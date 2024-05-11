@@ -5,9 +5,12 @@ import { CommsModule } from '@/modules/comms/comms.module'
 import { PrefsModule } from '@/modules/prefs/prefs.module'
 import { AuthModule } from '@/modules/auth/auth.module'
 import { AuthzModule } from '@/core/authz/authz.module'
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager'
+import { APP_INTERCEPTOR } from '@nestjs/core'
 
 @Module({
   imports: [
+    CacheModule.register(),
     AuthzModule,
     UsersModule,
     CommsModule,
@@ -15,7 +18,11 @@ import { AuthzModule } from '@/core/authz/authz.module'
     PrefsModule,
     AuthModule,
   ],
-  controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
+  ],
 })
 export class AppModule {}
