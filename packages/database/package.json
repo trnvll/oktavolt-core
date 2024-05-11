@@ -21,7 +21,7 @@
     "eslint-config-custom": "*",
     "tsc-alias": "^1.8.8",
     "tsconfig": "*",
-    "typescript": "^4.5.2"
+    "typescript": "^5.4.5"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
