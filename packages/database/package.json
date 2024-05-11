@@ -9,7 +9,7 @@
   },
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "build": "swc . -d dist --config-file .swcrc",
+    "build": "swc ./lib -d dist --config-file .swcrc",
     "build:types": "tsc -p tsconfig.declarations.json && tsc-alias -p tsconfig.declarations.json",
     "build:tsc": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json"
   },

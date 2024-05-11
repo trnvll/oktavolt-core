@@ -16,7 +16,7 @@ enum NodeEnvEnum {
 const defaultEnv: Partial<EnvironmentVariables> = {
   IS_TS_NODE: true,
   NODE_ENV: NodeEnvEnum.DEVELOPMENT,
-  LOGGING_LEVELS: [LogLevelEnum.ERROR, LogLevelEnum.WARN, LogLevelEnum.INFO],
+  LOGGING_LEVELS: [LogLevelEnum.ERROR, LogLevelEnum.WARN, LogLevelEnum.LOG],
   PORT: 8080,
 }
 

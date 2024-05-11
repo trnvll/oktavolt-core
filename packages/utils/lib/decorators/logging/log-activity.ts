@@ -12,7 +12,7 @@ interface LogOptions {
 
 export function LogActivity(options: LogOptions = {}) {
   const {
-    allowedLevels,
+    allowedLevels = process.env.LOGGING_LEVELS?.split(','),
     level = 'log',
     logEntry = true,
     logExit = true,
