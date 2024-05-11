@@ -15,4 +15,5 @@ export const Relationships = pgTable('relationships', {
   phone: varchar('phone', { length: 15 }),
   address: text('address'),
   notes: text('notes'),
+  context: varchar('context'),
 })

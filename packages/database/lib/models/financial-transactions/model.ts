@@ -2,6 +2,7 @@ import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
 import { Users } from '@/models/user/model'
 import { Relationships } from '@/models/relationship/model'
 import { timestamps } from '@/utils/timestamps'
+import { varchar } from 'drizzle-orm/pg-core'
 
 export const FinancialTransactions = pgTable('financial_transactions', {
   ...timestamps,
@@ -16,4 +17,5 @@ export const FinancialTransactions = pgTable('financial_transactions', {
   type: text('type').notNull(),
   timestamp: timestamp('timestamp').notNull(),
   description: text('description'),
+  context: varchar('context'),
 })

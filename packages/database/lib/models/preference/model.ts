@@ -1,6 +1,7 @@
 import { integer, pgTable, serial, text } from 'drizzle-orm/pg-core'
 import { Users } from '@/models/user/model'
 import { timestamps } from '@/utils/timestamps'
+import { varchar } from 'drizzle-orm/pg-core'
 
 export const Preferences = pgTable('preferences', {
   ...timestamps,
@@ -10,4 +11,5 @@ export const Preferences = pgTable('preferences', {
     .references(() => Users.userId),
   preferenceType: text('preference_type').notNull(),
   value: text('value'),
+  context: varchar('context'),
 })

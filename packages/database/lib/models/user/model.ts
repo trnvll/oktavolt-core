@@ -10,4 +10,5 @@ export const Users = pgTable('users', {
   email: text('email').notNull().unique(),
   phone: varchar('phone', { length: 15 }).notNull(),
   dob: timestamp('dob').notNull(),
+  context: varchar('context'),
 })

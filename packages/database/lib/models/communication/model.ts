@@ -6,6 +6,7 @@ import {
   CommunicationTypeEnum,
 } from '@/models/communication/enums'
 import { timestamps } from '@/utils/timestamps'
+import { varchar } from 'drizzle-orm/pg-core'
 
 export const Communications = pgTable('communications', {
   ...timestamps,
@@ -22,4 +23,5 @@ export const Communications = pgTable('communications', {
   sender: text('sender'),
   receiver: text('receiver').notNull(),
   provider: text('provider').notNull().$type<CommunicationProviderEnum>(),
+  context: varchar('context'),
 })
