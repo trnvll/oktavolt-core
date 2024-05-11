@@ -1,7 +1,9 @@
-import { Logger } from '@nestjs/common'
+import { Logger, LogLevel } from '@nestjs/common'
+import { LogLevelEnum } from '@/enums'
 
 interface LogOptions {
-  level?: 'log' | 'error' | 'warn' | 'debug' | 'verbose'
+  allowedLevels?: LogLevelEnum[]
+  level?: LogLevel
   logEntry?: boolean
   logExit?: boolean
   logError?: boolean
@@ -10,6 +12,7 @@ interface LogOptions {
 
 export function LogActivity(options: LogOptions = {}) {
   const {
+    allowedLevels,
     level = 'log',
     logEntry = true,
     logExit = true,
@@ -24,9 +27,13 @@ export function LogActivity(options: LogOptions = {}) {
     // Adjust the class name retrieval for static methods
     const className = isStaticMethod ? target.name : target.constructor.name
 
+    const shouldLog = allowedLevels
+      ? allowedLevels.includes(level as LogLevelEnum)
+      : true
+
     descriptor.value = function (...args: any[]) {
       const logger = new Logger(className)
-      if (logEntry) {
+      if (shouldLog && logEntry) {
         logger[level](
           `${message}, Method: ${key}, Args: ${JSON.stringify(args)}`,
         )
@@ -38,7 +45,7 @@ export function LogActivity(options: LogOptions = {}) {
         const isPromise = result instanceof Promise
 
         const handleResult = (resolvedResult: any) => {
-          if (logExit) {
+          if (shouldLog && logExit) {
             logger[level](
               `${message}, Method: ${key}, Result: ${JSON.stringify(
                 resolvedResult,
@@ -51,7 +58,7 @@ export function LogActivity(options: LogOptions = {}) {
         // If the method is asynchronous, wait for the promise to resolve before logging the exit
         return isPromise ? result.then(handleResult) : handleResult(result)
       } catch (error) {
-        if (logError) {
+        if (shouldLog && logError) {
           logger.error(
             `${message}, Method: ${key} has failed with error: ${error}`,
           )
