@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import { schema } from 'database'
-import { ConfigService } from '@nestjs/config'
+import { envConfig } from '@/config/env/env.config'
 
 export const DATABASE_CONN = 'DATABASE_CONN'
 
@@ -10,13 +10,11 @@ export const DATABASE_CONN = 'DATABASE_CONN'
   providers: [
     {
       provide: DATABASE_CONN,
-      inject: [ConfigService],
-      useFactory: async (config: ConfigService) => {
-        const connection = postgres(config.get('DATABASE_URL'))
+      useFactory: async () => {
+        const connection = postgres(envConfig.get('DATABASE_URL'))
         return drizzle(connection, { schema })
       },
     },
-    ConfigService,
   ],
   exports: [DATABASE_CONN],
 })
