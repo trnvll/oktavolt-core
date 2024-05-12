@@ -44,7 +44,6 @@
     "database": "*",
     "dotenv": "^16.3.1",
     "drizzle-orm": "^0.30.10",
-    "infra": "*",
     "jwks-rsa": "^3.0.1",
     "module-alias": "^2.2.2",
     "nodemon": "^2.0.22",
