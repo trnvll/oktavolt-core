@@ -42,4 +42,10 @@ deploy-cdk:
 deploy: test deploy-cdk
 	@echo "Deployment complete for $(ENV)."
 
+
+# Run the API Docker container
+docker-run-api:
+	docker run -p 8080:8080 --env-file .env oktavolt-api
+
+
 .PHONY: setup build dev test deploy-cdk deploy

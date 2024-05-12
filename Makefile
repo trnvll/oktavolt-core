@@ -15,6 +15,15 @@ dirs:
 $(DIRS):
 	$(MAKE) -C $@ $(filter-out $@,$(MAKECMDGOALS))
 
+# Build the API Docker image
+docker-build-api:
+	docker build -t oktavolt-api -f apps/api/Dockerfile .
+
+# Deploy with Fly.io
+fly-deploy-api:
+	fly deploy --config fly.api.toml
+	fly cat apps/api/.env | flyctl secrets import --config fly.api.toml
+
 # Catch-all rule to avoid make doing nothing for unknown goals
 %:
 	@:
