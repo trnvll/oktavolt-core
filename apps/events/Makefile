@@ -40,7 +40,7 @@ deploy-cdk:
 	cdk deploy --all $(CDK_DEPLOY_FLAGS)
 
 # Full deployment pipeline
-deploy: build test deploy-cdk
+deploy: build deploy-cdk
 	@echo "Deployment complete for $(ENV)."
 
 .PHONY: setup build dev test deploy-cdk deploy

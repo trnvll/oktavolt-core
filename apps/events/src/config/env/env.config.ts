@@ -1,7 +1,7 @@
 import { validateSync } from 'class-validator'
 import { plainToClass } from 'class-transformer'
 import { EnvironmentVariables } from '@/config/env/environment-variables'
-import dotenv from 'dotenv'
+import * as dotenv from 'dotenv'
 
 dotenv.config()
 

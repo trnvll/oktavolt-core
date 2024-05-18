@@ -3,6 +3,7 @@ import { Construct } from 'constructs'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
+import { envConfig } from '@/config/env/env.config'
 
 interface EventsLambdaStackProps extends StackProps {
   eventsBucket: s3.Bucket
@@ -18,11 +19,11 @@ export class EventsLambdaStack extends Stack {
 
     this.eventsHandler = new NodejsFunction(this, 'EventsHandler', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      entry: 'dist/entries/lambdas/events-handler.js',
+      entry: 'dist/entries/lambdas/user-events/handler.js',
       handler: 'handler',
       environment: {
-        IS_TS_NODE: 'true',
         EVENTS_BUCKET_NAME: eventsBucket.bucketName,
+        TS_DATABASE_URL: envConfig.get('TS_DATABASE_URL'),
       },
       bundling: {
         externalModules: [

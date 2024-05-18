@@ -6,7 +6,7 @@ import {
 } from '@/modules/events/dtos/core/enums'
 import { EventDetails } from '@/modules/events/dtos/event-details'
 import { InsertUserEvent } from 'tsdb'
-import { instanceToPlain } from 'class-transformer'
+import { instanceToPlain, Transform } from 'class-transformer'
 
 export class CreateEventDto {
   @IsInt()
@@ -22,6 +22,7 @@ export class CreateEventDto {
   data: EventDetails
 
   @IsDate()
+  @Transform(({ value }) => new Date(value))
   timestamp: Date
 
   @IsEnum(EventOriginEnum)
