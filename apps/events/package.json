@@ -32,7 +32,9 @@
     "dotenv": "^16.3.1",
     "module-alias": "^2.2.2",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "tsdb": "*",
+    "utils": "*"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.3.2",

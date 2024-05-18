@@ -1,1 +1,1 @@
-export * from 'lib/models/user-events'
+export * from '@/models/user-events'

@@ -1,5 +1,5 @@
 import { InferInsertModel, InferSelectModel } from 'drizzle-orm'
 import { UserEvents } from '@/models'
 
-export type SelectAuthentication = InferSelectModel<typeof UserEvents>
-export type InsertAuthentication = InferInsertModel<typeof UserEvents>
+export type SelectUserEvent = InferSelectModel<typeof UserEvents>
+export type InsertUserEvent = InferInsertModel<typeof UserEvents>

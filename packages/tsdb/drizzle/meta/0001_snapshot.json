@@ -1,6 +1,6 @@
 {
-  "id": "39fbec80-9dfd-4148-b828-19912b2df1db",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "0e7af5aa-3e80-45d9-952a-5630c0d2a8d4",
+  "prevId": "39fbec80-9dfd-4148-b828-19912b2df1db",
   "version": "5",
   "dialect": "pg",
   "tables": {
@@ -10,7 +10,7 @@
       "columns": {
         "user_id": {
           "name": "user_id",
-          "type": "numeric",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },

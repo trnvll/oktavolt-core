@@ -1,6 +1,6 @@
 import {
+  integer,
   jsonb,
-  numeric,
   pgTable,
   primaryKey,
   text,
@@ -10,7 +10,8 @@ import {
 export const UserEvents = pgTable(
   'user_events',
   {
-    userId: numeric('user_id').notNull(),
+    userId: integer('user_id').notNull(),
+    eventOrigin: text('event_origin').notNull(),
     eventType: text('event_type').notNull(),
     eventDetails: jsonb('event_details').notNull(),
     timestamp: timestamp('timestamp').defaultNow().notNull(),
