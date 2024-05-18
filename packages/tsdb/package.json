@@ -1,0 +1,31 @@
+{
+  "name": "tsdb",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "./dist/lib/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": "./dist/lib/index.js"
+  },
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\"",
+    "build": "swc ./lib -d dist --config-file .swcrc",
+    "build:types": "tsc -p tsconfig.declarations.json && tsc-alias -p tsconfig.declarations.json",
+    "build:tsc": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@swc/cli": "^0.3.12",
+    "@swc/core": "^1.5.3",
+    "drizzle-kit": "^0.20.17",
+    "eslint": "^7.32.0",
+    "eslint-config-custom": "*",
+    "tsc-alias": "^1.8.8",
+    "tsconfig": "*",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.30.10",
+    "postgres": "^3.4.4"
+  }
+}
