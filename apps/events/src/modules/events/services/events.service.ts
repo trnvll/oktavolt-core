@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { CreateEventDto } from '@/modules/events/dtos/create-event.dto'
 import { TsdbService } from '@/core/tsdb/tsdb.service'
 import { UserEvents } from 'tsdb'
 import { LogActivity } from 'utils'
+import { CreateEventDto } from 'shared'
 
 @Injectable()
 export class EventsService {

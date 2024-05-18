@@ -1,0 +1,5 @@
+export * from '@/events/dtos/user-event/core'
+export { BusinessEventDetailsDto } from '@/events/dtos/user-event/business-event-details.dto'
+export { TrackingEventDetailsDto } from '@/events/dtos/user-event/tracking-event-details.dto'
+export type { EventDetails } from '@/events/dtos/user-event/event-details'
+export { CreateEventDto } from '@/events/dtos/user-event/create-event.dto'

@@ -34,7 +34,8 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
     "tsdb": "*",
-    "utils": "*"
+    "utils": "*",
+    "shared": "*"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.3.2",

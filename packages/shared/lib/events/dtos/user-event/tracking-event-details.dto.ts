@@ -1,6 +1,6 @@
 import { IsOptional, IsString, ValidateNested } from 'class-validator'
 import { Type } from 'class-transformer'
-import { MetadataDto } from '@/modules/events/dtos/core/metadata.dto'
+import { MetadataDto } from '@/events'
 
 export class TrackingEventDetailsDto {
   @ValidateNested()

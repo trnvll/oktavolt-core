@@ -1,12 +1,12 @@
 import { IsDate, IsEnum, IsInt, IsObject } from 'class-validator'
+import { InsertUserEvent } from 'tsdb'
+import { instanceToPlain, Transform } from 'class-transformer'
 import {
+  EventDetails,
   EventOriginEnum,
   EventTargetEnum,
   EventTypeEnum,
-} from '@/modules/events/dtos/core/enums'
-import { EventDetails } from '@/modules/events/dtos/event-details'
-import { InsertUserEvent } from 'tsdb'
-import { instanceToPlain, Transform } from 'class-transformer'
+} from '@/events'
 
 export class CreateEventDto {
   @IsInt()

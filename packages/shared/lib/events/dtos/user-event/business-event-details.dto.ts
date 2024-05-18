@@ -1,8 +1,6 @@
 import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator'
-import { EntityTypeEnum } from '@/modules/events/dtos/core/enums'
 import { Type } from 'class-transformer'
-import { MetadataDto } from '@/modules/events/dtos/core/metadata.dto'
-import { DataChangeDto } from '@/modules/events/dtos/core/data-change.dto'
+import { DataChangeDto, EntityTypeEnum, MetadataDto } from '@/events'
 
 export class BusinessEventDetailsDto {
   @ValidateNested()

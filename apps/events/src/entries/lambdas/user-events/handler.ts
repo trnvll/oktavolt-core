@@ -9,7 +9,7 @@ import { EventsService } from '@/modules/events/services/events.service'
 import { NestFactory } from '@nestjs/core'
 import * as dotenv from 'dotenv'
 import { AppModule } from '@/app.module'
-import { CreateEventDto } from '@/modules/events/dtos/create-event.dto'
+import { CreateEventDto } from 'shared'
 import { plainToInstance } from 'class-transformer'
 import { SQSEvent } from 'aws-lambda'
 
