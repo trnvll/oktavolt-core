@@ -18,6 +18,7 @@ const defaultEnv: Partial<EnvironmentVariables> = {
   NODE_ENV: NodeEnvEnum.DEVELOPMENT,
   LOGGING_LEVELS: [LogLevelEnum.ERROR, LogLevelEnum.WARN, LogLevelEnum.LOG],
   PORT: 8080,
+  AUTH0_DOMAIN: 'https://platform.oktavolt.com',
 }
 
 export class EnvironmentVariables {
@@ -29,10 +30,12 @@ export class EnvironmentVariables {
   @Transform(({ value }) => (value ? parseInt(value, 10) : defaultEnv.PORT))
   PORT: number
 
+  @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => (value ? Boolean(value) : defaultEnv.IS_TS_NODE))
   IS_TS_NODE: boolean
 
+  @IsOptional()
   @IsEnum(NodeEnvEnum)
   @Transform(({ value }) => value ?? defaultEnv.IS_TS_NODE)
   NODE_ENV: NodeEnvEnum
@@ -43,4 +46,9 @@ export class EnvironmentVariables {
     value ? value.split(',') : defaultEnv.LOGGING_LEVELS,
   )
   LOGGING_LEVELS: LogLevelEnum[]
+
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => (value ? value : defaultEnv.AUTH0_DOMAIN))
+  AUTH0_DOMAIN: string
 }
