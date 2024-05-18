@@ -24,6 +24,9 @@ export enum EventOriginEnum {
 export enum EntityTypeEnum {
   User = 'user',
   Authentication = 'authentication',
+  Relationship = 'relationship',
+  Preference = 'preference',
+  Communication = 'communication',
 }
 
 export enum EventActionEnum {

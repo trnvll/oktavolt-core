@@ -10,10 +10,17 @@ import { and, eq } from 'drizzle-orm'
 import { Relationships, SelectUser, Users } from 'database'
 import { CreateRelationshipsDto } from '@/modules/relationships/dtos/create-relationships.dto'
 import { LogActivity } from 'utils'
+import { EventsEnum } from '@/core/events/types/events.enum'
+import { CreateEventUserDataUpdatedDto } from '@/core/events/dtos/create-event-user-data-updated.dto'
+import { EntityTypeEnum, EventActionEnum } from 'shared'
+import { EventEmitter2 } from '@nestjs/event-emitter'
 
 @Injectable()
 export class RelationshipsService {
-  constructor(private readonly database: DatabaseService) {}
+  constructor(
+    private readonly database: DatabaseService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   @LogActivity()
   async findAll(user: SelectUser) {
@@ -50,10 +57,27 @@ export class RelationshipsService {
       createRelationshipsDto.data,
     )
 
-    return this.database.db
+    const result = await this.database.db
       .insert(Relationships)
       .values(entities)
-      .returning({ relationshipId: Relationships.relationshipId })
+      .returning()
+
+    this.eventEmitter.emit(
+      EventsEnum.EventUserDataUpdated,
+      new CreateEventUserDataUpdatedDto({
+        userId: user.userId,
+        data: {
+          entityType: EntityTypeEnum.Relationship,
+          entityIds: result.map((entity) => entity.relationshipId),
+          dataChange: {
+            newValue: result,
+          },
+          action: EventActionEnum.Create,
+        },
+      }),
+    )
+
+    return result
   }
 
   @LogActivity()
@@ -73,9 +97,26 @@ export class RelationshipsService {
       throw new ConflictException('Relationship does not belong to user.')
     }
 
-    return this.database.db
+    const result = await this.database.db
       .delete(Relationships)
       .where(eq(Relationships.relationshipId, relationshipId))
-      .returning({ relationshipId: Relationships.relationshipId })
+      .returning()
+
+    this.eventEmitter.emit(
+      EventsEnum.EventUserDataUpdated,
+      new CreateEventUserDataUpdatedDto({
+        userId: user.userId,
+        data: {
+          entityType: EntityTypeEnum.Relationship,
+          entityIds: result.map((entity) => entity.relationshipId),
+          dataChange: {
+            oldValue: result,
+          },
+          action: EventActionEnum.Delete,
+        },
+      }),
+    )
+
+    return result
   }
 }

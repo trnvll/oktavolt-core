@@ -10,10 +10,17 @@ import { and, eq } from 'drizzle-orm'
 import { FindAllCommsDto } from '@/modules/comms/dtos/find-all-comms.dto'
 import { FindOneCommDto } from '@/modules/comms/dtos/find-one-comm.dto'
 import { LogActivity } from 'utils'
+import { EventEmitter2 } from '@nestjs/event-emitter'
+import { EventsEnum } from '@/core/events/types/events.enum'
+import { CreateEventUserDataUpdatedDto } from '@/core/events/dtos/create-event-user-data-updated.dto'
+import { EntityTypeEnum, EventActionEnum } from 'shared'
 
 @Injectable()
 export class CommsService {
-  constructor(private readonly database: DatabaseService) {}
+  constructor(
+    private readonly database: DatabaseService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   @LogActivity()
   async findAll(user: SelectUser) {
@@ -44,10 +51,27 @@ export class CommsService {
   async create(user: SelectUser, createCommsDto: CreateCommsDto) {
     const entities = CreateCommsDto.toEntity(user.userId, createCommsDto.data)
 
-    return this.database.db
+    const result = await this.database.db
       .insert(Communications)
       .values(entities)
-      .returning({ commId: Communications.commId })
+      .returning()
+
+    this.eventEmitter.emit(
+      EventsEnum.EventUserDataUpdated,
+      new CreateEventUserDataUpdatedDto({
+        userId: user.userId,
+        data: {
+          entityType: EntityTypeEnum.Communication,
+          entityIds: result.map((entity) => entity.commId),
+          dataChange: {
+            newValue: result,
+          },
+          action: EventActionEnum.Create,
+        },
+      }),
+    )
+
+    return result
   }
 
   @LogActivity()
@@ -67,9 +91,26 @@ export class CommsService {
       throw new ForbiddenException('Communication does not belong to user.')
     }
 
-    return this.database.db
+    const result = await this.database.db
       .delete(Communications)
       .where(eq(Communications.commId, commId))
-      .returning({ commId: Communications.commId })
+      .returning()
+
+    this.eventEmitter.emit(
+      EventsEnum.EventUserDataUpdated,
+      new CreateEventUserDataUpdatedDto({
+        userId: user.userId,
+        data: {
+          entityType: EntityTypeEnum.Communication,
+          entityIds: result.map((entity) => entity.commId),
+          dataChange: {
+            oldValue: result,
+          },
+          action: EventActionEnum.Delete,
+        },
+      }),
+    )
+
+    return result
   }
 }

@@ -6,10 +6,17 @@ import { FindOnePrefDto } from '@/modules/prefs/dtos/find-one-pref.dto'
 import { FindAllPrefsDto } from '@/modules/prefs/dtos/find-all-prefs.dto'
 import { CreatePrefsDto } from '@/modules/prefs/dtos/create-prefs.dto'
 import { LogActivity } from 'utils'
+import { EventEmitter2 } from '@nestjs/event-emitter'
+import { EventsEnum } from '@/core/events/types/events.enum'
+import { CreateEventUserDataUpdatedDto } from '@/core/events/dtos/create-event-user-data-updated.dto'
+import { EntityTypeEnum, EventActionEnum } from 'shared'
 
 @Injectable()
 export class PrefsService {
-  constructor(private readonly database: DatabaseService) {}
+  constructor(
+    private readonly database: DatabaseService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   @LogActivity()
   async findAll(user: SelectUser) {
@@ -43,10 +50,27 @@ export class PrefsService {
       createPreferencesDto.data,
     )
 
-    return this.database.db
+    const result = await this.database.db
       .insert(Preferences)
       .values(entity)
-      .returning({ prefId: Preferences.prefId })
+      .returning()
+
+    this.eventEmitter.emit(
+      EventsEnum.EventUserDataUpdated,
+      new CreateEventUserDataUpdatedDto({
+        userId: user.userId,
+        data: {
+          entityType: EntityTypeEnum.Preference,
+          entityIds: result.map((entity) => entity.prefId),
+          dataChange: {
+            newValue: result,
+          },
+          action: EventActionEnum.Create,
+        },
+      }),
+    )
+
+    return result
   }
 
   /*
@@ -86,9 +110,26 @@ export class PrefsService {
       throw new NotFoundException('Preference not found.')
     }
 
-    return this.database.db
+    const result = await this.database.db
       .delete(Preferences)
       .where(eq(Preferences.prefId, prefId))
-      .returning({ prefId: Preferences.prefId })
+      .returning()
+
+    this.eventEmitter.emit(
+      EventsEnum.EventUserDataUpdated,
+      new CreateEventUserDataUpdatedDto({
+        userId: user.userId,
+        data: {
+          entityType: EntityTypeEnum.Preference,
+          entityIds: result.map((entity) => entity.prefId),
+          dataChange: {
+            oldValue: result,
+          },
+          action: EventActionEnum.Delete,
+        },
+      }),
+    )
+
+    return result
   }
 }
