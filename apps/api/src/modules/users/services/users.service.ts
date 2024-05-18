@@ -6,10 +6,18 @@ import { FindOneUserDto } from '@/modules/users/dtos/find-one-user.dto'
 import { FindAllUsersDto } from '@/modules/users/dtos/find-all-users.dto'
 import { CreateUsersDto } from '@/modules/users/dtos/create-user.dto'
 import { LogActivity } from 'utils'
+import { EventEmitter2 } from '@nestjs/event-emitter'
+import { EventsEnum } from '@/core/events/types/events.enum'
+import { EntityTypeEnum, EventActionEnum } from 'shared'
+import { CreateEventUserCreatedDto } from '@/core/events/dtos/create-event-user-created.dto'
+import { CreateEventUserDeletedDto } from '@/core/events/dtos/create-event-user-deleted.dto'
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly database: DatabaseService) {}
+  constructor(
+    private readonly database: DatabaseService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   @LogActivity()
   async findAll() {
@@ -33,8 +41,27 @@ export class UsersService {
   @LogActivity()
   async create(userDto: CreateUsersDto) {
     const entities = CreateUsersDto.toEntity(userDto.data)
-    await this.database.db.insert(Users).values(entities)
-    return entities
+    const result = await this.database.db
+      .insert(Users)
+      .values(entities)
+      .returning()
+
+    this.eventEmitter.emit(
+      EventsEnum.EventUserCreated,
+      new CreateEventUserCreatedDto({
+        userId: result[0].userId,
+        data: {
+          entityType: EntityTypeEnum.User,
+          entityIds: result.map((entity) => entity.userId),
+          dataChange: {
+            newValue: result[0],
+          },
+          action: EventActionEnum.Create,
+        },
+      }),
+    )
+
+    return result
   }
 
   @LogActivity()
@@ -48,9 +75,26 @@ export class UsersService {
       throw new NotFoundException('User not found.')
     }
 
-    return this.database.db
+    const result = await this.database.db
       .delete(Users)
       .where(eq(Users.userId, userId))
-      .returning({ userId: Users.userId })
+      .returning()
+
+    this.eventEmitter.emit(
+      EventsEnum.EventUserDeleted,
+      new CreateEventUserDeletedDto({
+        userId: result[0].userId,
+        data: {
+          entityType: EntityTypeEnum.User,
+          entityIds: result.map((entity) => entity.userId),
+          dataChange: {
+            oldValue: result[0],
+          },
+          action: EventActionEnum.Delete,
+        },
+      }),
+    )
+
+    return result
   }
 }
