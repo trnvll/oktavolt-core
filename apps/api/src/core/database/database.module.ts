@@ -18,4 +18,4 @@ export const DATABASE_CONN = 'DATABASE_CONN'
   ],
   exports: [DATABASE_CONN],
 })
-export class DrizzleModule {}
+export class DatabaseModule {}

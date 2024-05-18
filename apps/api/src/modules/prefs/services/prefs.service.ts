@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { Preferences, SelectUser } from 'database'
-import { DrizzleService } from '@/core/drizzle/drizzle.service'
+import { DatabaseService } from '@/core/database/database.service'
 import { and, eq } from 'drizzle-orm'
 import { FindOnePrefDto } from '@/modules/prefs/dtos/find-one-pref.dto'
 import { FindAllPrefsDto } from '@/modules/prefs/dtos/find-all-prefs.dto'
@@ -9,11 +9,11 @@ import { LogActivity } from 'utils'
 
 @Injectable()
 export class PrefsService {
-  constructor(private readonly drizzle: DrizzleService) {}
+  constructor(private readonly database: DatabaseService) {}
 
   @LogActivity()
   async findAll(user: SelectUser) {
-    const prefs = await this.drizzle.db.query.prefs.findMany({
+    const prefs = await this.database.db.query.prefs.findMany({
       where: eq(Preferences.userId, user.userId),
     })
 
@@ -22,7 +22,7 @@ export class PrefsService {
 
   @LogActivity()
   async findOne(user: SelectUser, prefId: number) {
-    const pref = await this.drizzle.db.query.prefs.findFirst({
+    const pref = await this.database.db.query.prefs.findFirst({
       where: and(
         eq(Preferences.prefId, prefId),
         eq(Preferences.userId, user.userId),
@@ -43,7 +43,7 @@ export class PrefsService {
       createPreferencesDto.data,
     )
 
-    return this.drizzle.db
+    return this.database.db
       .insert(Preferences)
       .values(entity)
       .returning({ prefId: Preferences.prefId })
@@ -55,7 +55,7 @@ export class PrefsService {
     prefId: number,
     updatePreferencesDto: UpdatePrefsDto,
   ) {
-    const pref = await this.drizzle.db.query.Preferences.findFirst({
+    const pref = await this.database.db.query.Preferences.findFirst({
       where: and(
         eq(Preferences.prefId, prefId),
         eq(Preferences.userId, user.userId),
@@ -68,7 +68,7 @@ export class PrefsService {
 
     const updatedEntity = UpdatePrefsDto.toEntity(updatePreferencesDto.data)
 
-    return this.drizzle.db
+    return this.database.db
       .update(Preferences)
       .set(updatedEntity)
       .where(eq(Preferences.prefId, prefId))
@@ -78,7 +78,7 @@ export class PrefsService {
 
   @LogActivity()
   async delete(user: SelectUser, prefId: number) {
-    const pref = await this.drizzle.db.query.prefs.findFirst({
+    const pref = await this.database.db.query.prefs.findFirst({
       where: eq(Preferences.prefId, prefId),
     })
 
@@ -86,7 +86,7 @@ export class PrefsService {
       throw new NotFoundException('Preference not found.')
     }
 
-    return this.drizzle.db
+    return this.database.db
       .delete(Preferences)
       .where(eq(Preferences.prefId, prefId))
       .returning({ prefId: Preferences.prefId })

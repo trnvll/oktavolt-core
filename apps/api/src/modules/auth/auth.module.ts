@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common'
-import { DrizzleModule } from '@/core/drizzle/drizzle.module'
-import { DrizzleService } from '@/core/drizzle/drizzle.service'
+import { DatabaseModule } from '@/core/database/database.module'
+import { DatabaseService } from '@/core/database/database.service'
 import { AuthService } from '@/modules/auth/services/auth.service'
 import { AuthController } from '@/modules/auth/controllers/auth.controller'
 
 @Module({
-  imports: [DrizzleModule],
-  providers: [DrizzleService, AuthService],
+  imports: [DatabaseModule],
+  providers: [DatabaseService, AuthService],
   exports: [AuthService],
   controllers: [AuthController],
 })

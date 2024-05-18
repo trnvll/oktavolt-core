@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, PipeTransform } from '@nestjs/common'
-import { DrizzleService } from '@/core/drizzle/drizzle.service'
+import { DatabaseService } from '@/core/database/database.service'
 import { SelectUser, Users } from 'database'
 import { eq } from 'drizzle-orm'
 
@@ -7,14 +7,14 @@ import { eq } from 'drizzle-orm'
 export class FindUserByIdPipe
   implements PipeTransform<number, Promise<SelectUser>>
 {
-  constructor(private readonly drizzle: DrizzleService) {}
+  constructor(private readonly database: DatabaseService) {}
 
   async transform(userId: number): Promise<SelectUser> {
     if (!userId) {
       throw new NotFoundException('No user ID provided.')
     }
 
-    const user = await this.drizzle.db.query.users.findFirst({
+    const user = await this.database.db.query.users.findFirst({
       where: eq(Users.userId, userId),
     })
 

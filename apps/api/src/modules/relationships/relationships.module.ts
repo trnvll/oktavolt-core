@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common'
-import { DrizzleModule } from '@/core/drizzle/drizzle.module'
+import { DatabaseModule } from '@/core/database/database.module'
 import { RelationshipsService } from '@/modules/relationships/services/relationships.service'
 import { RelationshipsController } from '@/modules/relationships/controllers/relationships.controller'
-import { DrizzleService } from '@/core/drizzle/drizzle.service'
+import { DatabaseService } from '@/core/database/database.service'
 
 @Module({
-  imports: [DrizzleModule],
-  providers: [RelationshipsService, DrizzleService],
+  imports: [DatabaseModule],
+  providers: [RelationshipsService, DatabaseService],
   exports: [RelationshipsService],
   controllers: [RelationshipsController],
 })

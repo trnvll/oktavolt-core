@@ -20,7 +20,7 @@ docker-build-api:
 	docker build -t oktavolt-api -f apps/api/Dockerfile .
 
 # Deploy with Fly.io
-fly-deploy-api:
+fly-deploy-api: docker-build-api
 	fly deploy --config fly.api.toml
 	fly cat apps/api/.env | flyctl secrets import --config fly.api.toml
 

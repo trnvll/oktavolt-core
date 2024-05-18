@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common'
 import { FindAllRelationshipsDto } from '@/modules/relationships/dtos/find-all-relationships.dto'
 import { FindOneRelationshipDto } from '@/modules/relationships/dtos/find-one-relationship.dto'
-import { DrizzleService } from '@/core/drizzle/drizzle.service'
+import { DatabaseService } from '@/core/database/database.service'
 import { and, eq } from 'drizzle-orm'
 import { Relationships, SelectUser, Users } from 'database'
 import { CreateRelationshipsDto } from '@/modules/relationships/dtos/create-relationships.dto'
@@ -13,11 +13,11 @@ import { LogActivity } from 'utils'
 
 @Injectable()
 export class RelationshipsService {
-  constructor(private readonly drizzle: DrizzleService) {}
+  constructor(private readonly database: DatabaseService) {}
 
   @LogActivity()
   async findAll(user: SelectUser) {
-    const relationships = await this.drizzle.db.query.relations.findMany({
+    const relationships = await this.database.db.query.relations.findMany({
       where: eq(Relationships.userId, user.userId),
     })
 
@@ -26,7 +26,7 @@ export class RelationshipsService {
 
   @LogActivity()
   async findOne(user: SelectUser, relationshipId: number) {
-    const relationship = await this.drizzle.db.query.relations.findFirst({
+    const relationship = await this.database.db.query.relations.findFirst({
       where: and(
         eq(Relationships.userId, user.userId),
         eq(Relationships.relationshipId, relationshipId),
@@ -50,7 +50,7 @@ export class RelationshipsService {
       createRelationshipsDto.data,
     )
 
-    return this.drizzle.db
+    return this.database.db
       .insert(Relationships)
       .values(entities)
       .returning({ relationshipId: Relationships.relationshipId })
@@ -58,7 +58,7 @@ export class RelationshipsService {
 
   @LogActivity()
   async delete(user: SelectUser, relationshipId: number) {
-    const relationship = await this.drizzle.db.query.relations.findFirst({
+    const relationship = await this.database.db.query.relations.findFirst({
       where: and(
         eq(Users.userId, user.userId),
         eq(Relationships.relationshipId, relationshipId),
@@ -73,7 +73,7 @@ export class RelationshipsService {
       throw new ConflictException('Relationship does not belong to user.')
     }
 
-    return this.drizzle.db
+    return this.database.db
       .delete(Relationships)
       .where(eq(Relationships.relationshipId, relationshipId))
       .returning({ relationshipId: Relationships.relationshipId })
