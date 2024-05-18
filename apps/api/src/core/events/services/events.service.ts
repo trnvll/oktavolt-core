@@ -19,7 +19,6 @@ export class EventsService {
 
   @OnEvent(EventsEnum.EventUserDataUpdated)
   async handleUserDataUpdatedEvent(eventDto: CreateEventUserDataUpdatedDto) {
-    this.logger.debug(JSON.stringify(eventDto, null, 2))
     const dto: Omit<CreateEventDto, 'toEntity'> = {
       ...eventDto,
       type: EventTypeEnum.UserDataUpdated,
@@ -27,7 +26,7 @@ export class EventsService {
       origin: EventOriginEnum.Api,
       timestamp: new Date(),
     }
-    this.logger.log(`Sending event to SQS: ${JSON.stringify(dto, null, 2)}`)
+    this.logger.debug(`Sending event to SQS: ${JSON.stringify(dto, null, 2)}`)
 
     return await this.sqsService.sendMessage(dto)
   }

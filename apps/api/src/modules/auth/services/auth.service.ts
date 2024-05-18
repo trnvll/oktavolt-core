@@ -54,7 +54,7 @@ export class AuthService {
     const result = await this.database.db
       .insert(Authentication)
       .values(entities)
-      .returning({ id: Authentication.authId })
+      .returning()
 
     this.eventEmitter.emit(
       EventsEnum.EventUserDataUpdated,
@@ -62,16 +62,16 @@ export class AuthService {
         userId: user.userId,
         data: {
           entityType: EntityTypeEnum.Authentication,
-          entityIds: result.map((entity) => entity.id),
+          entityIds: result.map((entity) => entity.authId),
           dataChange: {
-            newValue: entities, // TODO: we should not send the password in the event
+            newValue: result, // TODO: we should not send the password in the event
           },
           action: EventActionEnum.Create,
         },
       }),
     )
 
-    return result
+    return CreateAuthsDto.fromEntity(result)
   }
 
   /*
@@ -110,9 +110,26 @@ export class AuthService {
       throw new ForbiddenException('Authentication does not belong to user.')
     }
 
-    return this.database.db
+    const result = await this.database.db
       .delete(Authentication)
       .where(eq(Authentication.authId, authId))
-      .returning({ authId: Authentication.authId })
+      .returning()
+
+    this.eventEmitter.emit(
+      EventsEnum.EventUserDataUpdated,
+      new CreateEventUserDataUpdatedDto({
+        userId: user.userId,
+        data: {
+          entityType: EntityTypeEnum.Authentication,
+          entityIds: result.map((entity) => entity.authId),
+          dataChange: {
+            oldValue: result, // TODO: we should not send the password in the event
+          },
+          action: EventActionEnum.Delete,
+        },
+      }),
+    )
+
+    return CreateAuthsDto.fromEntity(result)
   }
 }

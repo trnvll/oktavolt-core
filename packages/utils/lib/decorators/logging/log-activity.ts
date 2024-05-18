@@ -35,7 +35,7 @@ export function LogActivity(options: LogOptions = {}) {
       const logger = new Logger(className)
       if (shouldLog && logEntry) {
         logger[level](
-          `${message}, Method: ${key}, Args: ${JSON.stringify(args)}`,
+          `${message}, Method: ${key}, Args: ${JSON.stringify(args, null, 2)}`,
         )
       }
 
@@ -49,6 +49,8 @@ export function LogActivity(options: LogOptions = {}) {
             logger[level](
               `${message}, Method: ${key}, Result: ${JSON.stringify(
                 resolvedResult,
+                null,
+                2,
               )}`,
             )
           }

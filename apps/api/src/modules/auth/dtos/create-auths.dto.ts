@@ -6,8 +6,8 @@ import {
   IsArray,
   ValidateNested,
 } from 'class-validator'
-import { Type } from 'class-transformer'
-import { InsertAuthentication } from 'database'
+import { instanceToPlain, Type } from 'class-transformer'
+import { InsertAuthentication, SelectAuthentication } from 'database'
 import { LogActivity } from 'utils'
 
 export class CreateAuthsDto {
@@ -19,6 +19,11 @@ export class CreateAuthsDto {
   @LogActivity({ level: 'debug' })
   static toEntity(userId: number, dto: CreateAuthDto[]) {
     return dto.map((auth) => CreateAuthDto.toEntity(userId, auth))
+  }
+
+  @LogActivity({ level: 'debug' })
+  static fromEntity(entities: SelectAuthentication[]) {
+    return entities.map((auth) => CreateAuthDto.fromEntity(auth))
   }
 }
 
@@ -49,5 +54,9 @@ export class CreateAuthDto {
       email: dto.email,
       hashedPassword,
     }
+  }
+
+  static fromEntity(entity: SelectAuthentication) {
+    return instanceToPlain(entity)
   }
 }
