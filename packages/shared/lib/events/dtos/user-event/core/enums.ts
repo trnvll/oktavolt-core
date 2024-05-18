@@ -23,4 +23,11 @@ export enum EventOriginEnum {
 
 export enum EntityTypeEnum {
   User = 'user',
+  Authentication = 'authentication',
+}
+
+export enum EventActionEnum {
+  Create = 'create',
+  Update = 'update',
+  Delete = 'delete',
 }

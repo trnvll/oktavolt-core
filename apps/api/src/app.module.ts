@@ -8,6 +8,9 @@ import { AuthzModule } from '@/core/authz/authz.module'
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager'
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
+import { EventEmitterModule } from '@nestjs/event-emitter'
+import { EventsModule } from '@/core/events/events.module'
+import { SqsModule } from '@/core/sqs/sqs.module'
 
 @Module({
   imports: [
@@ -24,12 +27,15 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
         limit: 500,
       },
     ]),
+    EventEmitterModule.forRoot(),
     AuthzModule,
     UsersModule,
     CommsModule,
     RelationshipsModule,
     PrefsModule,
     AuthModule,
+    EventsModule,
+    SqsModule,
   ],
   providers: [
     {

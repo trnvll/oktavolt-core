@@ -14,6 +14,7 @@ enum NodeEnvEnum {
 }
 
 const defaultEnv: Partial<EnvironmentVariables> = {
+  AWS_REGION: 'eu-central-1',
   IS_TS_NODE: true,
   NODE_ENV: NodeEnvEnum.DEVELOPMENT,
   LOGGING_LEVELS: [LogLevelEnum.ERROR, LogLevelEnum.WARN, LogLevelEnum.LOG],
@@ -24,6 +25,14 @@ const defaultEnv: Partial<EnvironmentVariables> = {
 export class EnvironmentVariables {
   @IsString()
   DATABASE_URL: string
+
+  @IsString()
+  SQS_USER_EVENTS_QUEUE_URL: string
+
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => (value ? value : defaultEnv.AWS_REGION))
+  AWS_REGION: string
 
   @IsOptional()
   @IsNumber()

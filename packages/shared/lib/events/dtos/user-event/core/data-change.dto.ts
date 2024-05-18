@@ -2,8 +2,8 @@ import { IsObject } from 'class-validator'
 
 export class DataChangeDto {
   @IsObject()
-  oldValue: any
+  newValue: any
 
   @IsObject()
-  newValue: any
+  oldValue?: any
 }

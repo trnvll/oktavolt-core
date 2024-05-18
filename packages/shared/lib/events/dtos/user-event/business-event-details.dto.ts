@@ -1,20 +1,31 @@
-import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator'
+import {
+  IsArray,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator'
 import { Type } from 'class-transformer'
-import { DataChangeDto, EntityTypeEnum, MetadataDto } from '@/events'
+import { DataChangeDto, MetadataDto } from '@/events/dtos/user-event/core'
+import {
+  EventActionEnum,
+  EntityTypeEnum,
+} from '@/events/dtos/user-event/core/enums'
 
 export class BusinessEventDetailsDto {
   @ValidateNested()
   @Type(() => MetadataDto)
-  metadata: MetadataDto
+  metadata?: MetadataDto
 
-  @IsString()
-  action: string
+  @IsEnum(EventActionEnum)
+  action: EventActionEnum
 
   @IsEnum(EntityTypeEnum)
   entityType: EntityTypeEnum
 
-  @IsString()
-  entityId: string
+  @IsArray()
+  @IsInt({ each: true })
+  entityIds: number[]
 
   @IsOptional()
   @ValidateNested()

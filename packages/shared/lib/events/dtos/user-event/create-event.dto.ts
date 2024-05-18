@@ -2,11 +2,11 @@ import { IsDate, IsEnum, IsInt, IsObject } from 'class-validator'
 import { InsertUserEvent } from 'tsdb'
 import { instanceToPlain, Transform } from 'class-transformer'
 import {
-  EventDetails,
   EventOriginEnum,
   EventTargetEnum,
   EventTypeEnum,
-} from '@/events'
+} from '@/events/dtos/user-event/core/enums'
+import { EventDetails } from '@/events/dtos/user-event' // FIXME: watch out for circular imports when using absolute and index export pattern
 
 export class CreateEventDto {
   @IsInt()
