@@ -7,7 +7,7 @@ export const Authentication = pgTable('authentication', {
   authId: serial('auth_id').notNull().primaryKey(),
   userId: serial('user_id')
     .notNull()
-    .references(() => Users.userId),
+    .references(() => Users.userId, { onDelete: 'cascade' }),
   email: varchar('email'),
   hashedPassword: text('hashed_password'),
   serviceName: varchar('service_name').notNull(),

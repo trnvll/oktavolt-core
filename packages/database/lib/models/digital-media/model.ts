@@ -9,7 +9,7 @@ export const DigitalMedia = pgTable('digital_media', {
   mediaId: serial('media_id').notNull().primaryKey(),
   userId: integer('user_id')
     .notNull()
-    .references(() => Users.userId),
+    .references(() => Users.userId, { onDelete: 'cascade' }),
   mediaType: text('media_type').notNull().$type<DigitalMediaTypeEnum>(),
   title: text('title').notNull(),
   link: text('link'),

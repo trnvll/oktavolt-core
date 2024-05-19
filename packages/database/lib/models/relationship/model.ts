@@ -8,7 +8,7 @@ export const Relationships = pgTable('relationships', {
   relationshipId: serial('relationship_id').notNull().primaryKey(),
   userId: integer('user_id')
     .notNull()
-    .references(() => Users.userId),
+    .references(() => Users.userId, { onDelete: 'cascade' }),
   name: text('name').notNull(),
   relationType: text('relation_type').notNull().$type<RelationshipTypeEnum>(),
   email: text('email'),

@@ -2,6 +2,7 @@ import {
   IsArray,
   IsDate,
   IsEmail,
+  IsOptional,
   IsPhoneNumber,
   IsString,
   ValidateNested,
@@ -39,6 +40,10 @@ export class CreateUserDto {
   @Transform(({ value }) => (value ? new Date(value) : undefined))
   dateOfBirth: Date
 
+  @IsOptional()
+  @IsString()
+  context: string
+
   static toEntity(dto: CreateUserDto): InsertUser {
     return {
       firstName: dto.firstName,
@@ -46,6 +51,7 @@ export class CreateUserDto {
       email: dto.email,
       phone: dto.phone,
       dob: dto.dateOfBirth,
+      context: dto.context,
     }
   }
 }

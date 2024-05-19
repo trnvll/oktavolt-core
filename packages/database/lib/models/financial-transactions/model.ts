@@ -9,7 +9,7 @@ export const FinancialTransactions = pgTable('financial_transactions', {
   transId: serial('trans_id').notNull().primaryKey(),
   userId: integer('user_id')
     .notNull()
-    .references(() => Users.userId),
+    .references(() => Users.userId, { onDelete: 'cascade' }),
   relationshipID: integer('relationship_id').references(
     () => Relationships.relationshipId,
   ),

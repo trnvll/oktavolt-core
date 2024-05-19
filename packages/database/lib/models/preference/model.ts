@@ -8,7 +8,7 @@ export const Preferences = pgTable('preferences', {
   prefId: serial('pref_id').notNull().primaryKey(),
   userId: integer('user_id')
     .notNull()
-    .references(() => Users.userId),
+    .references(() => Users.userId, { onDelete: 'cascade' }),
   preferenceType: text('preference_type').notNull(),
   value: text('value'),
   context: varchar('context'),

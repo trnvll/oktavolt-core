@@ -21,4 +21,13 @@ export class LlmEmbeddingsService {
       return []
     }
   }
+
+  async generateEmbeddingForQuery(query: string) {
+    try {
+      return this.embeddings.embedQuery(query)
+    } catch (err) {
+      console.error('Error generating embedding for query', err)
+      return []
+    }
+  }
 }

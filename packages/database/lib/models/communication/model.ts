@@ -16,7 +16,7 @@ export const Communications = pgTable('communications', {
   ),
   userId: integer('user_id')
     .notNull()
-    .references(() => Users.userId),
+    .references(() => Users.userId, { onDelete: 'cascade' }),
   type: text('type').notNull().$type<CommunicationTypeEnum>(),
   content: text('content').notNull(),
   timestamp: timestamp('timestamp'),

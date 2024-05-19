@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { DatabaseService } from '@/core/database/database.service'
 import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
 import { SelectUser, UserEmbeddings } from 'database'
+import { l2Distance } from 'pgvector/drizzle-orm'
 
 @Injectable()
 export class UserEmbeddingsService {
@@ -9,6 +10,17 @@ export class UserEmbeddingsService {
     private database: DatabaseService,
     private llmEmbeddingsService: LlmEmbeddingsService,
   ) {}
+
+  async findNearestEmbeddings(query: string, limit = 5) {
+    const vector = await this.llmEmbeddingsService.generateEmbeddingForQuery(
+      query,
+    )
+    return this.database.db
+      .select({ userId: UserEmbeddings.userId })
+      .from(UserEmbeddings)
+      .orderBy(l2Distance(UserEmbeddings.embedding, vector))
+      .limit(limit)
+  }
 
   async generateAndSaveEmbeddings(user: SelectUser) {
     const content = this.formatUserData(user)

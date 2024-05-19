@@ -22,6 +22,11 @@ export class UsersService {
   ) {}
 
   @LogActivity()
+  async query(query: string) {
+    return this.userEmbeddingsService.findNearestEmbeddings(query)
+  }
+
+  @LogActivity()
   async findAll() {
     const plainUsers = await this.database.db.select().from(Users).execute()
     return FindAllUsersDto.fromEntity(plainUsers)

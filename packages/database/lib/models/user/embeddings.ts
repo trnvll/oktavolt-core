@@ -8,7 +8,7 @@ export const UserEmbeddings = pgTable('user_embeddings', {
   ...timestamps,
   userId: integer('user_id')
     .notNull()
-    .references(() => Users.userId),
+    .references(() => Users.userId, { onDelete: 'cascade' }),
   content: text('content').notNull(),
   embedding: vector('embedding', { dimensions: 1536 }).notNull(),
 })
