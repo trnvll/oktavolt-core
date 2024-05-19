@@ -5,6 +5,7 @@ import {
   FinancialTransactions,
   Preferences,
   Relationships,
+  UserEmbeddings,
   Users,
 } from '@/models'
 
@@ -16,4 +17,5 @@ export const schema = {
   prefs: Preferences,
   relations: Relationships,
   auth: Authentication,
+  userEmbeddings: UserEmbeddings,
 }
