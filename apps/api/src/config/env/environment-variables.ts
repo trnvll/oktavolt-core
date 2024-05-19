@@ -29,6 +29,9 @@ export class EnvironmentVariables {
   @IsString()
   SQS_USER_EVENTS_QUEUE_URL: string
 
+  @IsString()
+  OPENAI_API_KEY: string
+
   @IsOptional()
   @IsString()
   @Transform(({ value }) => (value ? value : defaultEnv.AWS_REGION))

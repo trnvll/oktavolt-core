@@ -11,6 +11,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { EventEmitterModule } from '@nestjs/event-emitter'
 import { EventsModule } from '@/core/events/events.module'
 import { SqsModule } from '@/core/sqs/sqs.module'
+import { LlmModule } from '@/core/llm/llm.module'
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { SqsModule } from '@/core/sqs/sqs.module'
     AuthModule,
     EventsModule,
     SqsModule,
+    LlmModule,
   ],
   providers: [
     {

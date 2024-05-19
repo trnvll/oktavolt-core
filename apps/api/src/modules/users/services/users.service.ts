@@ -11,12 +11,14 @@ import { EventsEnum } from '@/core/events/types/events.enum'
 import { EntityTypeEnum, EventActionEnum } from 'shared'
 import { CreateEventUserCreatedDto } from '@/core/events/dtos/create-event-user-created.dto'
 import { CreateEventUserDeletedDto } from '@/core/events/dtos/create-event-user-deleted.dto'
+import { UserEmbeddingsService } from '@/modules/users/services/user-embeddings.service'
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly database: DatabaseService,
     private readonly eventEmitter: EventEmitter2,
+    private readonly userEmbeddingsService: UserEmbeddingsService,
   ) {}
 
   @LogActivity()
@@ -45,6 +47,8 @@ export class UsersService {
       .insert(Users)
       .values(entities)
       .returning()
+
+    await this.userEmbeddingsService.generateAndSaveEmbeddings(result[0])
 
     this.eventEmitter.emit(
       EventsEnum.EventUserCreated,

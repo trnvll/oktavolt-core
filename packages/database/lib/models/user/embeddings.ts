@@ -9,6 +9,6 @@ export const UserEmbeddings = pgTable('user_embeddings', {
   userId: integer('user_id')
     .notNull()
     .references(() => Users.userId),
-  combinedText: text('combined_text').notNull(),
-  embedding: vector('embedding', { dimensions: 384 }).notNull(),
+  content: text('content').notNull(),
+  embedding: vector('embedding', { dimensions: 1536 }).notNull(),
 })

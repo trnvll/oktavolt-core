@@ -1,0 +1,1 @@
+ALTER TABLE "user_embeddings" RENAME COLUMN "combined_text" TO "content";

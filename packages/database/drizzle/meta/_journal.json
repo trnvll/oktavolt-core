@@ -64,6 +64,20 @@
       "when": 1716122072802,
       "tag": "0008_yummy_toro",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1716124278272,
+      "tag": "0009_wooden_the_renegades",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1716127106529,
+      "tag": "0010_friendly_wrecking_crew",
+      "breakpoints": true
     }
   ]
 }
