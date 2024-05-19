@@ -22,7 +22,7 @@ export class UsersService {
   ) {}
 
   @LogActivity()
-  async query(query: string) {
+  async omni(query: string) {
     return this.userEmbeddingsService.findNearestEmbeddings(query)
   }
 

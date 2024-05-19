@@ -22,7 +22,7 @@ export class UsersController {
     level: 'debug',
   })
   async query(@Query() queryDto: QueryUsersDto) {
-    return this.usersService.query(queryDto.query)
+    return this.usersService.omni(queryDto.query)
   }
 
   @Get()
