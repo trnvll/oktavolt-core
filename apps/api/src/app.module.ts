@@ -12,6 +12,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter'
 import { EventsModule } from '@/core/events/events.module'
 import { SqsModule } from '@/core/sqs/sqs.module'
 import { LlmModule } from '@/core/llm/llm.module'
+import { NotificationsModule } from '@/core/notifications/notifications.module'
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { LlmModule } from '@/core/llm/llm.module'
     EventsModule,
     SqsModule,
     LlmModule,
+    NotificationsModule,
   ],
   providers: [
     {

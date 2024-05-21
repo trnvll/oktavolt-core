@@ -53,12 +53,10 @@ export class UsersService {
       .values(entities)
       .returning()
 
-    await this.userEmbeddingsService.generateAndSaveEmbeddings(result[0])
-
     this.eventEmitter.emit(
       EventsEnum.EventUserCreated,
       new CreateEventUserCreatedDto({
-        userId: result[0].userId,
+        user: result[0],
         data: {
           entityType: EntityTypeEnum.User,
           entityIds: result.map((entity) => entity.userId),

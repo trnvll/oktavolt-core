@@ -21,8 +21,10 @@ export class EventsService {
 
   @OnEvent(EventsEnum.EventUserCreated)
   async handleUserCreatedEvent(eventDto: CreateEventUserCreatedDto) {
+    const { user, data } = eventDto
     const dto: Omit<CreateEventDto, 'toEntity'> = {
-      ...eventDto,
+      userId: user.userId,
+      data,
       type: EventTypeEnum.UserCreated,
       targets: [EventTargetEnum.TimeSeriesDb],
       origin: EventOriginEnum.Api,

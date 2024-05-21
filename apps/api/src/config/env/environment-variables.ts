@@ -32,6 +32,9 @@ export class EnvironmentVariables {
   @IsString()
   OPENAI_API_KEY: string
 
+  @IsString()
+  NOVU_API_KEY: string
+
   @IsOptional()
   @IsString()
   @Transform(({ value }) => (value ? value : defaultEnv.AWS_REGION))
