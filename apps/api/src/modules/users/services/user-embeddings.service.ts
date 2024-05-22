@@ -3,9 +3,6 @@ import { DatabaseService } from '@/core/database/database.service'
 import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
 import { SelectUser, UserEmbeddings } from 'database'
 import { l2Distance } from 'pgvector/drizzle-orm'
-import { CreateEventUserCreatedDto } from '@/core/events/dtos/create-event-user-created.dto'
-import { EventsEnum } from '@/core/events/types/events.enum'
-import { OnEvent } from '@nestjs/event-emitter'
 
 @Injectable()
 export class UserEmbeddingsService {
@@ -14,8 +11,7 @@ export class UserEmbeddingsService {
     private llmEmbeddingsService: LlmEmbeddingsService,
   ) {}
 
-  @OnEvent(EventsEnum.UserCreated)
-  async generateAndSaveEmbeddings({ user }: CreateEventUserCreatedDto) {
+  async generateAndSaveEmbeddings(user: SelectUser) {
     const content = this.formatUserData(user)
     try {
       const embeddings = await this.llmEmbeddingsService.generateEmbeddings([

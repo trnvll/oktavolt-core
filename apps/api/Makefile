@@ -18,6 +18,11 @@ setup:
 	aws secretsmanager get-secret-value --secret-id $(ENV)/api/env | jq -r ".SecretString | fromjson | to_entries | .[] | .key + \"=\" + .value" > .env
 	npm install
 
+# Start Redis
+redis:
+	@echo "Starting Redis..."
+	docker run -p 6379:6379 --name oktavolt-redis -d redis
+
 # Run the application
 dev:
 	@echo "Running dev in $(ENV) environment..."

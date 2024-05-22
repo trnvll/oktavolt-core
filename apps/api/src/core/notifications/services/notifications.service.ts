@@ -2,9 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { Novu } from '@novu/node'
 import { envConfig } from '@/config/env/env.config'
 import { NotificationTypeEnum } from '@/core/notifications/types/notification-types.enum'
-import { OnEvent } from '@nestjs/event-emitter'
-import { EventsEnum } from '@/core/events/types/events.enum'
-import { CreateEventUserCreatedDto } from '@/core/events/dtos/create-event-user-created.dto'
+import { SelectUser } from 'database'
 
 @Injectable()
 export class NotificationsService {
@@ -14,8 +12,7 @@ export class NotificationsService {
     this.novu = new Novu({ apiKey: envConfig.get('NOVU_API_KEY') })
   }
 
-  @OnEvent(EventsEnum.UserCreated)
-  async createOrUpdateSubscriber({ user }: CreateEventUserCreatedDto) {
+  async createOrUpdateSubscriber(user: SelectUser) {
     await this.novu.subscribers.identify(this.getSubscriberId(user.userId), {
       email: user.email,
       firstName: user.firstName,

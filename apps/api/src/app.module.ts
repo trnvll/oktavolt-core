@@ -13,6 +13,8 @@ import { EventsModule } from '@/core/events/events.module'
 import { SqsModule } from '@/core/sqs/sqs.module'
 import { LlmModule } from '@/core/llm/llm.module'
 import { NotificationsModule } from '@/core/notifications/notifications.module'
+import { BullModule } from '@nestjs/bull'
+import { QueueEnum } from '@/types/queues/queue.enum'
 
 @Module({
   imports: [
@@ -30,6 +32,15 @@ import { NotificationsModule } from '@/core/notifications/notifications.module'
       },
     ]),
     EventEmitterModule.forRoot(),
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
+    BullModule.registerQueue({
+      name: QueueEnum.UserEvents,
+    }),
     AuthzModule,
     UsersModule,
     CommsModule,
