@@ -54,7 +54,7 @@ export class UsersService {
       .returning()
 
     this.eventEmitter.emit(
-      EventsEnum.EventUserCreated,
+      EventsEnum.UserCreated,
       new CreateEventUserCreatedDto({
         user: result[0],
         data: {
@@ -88,7 +88,7 @@ export class UsersService {
       .returning()
 
     this.eventEmitter.emit(
-      EventsEnum.EventUserDeleted,
+      EventsEnum.UserDeleted,
       new CreateEventUserDeletedDto({
         userId: result[0].userId,
         data: {

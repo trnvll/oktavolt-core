@@ -14,7 +14,7 @@ export class NotificationsService {
     this.novu = new Novu({ apiKey: envConfig.get('NOVU_API_KEY') })
   }
 
-  @OnEvent(EventsEnum.EventUserCreated)
+  @OnEvent(EventsEnum.UserCreated)
   async createOrUpdateSubscriber({ user }: CreateEventUserCreatedDto) {
     await this.novu.subscribers.identify(this.getSubscriberId(user.userId), {
       email: user.email,

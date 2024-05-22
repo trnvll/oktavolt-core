@@ -56,7 +56,7 @@ export class PrefsService {
       .returning()
 
     this.eventEmitter.emit(
-      EventsEnum.EventUserDataUpdated,
+      EventsEnum.UserDataUpdated,
       new CreateEventUserDataUpdatedDto({
         userId: user.userId,
         data: {
@@ -116,7 +116,7 @@ export class PrefsService {
       .returning()
 
     this.eventEmitter.emit(
-      EventsEnum.EventUserDataUpdated,
+      EventsEnum.UserDataUpdated,
       new CreateEventUserDataUpdatedDto({
         userId: user.userId,
         data: {

@@ -19,7 +19,7 @@ export class EventsService {
     private readonly logger: Logger,
   ) {}
 
-  @OnEvent(EventsEnum.EventUserCreated)
+  @OnEvent(EventsEnum.UserCreated)
   async handleUserCreatedEvent(eventDto: CreateEventUserCreatedDto) {
     const { user, data } = eventDto
     const dto: Omit<CreateEventDto, 'toEntity'> = {
@@ -35,7 +35,7 @@ export class EventsService {
     return await this.sqsService.sendMessage(dto)
   }
 
-  @OnEvent(EventsEnum.EventUserDeleted)
+  @OnEvent(EventsEnum.UserDeleted)
   async handleUserDeletedEvent(eventDto: CreateEventUserDeletedDto) {
     const dto: Omit<CreateEventDto, 'toEntity'> = {
       ...eventDto,
@@ -49,7 +49,7 @@ export class EventsService {
     return await this.sqsService.sendMessage(dto)
   }
 
-  @OnEvent(EventsEnum.EventUserDataUpdated)
+  @OnEvent(EventsEnum.UserDataUpdated)
   async handleUserDataUpdatedEvent(eventDto: CreateEventUserDataUpdatedDto) {
     const dto: Omit<CreateEventDto, 'toEntity'> = {
       ...eventDto,

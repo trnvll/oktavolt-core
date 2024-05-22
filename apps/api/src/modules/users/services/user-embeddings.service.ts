@@ -14,7 +14,7 @@ export class UserEmbeddingsService {
     private llmEmbeddingsService: LlmEmbeddingsService,
   ) {}
 
-  @OnEvent(EventsEnum.EventUserCreated)
+  @OnEvent(EventsEnum.UserCreated)
   async generateAndSaveEmbeddings({ user }: CreateEventUserCreatedDto) {
     const content = this.formatUserData(user)
     try {

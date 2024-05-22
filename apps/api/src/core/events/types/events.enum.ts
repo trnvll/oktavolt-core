@@ -1,5 +1,5 @@
 export enum EventsEnum {
-  EventUserCreated = 'event.user.created',
-  EventUserDeleted = 'event.user.deleted',
-  EventUserDataUpdated = 'event.user.data.updated',
+  UserCreated = 'event.user.created',
+  UserDeleted = 'event.user.deleted',
+  UserDataUpdated = 'event.user.data.updated',
 }

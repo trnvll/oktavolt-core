@@ -57,7 +57,7 @@ export class CommsService {
       .returning()
 
     this.eventEmitter.emit(
-      EventsEnum.EventUserDataUpdated,
+      EventsEnum.UserDataUpdated,
       new CreateEventUserDataUpdatedDto({
         userId: user.userId,
         data: {
@@ -97,7 +97,7 @@ export class CommsService {
       .returning()
 
     this.eventEmitter.emit(
-      EventsEnum.EventUserDataUpdated,
+      EventsEnum.UserDataUpdated,
       new CreateEventUserDataUpdatedDto({
         userId: user.userId,
         data: {
