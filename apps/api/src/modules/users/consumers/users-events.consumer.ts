@@ -3,7 +3,7 @@ import { LogActivity } from 'utils'
 import { Job } from 'bull'
 import { Process, Processor } from '@nestjs/bull'
 import { NotificationsService } from '@/core/notifications/services/notifications.service'
-import { CreateEventUserCreatedDto } from '@/core/events/dtos/create-event-user-created.dto'
+import { CreateEventUserCreatedJob } from '@/core/events/dtos/create-event-user-created.dto'
 import { SelectUser } from 'database'
 import { UserEmbeddingsService } from '@/modules/users/services/user-embeddings.service'
 import { QueueEnum } from '@/types/queues/queue.enum'
@@ -16,13 +16,13 @@ import {
 import { Logger } from '@nestjs/common'
 import { SqsService } from '@/core/sqs/sqs.service'
 import { CreateEventUserDeletedDto } from '@/core/events/dtos/create-event-user-deleted.dto'
-import { CreateEventUserDataUpdatedDto } from '@/core/events/dtos/create-event-user-data-updated.dto'
+import { CreateEventUserDataUpdatedJob } from '@/core/events/dtos/create-event-user-data-updated.dto'
 
 export enum UserEventsConsumerEnum {
   SendWelcomeEmail = 'send-welcome-email',
   StoreUserCreatedEvent = 'store-user-created-event',
   StoreUserDeletedEvent = 'store-user-deleted-event',
-  StoreUserUpdatedEvent = 'store-user-updated-event',
+  StoreUserDataUpdatedEvent = 'store-user-data-updated-event',
   CreateUserEmbedding = 'create-user-embedding',
 }
 
@@ -50,7 +50,7 @@ export class UsersEventsConsumer {
 
   @Process(UserEventsConsumerEnum.StoreUserCreatedEvent)
   @LogActivity()
-  async handleStoreUserEvent(job: Job<CreateEventUserCreatedDto>) {
+  async handleStoreUserEvent(job: Job<CreateEventUserCreatedJob>) {
     const { user, data } = job.data
     const dto: Omit<CreateEventDto, 'toEntity'> = {
       userId: user.userId,
@@ -67,9 +67,11 @@ export class UsersEventsConsumer {
 
   @Process(UserEventsConsumerEnum.StoreUserDeletedEvent)
   @LogActivity()
-  async handleUserDeletedEvent(eventDto: CreateEventUserDeletedDto) {
+  async handleUserDeletedEvent(job: Job<CreateEventUserDeletedDto>) {
+    const { userId, data } = job.data
     const dto: Omit<CreateEventDto, 'toEntity'> = {
-      ...eventDto,
+      userId: userId,
+      data,
       type: EventTypeEnum.UserDeleted,
       targets: [EventTargetEnum.TimeSeriesDb],
       origin: EventOriginEnum.Api,
@@ -80,11 +82,13 @@ export class UsersEventsConsumer {
     await this.sqsService.sendMessage(dto)
   }
 
-  @Process(UserEventsConsumerEnum.StoreUserUpdatedEvent)
+  @Process(UserEventsConsumerEnum.StoreUserDataUpdatedEvent)
   @LogActivity()
-  async handleUserDataUpdatedEvent(eventDto: CreateEventUserDataUpdatedDto) {
+  async handleUserDataUpdatedEvent(job: Job<CreateEventUserDataUpdatedJob>) {
+    const { user, data } = job.data
     const dto: Omit<CreateEventDto, 'toEntity'> = {
-      ...eventDto,
+      userId: user.userId,
+      data,
       type: EventTypeEnum.UserDataUpdated,
       targets: [EventTargetEnum.TimeSeriesDb],
       origin: EventOriginEnum.Api,

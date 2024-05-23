@@ -56,7 +56,7 @@ export class UsersService {
     this.eventEmitter.emit(
       EventsEnum.UserCreated,
       new CreateEventUserCreatedDto({
-        user: result[0],
+        userId: result[0].userId,
         data: {
           entityType: EntityTypeEnum.User,
           entityIds: result.map((entity) => entity.userId),

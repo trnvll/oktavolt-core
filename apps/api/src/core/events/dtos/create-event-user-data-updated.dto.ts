@@ -1,13 +1,22 @@
-import { PickType } from '@nestjs/swagger'
-import { CreateEventDto } from 'shared'
+import { EventDetails } from 'shared'
+import { SelectUser } from 'database'
 
-export class CreateEventUserDataUpdatedDto extends PickType(CreateEventDto, [
-  'userId',
-  'data',
-] as const) {
+export class CreateEventUserDataUpdatedDto {
+  userId: number
+  data: EventDetails
+
   constructor(event: CreateEventUserDataUpdatedDto) {
-    super()
     this.userId = event.userId
+    this.data = event.data
+  }
+}
+
+export class CreateEventUserDataUpdatedJob {
+  user: SelectUser
+  data: EventDetails
+
+  constructor(event: CreateEventUserDataUpdatedJob) {
+    this.user = event.user
     this.data = event.data
   }
 }
