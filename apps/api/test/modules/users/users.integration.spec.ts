@@ -112,9 +112,8 @@ describe('UsersController (e2e)', () => {
       }),
     )
 
-    pruneFlakyVariables(response.body, ['userId', 'dob'])
-
     // 5. User data dto should have been returned in the response (use snapshot to validate).
+    pruneFlakyVariables(response.body, ['userId', 'dob'])
     expect(response.body).toMatchSnapshot()
   })
 })
