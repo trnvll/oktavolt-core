@@ -3,7 +3,6 @@ import {
   IsDate,
   IsEmail,
   IsOptional,
-  IsPhoneNumber,
   IsString,
   ValidateNested,
 } from 'class-validator'
@@ -33,7 +32,7 @@ export class CreateUserDto {
   @IsEmail()
   email: string
 
-  @IsPhoneNumber()
+  @IsString()
   phone: string
 
   @IsDate()

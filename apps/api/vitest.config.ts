@@ -1,9 +1,23 @@
+import swc from 'unplugin-swc'
 import { defineConfig } from 'vitest/config'
-import viteTsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
-  plugins: [viteTsconfigPaths()],
   test: {
     testTimeout: 30_000,
+    globals: true,
+    alias: {
+      '@': './src',
+    },
+    root: './',
   },
+  resolve: {
+    alias: {
+      '@': './src',
+    },
+  },
+  plugins: [
+    swc.vite({
+      module: { type: 'es6' },
+    }),
+  ],
 })

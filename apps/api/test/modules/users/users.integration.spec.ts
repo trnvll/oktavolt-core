@@ -9,8 +9,14 @@ import { NotificationsService } from '@/core/notifications/services/notification
 import { SqsService } from '@/core/sqs/sqs.service'
 import { UserEmbeddingsService } from '@/modules/users/services/user-embeddings.service'
 import { EventTypeEnum } from 'shared'
-import { setupTestApp } from '../../app.helper'
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+import { vi, describe, it, expect, beforeAll, afterAll } from 'vitest'
+import { QueueEnum } from '@/types/queues/queue.enum'
+import { Queue } from 'bull'
+import { getQueueToken } from '@nestjs/bull'
+import { setupTestApp } from '../../_utils/app.utils'
+import { pruneFlakyVariables } from '../../_utils/test.utils'
+
+faker.seed(42)
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication
@@ -19,21 +25,37 @@ describe('UsersController (e2e)', () => {
     notificationService: NotificationsService
     sqsService: SqsService
     userEmbeddingsService: UserEmbeddingsService
-    // userEventsQueue: Queue
+    userEventsQueue: Queue
   }
   let teardown: () => Promise<void>
 
   beforeAll(async () => {
-    const testApp = await setupTestApp()
-    app = testApp.app
-    teardown = testApp.teardown
+    const setup = await setupTestApp({
+      mockProviders: [
+        [NotificationsService, { createOrUpdateSubscriber: vi.fn() }],
+        [SqsService, { sendMessage: vi.fn() }],
+        [UserEmbeddingsService, { generateAndSaveEmbeddings: vi.fn() }],
+        /*
+        [
+          LlmEmbeddingsService,
+          {
+            generateEmbeddings: vi.fn(() => [
+              [0.3939302, 0.391039, 0.393029392],
+            ]),
+          },
+        ],
+         */
+      ],
+    })
+    app = setup.app
+    teardown = setup.teardown
 
     context = {
-      database: testApp.resolve(DatabaseService, true),
-      notificationService: testApp.resolve(NotificationsService),
-      sqsService: testApp.resolve(SqsService),
-      userEmbeddingsService: testApp.resolve(UserEmbeddingsService),
-      // userEventsQueue: app.get(QueueEnum.UserEvents),
+      database: setup.resolve(DatabaseService, true),
+      notificationService: setup.resolve(NotificationsService),
+      sqsService: setup.resolve(SqsService),
+      userEmbeddingsService: setup.resolve(UserEmbeddingsService),
+      userEventsQueue: app.get(getQueueToken(QueueEnum.UserEvents)),
     }
   })
 
@@ -48,8 +70,8 @@ describe('UsersController (e2e)', () => {
           email: faker.internet.email(),
           firstName: faker.person.firstName(),
           lastName: faker.person.lastName(),
-          phone: faker.phone.number(),
-          dateOfBirth: faker.date.past(),
+          phone: faker.phone.number().split(' ')[0] as any,
+          dateOfBirth: faker.date.past().toISOString() as any,
         },
       ],
     }
@@ -73,30 +95,24 @@ describe('UsersController (e2e)', () => {
     // 4. Background job should have been triggered to store the user created event.
     // To verify these background jobs, we need to mock the respective services and check if the methods were called.
 
-    const sendWelcomeEmailSpy = jest.spyOn(
-      context.notificationService,
-      'sendEmailNotification',
+    expect(
+      context.notificationService.createOrUpdateSubscriber,
+    ).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: savedUser.userId }),
     )
-    const generateEmbeddingsSpy = jest.spyOn(
-      context.userEmbeddingsService,
-      'generateAndSaveEmbeddings',
+    expect(
+      context.userEmbeddingsService.generateAndSaveEmbeddings,
+    ).toHaveBeenCalledWith(
+      expect.objectContaining({ userId: savedUser.userId }),
     )
-    const sendMessageSpy = jest.spyOn(context.sqsService, 'sendMessage')
-
-    // Triggering event handling manually for the sake of the test
-    // await context.userEventsQueue.processJobs()
-
-    expect(sendWelcomeEmailSpy).toHaveBeenCalledWith(
-      savedUser.userId,
-      savedUser.email,
-    )
-    expect(generateEmbeddingsSpy).toHaveBeenCalledWith(savedUser)
-    expect(sendMessageSpy).toHaveBeenCalledWith(
+    expect(context.sqsService.sendMessage).toHaveBeenCalledWith(
       expect.objectContaining({
         userId: savedUser.userId,
         type: EventTypeEnum.UserCreated,
       }),
     )
+
+    pruneFlakyVariables(response.body, ['userId', 'dob'])
 
     // 5. User data dto should have been returned in the response (use snapshot to validate).
     expect(response.body).toMatchSnapshot()

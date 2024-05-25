@@ -1,10 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { Type } from '@nestjs/common'
+import { Test } from '@nestjs/testing'
+import { Type, ValidationPipe } from '@nestjs/common'
 import { PostgreSqlContainer } from '@testcontainers/postgresql'
 import { AppModule } from '@/app.module'
 import { migratedb } from 'database'
+import { DatabaseExceptionFilter } from '@/filters/database-exception.filter'
 
-export const setupTestApp = async () => {
+interface SetupTestAppProps {
+  mockProviders?: Array<[any, any]>
+}
+
+export const setupTestApp = async ({
+  mockProviders,
+}: SetupTestAppProps = {}) => {
   console.log('Setting up PostgreSQL container...')
   const container = await new PostgreSqlContainer('pgvector/pgvector:pg16')
     .withUsername('testuser')
@@ -30,11 +37,26 @@ export const setupTestApp = async () => {
   }
 
   console.log('Initializing NestJS application...')
-  const moduleFixture: TestingModule = await Test.createTestingModule({
+  const moduleFixtureBuilder = Test.createTestingModule({
     imports: [AppModule],
-  }).compile()
+  })
+
+  // Override providers with mock services
+  if (mockProviders) {
+    for (const [serviceClass, mockImplementation] of mockProviders) {
+      moduleFixtureBuilder
+        .overrideProvider(serviceClass)
+        .useValue(mockImplementation)
+    }
+  }
+
+  const moduleFixture = await moduleFixtureBuilder.compile()
 
   const app = moduleFixture.createNestApplication()
+
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }))
+  app.useGlobalFilters(new DatabaseExceptionFilter())
+
   await app.init()
 
   console.log('✓ Setup completed for test fixture')

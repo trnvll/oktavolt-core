@@ -4,23 +4,15 @@ if (!process.env.IS_TS_NODE) {
 
 import { NestFactory } from '@nestjs/core'
 import { DatabaseExceptionFilter } from '@/filters/database-exception.filter'
-import helmet from '@fastify/helmet'
+import helmet from 'helmet'
 import { ValidationPipe, VersioningType } from '@nestjs/common'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { AppModule } from '@/app.module'
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify'
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter(),
-    {
-      logger: ['error', 'warn', 'log'],
-    },
-  )
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn', 'log'],
+  })
 
   const config = new DocumentBuilder()
     .setTitle('Oktavolt API Specification')
@@ -31,7 +23,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config)
   SwaggerModule.setup('api', app, document)
 
-  await app.register(helmet)
+  app.use(helmet())
   app.enableCors()
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }))
   app.useGlobalFilters(new DatabaseExceptionFilter())
