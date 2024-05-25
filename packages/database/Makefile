@@ -22,12 +22,17 @@ gen-migrate:
 	@echo "Generating database migrations for $(ENV)..."
 	$(GEN_DB_MIGRATE_CMD)
 
+# Copy drizzle to dist
+drizzle-dist:
+	@echo "Copying drizzle to dist..."
+	cp -r ./drizzle ./dist
+
 # Database migrations
 migrate:
 	@echo "Running database migrations for $(ENV)..."
 	$(DB_MIGRATE_CMD)
 
-build: setup migrate
+build: setup migrate drizzle-dist
 	@echo "Building in $(ENV) environment..."
 	npm run build:types
 	npx turbo run build --filter=database

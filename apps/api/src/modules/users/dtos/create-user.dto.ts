@@ -42,7 +42,7 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsString()
-  context: string
+  context?: string
 
   static toEntity(dto: CreateUserDto): InsertUser {
     return {

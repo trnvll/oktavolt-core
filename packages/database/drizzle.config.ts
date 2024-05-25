@@ -1,13 +1,17 @@
 import { defineConfig } from 'drizzle-kit'
 import { config } from '@/utils/config'
+import path from 'path'
+
+const out = path.resolve(__dirname, './drizzle')
+const schema = path.resolve(__dirname, './lib/models/index.ts')
 
 export default defineConfig({
-  schema: './lib/models/index.ts',
+  schema,
   driver: 'pg',
   dbCredentials: {
     connectionString: config().DATABASE_URL,
   },
-  out: './drizzle',
+  out,
   verbose: true,
   strict: true,
 })

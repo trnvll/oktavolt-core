@@ -8,8 +8,9 @@ import {
 } from 'class-validator'
 import { LogLevelEnum } from 'utils'
 
-enum NodeEnvEnum {
+export enum NodeEnvEnum {
   DEVELOPMENT = 'development',
+  TEST = 'test',
   PRODUCTION = 'production',
 }
 

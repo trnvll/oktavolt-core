@@ -1,6 +1,9 @@
 import { validateSync } from 'class-validator'
 import { plainToClass } from 'class-transformer'
-import { EnvironmentVariables } from '@/config/env/environment-variables'
+import {
+  EnvironmentVariables,
+  NodeEnvEnum,
+} from '@/config/env/environment-variables'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -20,6 +23,9 @@ class EnvConfig {
       enableImplicitConversion: true,
     })
 
+    if (envVariables.NODE_ENV === NodeEnvEnum.TEST) {
+      return transformedConfig
+    }
     const errors = validateSync(transformedConfig)
     if (errors.length > 0) {
       throw new Error(
