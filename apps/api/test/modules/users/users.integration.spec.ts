@@ -49,16 +49,6 @@ describe('UsersController (e2e)', () => {
         ],
         [SqsService, { sendMessage: vi.fn() }],
         [UserEmbeddingsService, { generateAndSaveEmbeddings: vi.fn() }],
-        /*
-        [
-          LlmEmbeddingsService,
-          {
-            generateEmbeddings: vi.fn(() => [
-              [0.3939302, 0.391039, 0.393029392],
-            ]),
-          },
-        ],
-         */
       ],
     })
     app = setup.app
