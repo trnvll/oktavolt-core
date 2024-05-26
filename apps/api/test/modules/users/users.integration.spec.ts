@@ -13,10 +13,11 @@ import { vi, describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { QueueEnum } from '@/types/queues/queue.enum'
 import { Queue } from 'bull'
 import { getQueueToken } from '@nestjs/bull'
-import { setupTestApp } from '../../_utils/app.utils'
 import { pruneFlakyVariables } from '../../_utils/test.utils'
+import { setupTestApp } from '../../_setup/app.setup'
+import { testConstants } from '../../_utils/constants.utils'
 
-faker.seed(42)
+faker.seed(testConstants.SEED)
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication

@@ -2,7 +2,7 @@ import { Test } from '@nestjs/testing'
 import { Type, ValidationPipe } from '@nestjs/common'
 import { AppModule } from '@/app.module'
 import { DatabaseExceptionFilter } from '@/filters/database-exception.filter'
-import { setupTestDatabase } from './db.utils'
+import { setupTestDatabase } from './db.setup'
 import { vi } from 'vitest'
 
 interface SetupTestAppProps {
