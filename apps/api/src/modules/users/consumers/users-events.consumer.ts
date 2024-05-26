@@ -40,12 +40,12 @@ export class UsersEventsConsumer {
   @LogActivity()
   async handleSendWelcomeEmail(job: Job<SelectUser>) {
     await this.notificationService.createOrUpdateSubscriber(job.data)
-    await this.notificationService.sendEmailNotification(
-      job.data.userId,
-      job.data.email,
-      'Welcome to Oktavolt.',
-      'This is some content.',
-    )
+    await this.notificationService.sendEmailNotification({
+      userId: job.data.userId,
+      email: job.data.email,
+      subject: 'Welcome to Oktavolt.',
+      content: 'This is some content.',
+    })
   }
 
   @Process(UserEventsConsumerEnum.StoreUserCreatedEvent)

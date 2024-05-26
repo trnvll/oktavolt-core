@@ -9,7 +9,15 @@ import { NotificationsService } from '@/core/notifications/services/notification
 import { SqsService } from '@/core/sqs/sqs.service'
 import { UserEmbeddingsService } from '@/modules/users/services/user-embeddings.service'
 import { EventTypeEnum } from 'shared'
-import { vi, describe, it, expect, beforeAll, afterAll } from 'vitest'
+import {
+  vi,
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  afterEach,
+} from 'vitest'
 import { QueueEnum } from '@/types/queues/queue.enum'
 import { Queue } from 'bull'
 import { getQueueToken } from '@nestjs/bull'
@@ -29,6 +37,7 @@ describe('UsersController (e2e)', () => {
     userEventsQueue: Queue
   }
   let teardown: () => Promise<void>
+  let cleanDatabase: () => Promise<void>
 
   beforeAll(async () => {
     const setup = await setupTestApp({
@@ -53,6 +62,7 @@ describe('UsersController (e2e)', () => {
     })
     app = setup.app
     teardown = setup.teardown
+    cleanDatabase = setup.cleanDatabase
 
     context = {
       database: setup.resolve(DatabaseService, true),
@@ -63,11 +73,22 @@ describe('UsersController (e2e)', () => {
     }
   })
 
+  afterEach(async () => {
+    await cleanDatabase()
+  })
+
   afterAll(async () => {
     await teardown()
   })
 
-  it('should create multiple users and trigger the appropriate events', async () => {
+  it('[POST /users] - Should create user.', async () => {
+    // Business rules:
+    // 1. User data should be saved in the database.
+    // 2. Should send welcome email to user.
+    // 3. Should create user embeddings.
+    // 4. Should store the user created event.
+    // 5. User data dto should have been returned in the response.
+
     const createUsersDto: CreateUsersDto = {
       data: [
         {
@@ -83,10 +104,9 @@ describe('UsersController (e2e)', () => {
     const response = await request(app.getHttpServer())
       .post('/users')
       .send(createUsersDto)
-    // .expect(201)
+      .expect(201)
 
-    // Business rules:
-    // 1. User data should be saved in the database.
+    // Business rule 1.
     const savedUser = await context.database.db.query.users.findFirst({
       where: eq(Users.email, createUsersDto.data[0].email),
     })
@@ -94,21 +114,19 @@ describe('UsersController (e2e)', () => {
     if (!savedUser) throw new Error('User not found.')
     expect(savedUser.email).toBe(createUsersDto.data[0].email)
 
-    // 2. Background job should have been triggered to send a welcome email to the user.
-    // 3. Background job should have been triggered to generate and store user embeddings.
-    // 4. Background job should have been triggered to store the user created event.
-    // To verify these background jobs, we need to mock the respective services and check if the methods were called.
-
+    // Business rule 2.
     expect(
-      context.notificationService.createOrUpdateSubscriber,
+      context.notificationService.sendEmailNotification,
     ).toHaveBeenCalledWith(
       expect.objectContaining({ userId: savedUser.userId }),
     )
+    // Business rule 3.
     expect(
       context.userEmbeddingsService.generateAndSaveEmbeddings,
     ).toHaveBeenCalledWith(
       expect.objectContaining({ userId: savedUser.userId }),
     )
+    // Business rule 4.
     expect(context.sqsService.sendMessage).toHaveBeenCalledWith(
       expect.objectContaining({
         userId: savedUser.userId,
@@ -116,7 +134,7 @@ describe('UsersController (e2e)', () => {
       }),
     )
 
-    // 5. User data dto should have been returned in the response (use snapshot to validate).
+    // Business rule 5.
     pruneFlakyVariables(response.body, ['userId', 'dob'])
     expect(response.body).toMatchSnapshot()
   })

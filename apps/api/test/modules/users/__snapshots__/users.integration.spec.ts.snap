@@ -1,11 +1,10 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`UsersController (e2e) > should create multiple users and trigger the appropriate events 1`] = `
+exports[`UsersController (e2e) > [POST /users] - Should create user. 1`] = `
 [
   {
     "authzUserId": null,
     "context": null,
-    "deletedAt": null,
     "email": "Peyton59@yahoo.com",
     "firstName": "Carley",
     "lastName": "Crist",

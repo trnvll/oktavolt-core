@@ -2,8 +2,9 @@ import { Test } from '@nestjs/testing'
 import { Type, ValidationPipe } from '@nestjs/common'
 import { AppModule } from '@/app.module'
 import { DatabaseExceptionFilter } from '@/filters/database-exception.filter'
-import { setupTestDatabase } from './db.setup'
+import { cleanTestDatabase, setupTestDatabase } from './db.setup'
 import { vi } from 'vitest'
+import { DatabaseService } from '@/core/database/database.service'
 
 interface SetupTestAppProps {
   mockProviders?: Array<[any, any]>
@@ -46,6 +47,11 @@ export const setupTestApp = async ({
     app,
     resolve: <T>(ctx: Type<T>, useModuleFixture = false) =>
       useModuleFixture ? moduleFixture.get<T>(ctx) : app.get<T>(ctx),
+    cleanDatabase: async () => {
+      console.log('Cleaning test database...')
+      await cleanTestDatabase(moduleFixture.get(DatabaseService))
+      console.log('Database cleaned')
+    },
     teardown: async () => {
       console.log('Tearing down PostgreSQL container and NestJS application...')
       await app.close()

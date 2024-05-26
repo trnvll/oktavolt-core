@@ -28,12 +28,17 @@ export class NotificationsService {
     })
   }
 
-  async sendEmailNotification(
-    userId: number,
-    email: string,
-    subject: string,
-    content: string,
-  ) {
+  async sendEmailNotification({
+    userId,
+    email,
+    subject,
+    content,
+  }: {
+    userId: number
+    email: string
+    subject: string
+    content: string
+  }) {
     const subscriberId = this.getSubscriberId(userId)
     await this.novu.trigger(NotificationTypeEnum.EMAIL, {
       to: { subscriberId, email },

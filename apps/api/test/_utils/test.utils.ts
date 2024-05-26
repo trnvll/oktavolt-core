@@ -2,7 +2,12 @@ export function pruneFlakyVariables<T>(
   obj: T,
   extraPropertiesToPrune: string[] = [],
 ): void {
-  const defaultPropertiesToPrune = ['createdAt', 'updatedAt', 'timestamp']
+  const defaultPropertiesToPrune = [
+    'createdAt',
+    'updatedAt',
+    'deletedAt',
+    'timestamp',
+  ]
   const propertiesToPrune = [
     ...new Set([...defaultPropertiesToPrune, ...extraPropertiesToPrune]),
   ]
