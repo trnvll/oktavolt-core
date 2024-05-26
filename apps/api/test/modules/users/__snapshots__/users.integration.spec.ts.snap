@@ -9,7 +9,7 @@ exports[`UsersController (e2e) > should create multiple users and trigger the ap
     "email": "Peyton59@yahoo.com",
     "firstName": "Carley",
     "lastName": "Crist",
-    "phone": "(248)",
+    "phone": "(248) 461-7600",
   },
 ]
 `;

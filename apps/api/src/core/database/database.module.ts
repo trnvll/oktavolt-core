@@ -11,7 +11,9 @@ export const DATABASE_CONN = 'DATABASE_CONN'
     {
       provide: DATABASE_CONN,
       useFactory: async () => {
-        const connection = postgres(envConfig.get('DATABASE_URL'))
+        const connection = postgres(
+          process.env.DATABASE_URL ?? envConfig.get('DATABASE_URL'),
+        )
         return drizzle(connection, { schema })
       },
     },
