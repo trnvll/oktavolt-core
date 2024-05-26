@@ -11,17 +11,11 @@
     "start:prod": "node dist/main",
     "db:up": "docker-compose up -d",
     "db:down": "docker-compose down",
-    "db:migrate:dev": "prisma migrate dev",
-    "db:migrate:prod": "prisma migrate deploy",
-    "db:studio": "npx prisma studio",
     "cdk:deploy": "cdk deploy --all",
     "cdk:build:deploy": "npm run build && cdk deploy",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test": "vitest",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
     "@langchain/core": "^0.2.0",
