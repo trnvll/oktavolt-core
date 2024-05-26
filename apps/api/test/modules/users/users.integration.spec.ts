@@ -24,6 +24,7 @@ import { getQueueToken } from '@nestjs/bull'
 import { pruneFlakyVariables } from '../../_utils/test.utils'
 import { setupTestApp } from '../../_setup/app.setup'
 import { testConstants } from '../../_utils/constants.utils'
+import { plainToInstance } from 'class-transformer'
 
 faker.seed(testConstants.SEED)
 
@@ -136,6 +137,55 @@ describe('UsersController (e2e)', () => {
 
     // Business rule 5.
     pruneFlakyVariables(response.body, ['userId', 'dob'])
+    expect(response.body).toMatchSnapshot()
+  })
+
+  it('[GET /users] - Should get all users.', async () => {
+    // Business rules:
+    // 1. Should return all users from the database.
+
+    // Arrange
+    let dto: CreateUsersDto = {
+      data: [
+        {
+          email: faker.internet.email(),
+          firstName: faker.person.firstName(),
+          lastName: faker.person.lastName(),
+          phone: faker.phone.number(),
+          dateOfBirth: faker.date.past().toISOString() as any,
+        },
+        {
+          email: faker.internet.email(),
+          firstName: faker.person.firstName(),
+          lastName: faker.person.lastName(),
+          phone: faker.phone.number(),
+          dateOfBirth: faker.date.past().toISOString() as any,
+        },
+        {
+          email: faker.internet.email(),
+          firstName: faker.person.firstName(),
+          lastName: faker.person.lastName(),
+          phone: faker.phone.number(),
+          dateOfBirth: faker.date.past().toISOString() as any,
+        },
+      ],
+    }
+    dto = plainToInstance(CreateUsersDto, dto)
+    await context.database.db
+      .insert(Users)
+      .values(CreateUsersDto.toEntity(dto.data))
+
+    const response = await request(app.getHttpServer())
+      .get('/users')
+      .expect(200)
+
+    // Business rule 1.
+    const users = await context.database.db.query.users.findMany()
+    expect(response.body).toHaveLength(users.length)
+
+    response.body.forEach((user: any) => {
+      pruneFlakyVariables(user, ['userId', 'dob', 'dateOfBirth'])
+    })
     expect(response.body).toMatchSnapshot()
   })
 })
