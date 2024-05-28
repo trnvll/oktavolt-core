@@ -44,10 +44,12 @@ export class EventsQuery {
 
     return {
       results,
-      page,
-      pageSize: limit,
-      totalPages: Math.ceil(totalCount[0].count / limit),
-      totalResults: totalCount[0].count,
+      metadata: {
+        page,
+        pageSize: limit,
+        totalPages: Math.ceil(totalCount[0].count / limit),
+        totalResults: totalCount[0].count,
+      },
     }
   }
 }
