@@ -1,6 +1,7 @@
-import { Controller, Get, Post } from '@nestjs/common'
+import { Controller, Get, Post, Query } from '@nestjs/common'
 import { EventsService } from '@/modules/events/services/events.service'
-import { CreateEventDto } from 'shared'
+import { CreateEventDto, PaginationDto, SortDto } from 'shared'
+import { EventSortFields } from '@/modules/events/dtos/event-sort-fields'
 
 @Controller('events')
 export class EventsController {
@@ -12,7 +13,10 @@ export class EventsController {
   }
 
   @Get()
-  findAllUserEvents() {
-    return this.eventsService.findAllUserEvents()
+  findAllUserEvents(
+    @Query() paginationDto: PaginationDto,
+    @Query() sortDto: SortDto<EventSortFields>,
+  ) {
+    return this.eventsService.findAllUserEvents(paginationDto, sortDto)
   }
 }
