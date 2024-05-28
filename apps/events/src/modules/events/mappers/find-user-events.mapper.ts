@@ -1,9 +1,17 @@
 import { SelectUserEvent } from 'tsdb'
 import { instanceToPlain } from 'class-transformer'
+import { ResultsWithMetadata } from 'shared'
 
 export class FindAllUserEventsMapper {
-  static fromEntity(userEvents: SelectUserEvent[]) {
-    return userEvents.map(FindUserEventsMapper.fromEntity)
+  static fromEntity(
+    queryResult: ResultsWithMetadata<SelectUserEvent>,
+  ): ResultsWithMetadata {
+    return {
+      ...queryResult,
+      results: queryResult.results.map((userEvent) =>
+        instanceToPlain(userEvent),
+      ),
+    }
   }
 }
 

@@ -29,10 +29,7 @@ export class EventsService {
     paginationDto: PaginationDto,
     sortDto: SortDto<EventSortFields>,
   ) {
-    const plainUserEvents = await this.eventsQuery.findAllEvents(
-      paginationDto,
-      sortDto,
-    )
-    return FindAllUserEventsMapper.fromEntity(plainUserEvents)
+    const result = await this.eventsQuery.findAllEvents(paginationDto, sortDto)
+    return FindAllUserEventsMapper.fromEntity(result)
   }
 }

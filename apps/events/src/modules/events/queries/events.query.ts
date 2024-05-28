@@ -1,19 +1,24 @@
 import { Injectable } from '@nestjs/common'
 import { TsdbService } from '@/core/tsdb/tsdb.service'
-import { UserEvents } from 'tsdb'
-import { PaginationDto, SortDto, SortOrderEnum } from 'shared'
-import { asc, desc } from 'drizzle-orm'
+import { SelectUserEvent, UserEvents } from 'tsdb'
+import {
+  PaginationDto,
+  ResultsWithMetadata,
+  SortDto,
+  SortOrderEnum,
+} from 'shared'
+import { asc, desc, count } from 'drizzle-orm'
 import { EventSortFields } from '@/modules/events/dtos/event-sort-fields'
 
 @Injectable()
 export class EventsQuery {
   constructor(private readonly tsdb: TsdbService) {}
 
-  findAllEvents(
+  async findAllEvents(
     paginationDto: PaginationDto,
     sortDto: SortDto<EventSortFields>,
-  ) {
-    const { limit, offset } = paginationDto
+  ): Promise<ResultsWithMetadata<SelectUserEvent>> {
+    const { page, limit, offset } = paginationDto
     const { sortBy, sortOrder } = sortDto
 
     const query = this.tsdb.db
@@ -30,6 +35,19 @@ export class EventsQuery {
       )
     }
 
-    return query.execute()
+    const countQuery = this.tsdb.db.select({ count: count() }).from(UserEvents)
+
+    const [results, totalCount] = await Promise.all([
+      query.execute(),
+      countQuery.execute(),
+    ])
+
+    return {
+      results,
+      page,
+      pageSize: limit,
+      totalPages: Math.ceil(totalCount[0].count / limit),
+      totalResults: totalCount[0].count,
+    }
   }
 }

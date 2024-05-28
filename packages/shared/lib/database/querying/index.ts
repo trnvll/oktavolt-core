@@ -1,2 +1,2 @@
-export { PaginationDto } from '@/database/querying/pagination.dto'
-export { SortDto, SortOrderEnum } from '@/database/querying/sorting.dto'
+export * from '@/database/querying/dtos'
+export * from '@/database/querying/types'
