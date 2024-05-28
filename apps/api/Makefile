@@ -33,10 +33,15 @@ build: setup
 	@echo "Building in $(ENV) environment..."
 	npx turbo run build --filter=api
 
+# Run tests in watch mode
+test-watch:
+	@echo "Running tests in watch mode..."
+	vitest
+
 # Run tests
 test: build
 	@echo "Running tests..."
-	jest
+	vitest run
 
 # Deploy to AWS using CDK
 deploy-cdk:
