@@ -1,26 +1,43 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`UsersController (e2e) > [GET /users] - Should get all users. 1`] = `
-[
-  {
-    "email": "Riley.Effertz99@hotmail.com",
-    "firstName": "Christelle",
-    "lastName": "Gutmann",
-    "phone": "(604) 225-6310 x2932",
+{
+  "metadata": {
+    "page": 1,
+    "pageSize": 10,
+    "totalPages": 1,
+    "totalResults": 3,
   },
-  {
-    "email": "Ozella_Dooley@gmail.com",
-    "firstName": "Wilma",
-    "lastName": "Konopelski",
-    "phone": "866-340-0999",
-  },
-  {
-    "email": "German.Armstrong68@hotmail.com",
-    "firstName": "Dayne",
-    "lastName": "Paucek",
-    "phone": "(648) 219-3216",
-  },
-]
+  "results": [
+    {
+      "authzUserId": null,
+      "context": null,
+      "email": "Riley.Effertz99@hotmail.com",
+      "firstName": "Christelle",
+      "lastName": "Gutmann",
+      "phone": "(604) 225-6310 x2932",
+      "userId": 1,
+    },
+    {
+      "authzUserId": null,
+      "context": null,
+      "email": "Ozella_Dooley@gmail.com",
+      "firstName": "Wilma",
+      "lastName": "Konopelski",
+      "phone": "866-340-0999",
+      "userId": 2,
+    },
+    {
+      "authzUserId": null,
+      "context": null,
+      "email": "German.Armstrong68@hotmail.com",
+      "firstName": "Dayne",
+      "lastName": "Paucek",
+      "phone": "(648) 219-3216",
+      "userId": 3,
+    },
+  ],
+}
 `;
 
 exports[`UsersController (e2e) > [POST /users] - Should create user. 1`] = `

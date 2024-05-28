@@ -12,6 +12,8 @@ import { UsersService } from '@/modules/users/services/users.service'
 import { CreateUsersDto } from '@/modules/users/dtos/create-user.dto'
 import { LogActivity } from 'utils'
 import { QueryUsersDto } from '@/modules/users/dtos/query-users.dto'
+import { UserSortFields } from '@/modules/users/types/user-sort-fields'
+import { PaginationDto, SortDto } from 'shared'
 
 @Controller('users')
 export class UsersController {
@@ -29,8 +31,11 @@ export class UsersController {
   @LogActivity({
     level: 'debug',
   })
-  async findAll() {
-    return this.usersService.findAll()
+  async findAll(
+    @Query() paginationDto: PaginationDto,
+    @Query() sortDto: SortDto<UserSortFields>,
+  ) {
+    return this.usersService.findAll(paginationDto, sortDto)
   }
 
   @Get(':userId')

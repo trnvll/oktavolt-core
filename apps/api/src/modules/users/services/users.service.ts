@@ -3,15 +3,17 @@ import { DatabaseService } from '@/core/database/database.service'
 import { Users } from 'database'
 import { eq } from 'drizzle-orm'
 import { FindOneUserDto } from '@/modules/users/dtos/find-one-user.dto'
-import { FindAllUsersDto } from '@/modules/users/dtos/find-all-users.dto'
 import { CreateUsersDto } from '@/modules/users/dtos/create-user.dto'
 import { LogActivity } from 'utils'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { EventsEnum } from '@/core/events/types/events.enum'
-import { EntityTypeEnum, EventActionEnum } from 'shared'
+import { EntityTypeEnum, EventActionEnum, PaginationDto, SortDto } from 'shared'
 import { CreateEventUserCreatedDto } from '@/core/events/dtos/create-event-user-created.dto'
 import { CreateEventUserDeletedDto } from '@/core/events/dtos/create-event-user-deleted.dto'
 import { UserEmbeddingsService } from '@/modules/users/services/user-embeddings.service'
+import { UsersQueryService } from '@/modules/users/services/users-query.service'
+import { UserSortFields } from '@/modules/users/types/user-sort-fields'
+import { FindAllUsersMapper } from '@/modules/users/mappers/find-users.mapper'
 
 @Injectable()
 export class UsersService {
@@ -19,6 +21,7 @@ export class UsersService {
     private readonly database: DatabaseService,
     private readonly eventEmitter: EventEmitter2,
     private readonly userEmbeddingsService: UserEmbeddingsService,
+    private readonly usersQueryService: UsersQueryService,
   ) {}
 
   @LogActivity()
@@ -27,9 +30,15 @@ export class UsersService {
   }
 
   @LogActivity()
-  async findAll() {
-    const plainUsers = await this.database.db.select().from(Users).execute()
-    return FindAllUsersDto.fromEntity(plainUsers)
+  async findAll(
+    paginationDto: PaginationDto,
+    sortDto: SortDto<UserSortFields>,
+  ) {
+    const queryResult = await this.usersQueryService.findAllUsers(
+      paginationDto,
+      sortDto,
+    )
+    return FindAllUsersMapper.fromEntity(queryResult)
   }
 
   @LogActivity()

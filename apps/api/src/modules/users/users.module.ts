@@ -11,6 +11,7 @@ import { BullModule } from '@nestjs/bull'
 import { QueueEnum } from '@/types/queues/queue.enum'
 import { NotificationsService } from '@/core/notifications/services/notifications.service'
 import { SqsService } from '@/core/sqs/sqs.service'
+import { UsersQueryService } from '@/modules/users/services/users-query.service'
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { SqsService } from '@/core/sqs/sqs.service'
     DatabaseService,
     UsersEventsHandler,
     UsersEventsConsumer,
+    UsersQueryService,
   ],
   exports: [UsersService, UserEmbeddingsService],
   controllers: [UsersController],

@@ -8,9 +8,7 @@ export class FindAllUserEventsMapper {
   ): ResultsWithMetadata {
     return {
       ...queryResult,
-      results: queryResult.results.map((userEvent) =>
-        instanceToPlain(userEvent),
-      ),
+      results: queryResult.results.map(FindUserEventsMapper.fromEntity),
     }
   }
 }

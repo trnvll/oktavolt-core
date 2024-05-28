@@ -132,7 +132,7 @@ describe('UsersController (e2e)', () => {
 
   it('[GET /users] - Should get all users.', async () => {
     // Business rules:
-    // 1. Should return all users from the database.
+    // 1. Should return all users from the database in an appropriate, paginated response.
 
     // Arrange
     let dto: CreateUsersDto = {
@@ -171,10 +171,10 @@ describe('UsersController (e2e)', () => {
 
     // Business rule 1.
     const users = await context.database.db.query.users.findMany()
-    expect(response.body).toHaveLength(users.length)
+    expect(response.body.results).toHaveLength(users.length)
 
-    response.body.forEach((user: any) => {
-      pruneFlakyVariables(user, ['userId', 'dob', 'dateOfBirth'])
+    response.body.results.forEach((user: any) => {
+      pruneFlakyVariables(user, ['dob', 'dateOfBirth'])
     })
     expect(response.body).toMatchSnapshot()
   })
