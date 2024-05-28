@@ -20,7 +20,7 @@ setup: env-secrets
 	npm install
 
 # Run the application
-dev: setup
+dev:
 	@echo "Running dev in $(ENV) environment..."
 	npx turbo run dev --filter=events
 
