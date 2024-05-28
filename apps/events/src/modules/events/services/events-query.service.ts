@@ -11,7 +11,7 @@ import { asc, desc, count } from 'drizzle-orm'
 import { EventSortFields } from '@/modules/events/dtos/event-sort-fields'
 
 @Injectable()
-export class EventsQuery {
+export class EventsQueryService {
   constructor(private readonly tsdb: TsdbService) {}
 
   async findAllEvents(

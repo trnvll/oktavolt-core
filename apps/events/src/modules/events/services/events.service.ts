@@ -5,13 +5,13 @@ import { LogActivity } from 'utils'
 import { CreateEventDto, PaginationDto, SortDto } from 'shared'
 import { FindAllUserEventsMapper } from '@/modules/events/mappers/find-user-events.mapper'
 import { EventSortFields } from '@/modules/events/dtos/event-sort-fields'
-import { EventsQuery } from '@/modules/events/queries/events.query'
+import { EventsQueryService } from '@/modules/events/services/events-query.service'
 
 @Injectable()
 export class EventsService {
   constructor(
     private readonly tsdbService: TsdbService,
-    private readonly eventsQuery: EventsQuery,
+    private readonly eventsQueryService: EventsQueryService,
   ) {}
 
   @LogActivity()
@@ -29,7 +29,10 @@ export class EventsService {
     paginationDto: PaginationDto,
     sortDto: SortDto<EventSortFields>,
   ) {
-    const result = await this.eventsQuery.findAllEvents(paginationDto, sortDto)
+    const result = await this.eventsQueryService.findAllEvents(
+      paginationDto,
+      sortDto,
+    )
     return FindAllUserEventsMapper.fromEntity(result)
   }
 }
