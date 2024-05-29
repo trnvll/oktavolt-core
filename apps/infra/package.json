@@ -1,0 +1,22 @@
+{
+  "name": "infra",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+  },
+  "devDependencies": {
+    "@swc/cli": "^0.3.12",
+    "@swc/core": "^1.5.3",
+    "eslint": "^7.32.0",
+    "@pulumi/auth0": "^3.3.2",
+    "@pulumi/pulumi": "^3.117.0",
+    "eslint-config-custom": "*",
+    "tsconfig": "*",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.30.10",
+    "postgres": "^3.4.4"
+  }
+}

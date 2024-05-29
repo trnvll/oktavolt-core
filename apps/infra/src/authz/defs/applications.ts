@@ -1,24 +1,24 @@
 import { envConfig } from '@/config/env/env.config'
+import { ClientArgs } from '@pulumi/auth0'
 
-export function getApplications() {
+export function getApplicationResourceDefs(): ClientArgs[] {
   const localhost = 'http://localhost:3000'
   const domain = envConfig.get('AUTH0_DOMAIN')
   return [
     {
       name: 'Oktavolt Platform SPA',
-      app_type: 'spa',
+      appType: 'spa',
       callbacks: [
         [localhost, 'auth/callback'].join('/'),
         [domain, 'auth/callback'].join('/'),
       ],
-      allowed_logout_urls: [
+      allowedLogoutUrls: [
         [localhost, 'auth/logout'].join('/'),
         [domain, 'auth/logout'].join('/'),
       ],
-      allowed_origins: [domain, localhost],
-      web_origins: [domain, localhost],
-      grant_types: ['authorization_code', 'refresh_token'],
-      token_endpoint_auth_method: 'none',
+      allowedOrigins: [domain, localhost],
+      webOrigins: [domain, localhost],
+      grantTypes: ['authorization_code', 'refresh_token'],
     },
   ]
 }
