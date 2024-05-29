@@ -15,6 +15,7 @@ import { LlmModule } from '@/core/llm/llm.module'
 import { NotificationsModule } from '@/core/notifications/notifications.module'
 import { BullModule } from '@nestjs/bull'
 import { QueueEnum } from '@/types/queues/queue.enum'
+import { envConfig } from '@/config/env/env.config'
 
 @Module({
   imports: [
@@ -34,8 +35,10 @@ import { QueueEnum } from '@/types/queues/queue.enum'
     EventEmitterModule.forRoot(),
     BullModule.forRoot({
       redis: {
-        host: 'localhost',
-        port: 6379,
+        username: envConfig.get('REDIS_USERNAME'),
+        host: envConfig.get('REDIS_HOST'),
+        port: envConfig.get('REDIS_PORT'),
+        password: envConfig.get('REDIS_PASSWORD'),
       },
     }),
     BullModule.registerQueue({

@@ -6,6 +6,7 @@ import {
   Logger,
 } from '@nestjs/common'
 import { PostgresError } from 'postgres'
+import { FastifyReply } from 'fastify'
 
 @Catch(PostgresError)
 export class DatabaseExceptionFilter implements ExceptionFilter {
@@ -13,7 +14,7 @@ export class DatabaseExceptionFilter implements ExceptionFilter {
 
   catch(exception: PostgresError, host: ArgumentsHost) {
     const ctx = host.switchToHttp()
-    const response = ctx.getResponse()
+    const response = ctx.getResponse<FastifyReply>()
     const request = ctx.getRequest()
     let status = HttpStatus.INTERNAL_SERVER_ERROR
 
@@ -31,7 +32,7 @@ export class DatabaseExceptionFilter implements ExceptionFilter {
       `${request.method} ${request.url}`,
     )
 
-    response.status(status).json({
+    response.code(status).send({
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,

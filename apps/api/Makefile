@@ -29,7 +29,7 @@ dev:
 	npx turbo run dev --filter=api
 
 # Build the application
-build: setup
+build:
 	@echo "Building in $(ENV) environment..."
 	npx turbo run build --filter=api
 

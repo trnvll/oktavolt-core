@@ -21,6 +21,9 @@ const defaultEnv: Partial<EnvironmentVariables> = {
   LOGGING_LEVELS: [LogLevelEnum.ERROR, LogLevelEnum.WARN, LogLevelEnum.LOG],
   PORT: 8080,
   AUTH0_DOMAIN: 'https://platform.oktavolt.com',
+  REDIS_HOST: '0.0.0.0',
+  REDIS_PORT: 6379,
+  REDIS_USERNAME: 'default',
 }
 
 export class EnvironmentVariables {
@@ -35,6 +38,25 @@ export class EnvironmentVariables {
 
   @IsString()
   NOVU_API_KEY: string
+
+  @IsOptional()
+  @IsString()
+  REDIS_HOST: string
+
+  @IsOptional()
+  @IsNumber()
+  @Transform(({ value }) =>
+    value ? parseInt(value, 10) : defaultEnv.REDIS_PORT,
+  )
+  REDIS_PORT: number
+
+  @IsOptional()
+  @IsString()
+  REDIS_USERNAME?: string
+
+  @IsOptional()
+  @IsString()
+  REDIS_PASSWORD: string
 
   @IsOptional()
   @IsString()

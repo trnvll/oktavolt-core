@@ -19,10 +19,13 @@ $(DIRS):
 docker-build-api:
 	docker build -t oktavolt-api -f apps/api/Dockerfile .
 
+fly-secrets-api:
+	cat apps/api/.env | flyctl secrets import --config fly.api.toml
+
 # Deploy with Fly.io
 fly-deploy-api: docker-build-api
 	fly deploy --config fly.api.toml
-	fly cat apps/api/.env | flyctl secrets import --config fly.api.toml
+	cat apps/api/.env | flyctl secrets import --config fly.api.toml
 
 # Catch-all rule to avoid make doing nothing for unknown goals
 %:
