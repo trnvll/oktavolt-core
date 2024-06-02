@@ -1,7 +1,3 @@
-if (!process.env.IS_TS_NODE) {
-  require('module-alias/register')
-}
-
 import { NestFactory } from '@nestjs/core'
 import { DatabaseExceptionFilter } from '@/filters/database-exception.filter'
 import { ValidationPipe, VersioningType } from '@nestjs/common'
@@ -12,6 +8,8 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify'
 import helmet from '@fastify/helmet'
+
+declare const module: any
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -43,5 +41,10 @@ async function bootstrap() {
   })
 
   await app.listen(process.env.PORT || 8080, '0.0.0.0')
+
+  if (module.hot) {
+    module.hot.accept()
+    module.hot.dispose(() => app.close())
+  }
 }
 void bootstrap()
