@@ -8,6 +8,7 @@
   "scripts": {
     "build": "nest build -b swc",
     "dev": "nest start -b swc -w",
+    "dev:tc": "nest start -b swc -w --type-check",
     "start:prod": "node dist/main",
     "cdk:deploy": "cdk deploy --all",
     "cdk:build:deploy": "npm run build && cdk deploy",
