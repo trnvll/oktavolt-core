@@ -24,6 +24,9 @@ export class EnvironmentVariables {
   @IsString()
   TS_DATABASE_URL: string
 
+  @IsString()
+  MIXPANEL_TOKEN: string
+
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => (value ? parseInt(value, 10) : defaultEnv.PORT))

@@ -2,6 +2,7 @@ export enum EventTypeEnum {
   UserCreated = 'user-created',
   UserDataUpdated = 'user-data-updated',
   UserDeleted = 'user-deleted',
+  UserTracking = 'user-tracking',
 }
 
 export enum EventTargetEnum {
@@ -10,6 +11,7 @@ export enum EventTargetEnum {
   MessageQueue = 'mq',
   LogService = 'logs',
   AnalyticsService = 'analytics',
+  Mixpanel = 'mixpanel',
   EmailService = 'email',
   NotificationService = 'notification',
   Crm = 'crm',

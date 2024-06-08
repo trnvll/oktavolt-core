@@ -3,6 +3,7 @@ import { EventsModule } from '@/modules/events/events.module'
 import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
+import { MixpanelModule } from '@/modules/mixpanel/mixpanel.module'
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
         limit: 500,
       },
     ]),
+    MixpanelModule,
   ],
   providers: [
     {

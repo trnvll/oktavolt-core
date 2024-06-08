@@ -8,7 +8,7 @@ import {
 } from '@/events/dtos/user-event/core/enums'
 import { EventDetails } from '@/events/dtos/user-event' // FIXME: watch out for circular imports when using absolute and index export pattern
 
-export class CreateEventDto {
+export class CreateEventDto<T = EventDetails> {
   @IsInt()
   userId: number
 
@@ -19,7 +19,7 @@ export class CreateEventDto {
   targets: EventTargetEnum[]
 
   @IsObject()
-  data: EventDetails
+  data: T
 
   @IsDate()
   @Transform(({ value }) => new Date(value))
