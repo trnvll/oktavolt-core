@@ -4,6 +4,7 @@ import { CreateEventDto, TrackingEventDetailsDto } from 'shared'
 import Mixpanel from 'mixpanel'
 import { CreateEventDtoToMixpanelDtoMapper } from '@/modules/mixpanel/mappers/create-event-dto-to-mixpanel-dto.mapper'
 import { envConfig } from '@/config/env/env.config'
+import { LogActivity } from 'utils'
 
 @Injectable()
 export class MixpanelService implements IEventHandler {
@@ -13,10 +14,11 @@ export class MixpanelService implements IEventHandler {
     this.mixpanel = Mixpanel.init(envConfig.get('MIXPANEL_TOKEN'))
   }
 
+  @LogActivity({ logEntry: false })
   async handleEvent(
     event: CreateEventDto<TrackingEventDetailsDto>,
   ): Promise<void> {
     const mixpanelDto = CreateEventDtoToMixpanelDtoMapper.map(event)
-    this.mixpanel.track(event.type, mixpanelDto)
+    return this.mixpanel.track(event.type, mixpanelDto)
   }
 }
