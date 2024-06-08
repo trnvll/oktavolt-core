@@ -4,6 +4,7 @@ import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager'
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
 import { MixpanelModule } from '@/modules/mixpanel/mixpanel.module'
+import { TimeSeriesDatabaseModule } from '@/modules/time-series-database/time-series-database.module'
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { MixpanelModule } from '@/modules/mixpanel/mixpanel.module'
       },
     ]),
     MixpanelModule,
+    TimeSeriesDatabaseModule,
   ],
   providers: [
     {

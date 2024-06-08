@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query } from '@nestjs/common'
+import { Body, Controller, Get, Post, Query } from '@nestjs/common'
 import { EventsService } from '@/modules/events/services/events.service'
 import { CreateEventDto, PaginationDto, SortDto } from 'shared'
 import { EventSortFields } from '@/modules/events/dtos/event-sort-fields'
@@ -8,7 +8,7 @@ export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
   @Post()
-  createUserEvent(userEventDto: CreateEventDto) {
+  createUserEvent(@Body() userEventDto: CreateEventDto) {
     return this.eventsService.createUserEvent(userEventDto)
   }
 

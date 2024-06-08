@@ -21,6 +21,7 @@ export enum EventOriginEnum {
   Platform = 'platform',
   Web = 'web',
   Api = 'api',
+  Events = 'events',
 }
 
 export enum EntityTypeEnum {
