@@ -1,8 +1,8 @@
 const getDatabaseConfig = () => {
   return {
     database: {
-      uri: process.env.DATABASE_URI,
-      tsdbUri: process.env.TS_DATABASE_URI,
+      uri: process.env.DATABASE_URL,
+      tsdbUri: process.env.TS_DATABASE_URL,
     },
   }
 }

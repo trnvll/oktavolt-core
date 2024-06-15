@@ -20,13 +20,19 @@ import { baseConfig } from '@/config/base.config'
 import { awsConfig } from '@/config/aws.config'
 import { databaseConfig } from '@/config/database.config'
 import { RedisConfig, redisConfig } from '@/config/redis.config'
+import { externalConfig } from '@/config/external.config'
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      cache: true,
-      load: [baseConfig, databaseConfig, awsConfig, redisConfig],
+      load: [
+        baseConfig,
+        awsConfig,
+        redisConfig,
+        externalConfig,
+        databaseConfig,
+      ],
     }),
     CacheModule.register(),
     ThrottlerModule.forRoot([
