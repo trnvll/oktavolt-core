@@ -1,15 +1,28 @@
 import { Injectable } from '@nestjs/common'
 import { SQS } from 'aws-sdk'
-import { envConfig } from '@/config/env/env.config'
+import { ConfigService } from '@nestjs/config'
+import { AwsConfig } from '@/config/aws.config'
+import { BaseConfig } from '@/config/base.config'
 
 @Injectable()
 export class SqsService {
   private readonly sqs: SQS
   private readonly queueUrl: string
 
-  constructor() {
-    this.sqs = new SQS({ region: envConfig.get('AWS_REGION') })
-    this.queueUrl = envConfig.get('SQS_USER_EVENTS_QUEUE_URL')
+  constructor(private readonly configService: ConfigService) {
+    const baseConfig = configService.get<BaseConfig>('base')
+    const awsConfig = configService.get<AwsConfig>('aws')
+
+    if (!awsConfig?.region) {
+      throw new Error('AWS region is missing.')
+    }
+
+    if (!baseConfig?.sqsUserEventsQueueUrl) {
+      throw new Error('SQS user events queue URL is missing.')
+    }
+
+    this.sqs = new SQS({ region: awsConfig.region })
+    this.queueUrl = baseConfig.sqsUserEventsQueueUrl
   }
 
   async sendMessage(messageBody: any): Promise<void> {

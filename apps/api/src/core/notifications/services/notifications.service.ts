@@ -1,15 +1,22 @@
 import { Injectable } from '@nestjs/common'
 import { Novu } from '@novu/node'
-import { envConfig } from '@/config/env/env.config'
 import { NotificationTypeEnum } from '@/core/notifications/types/notification-types.enum'
 import { SelectUser } from 'database'
+import { ConfigService } from '@nestjs/config'
+import { ExternalConfig } from '@/config/external.config'
 
 @Injectable()
 export class NotificationsService {
   private readonly novu: Novu
 
-  constructor() {
-    this.novu = new Novu({ apiKey: envConfig.get('NOVU_API_KEY') })
+  constructor(private readonly configService: ConfigService) {
+    const externalConfig = configService.get<ExternalConfig>('external')
+
+    if (!externalConfig?.novuApiKey) {
+      throw new Error('Novu API Key is missing.')
+    }
+
+    this.novu = new Novu({ apiKey: externalConfig.novuApiKey })
   }
 
   async createOrUpdateSubscriber(user: SelectUser) {

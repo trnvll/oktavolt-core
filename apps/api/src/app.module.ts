@@ -13,12 +13,21 @@ import { EventsModule } from '@/core/events/events.module'
 import { SqsModule } from '@/core/sqs/sqs.module'
 import { LlmModule } from '@/core/llm/llm.module'
 import { NotificationsModule } from '@/core/notifications/notifications.module'
-import { BullModule } from '@nestjs/bull'
+import { BullModule, BullModuleOptions } from '@nestjs/bull'
 import { QueueEnum } from '@/types/queues/queue.enum'
-import { envConfig } from '@/config/env/env.config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { baseConfig } from '@/config/base.config'
+import { awsConfig } from '@/config/aws.config'
+import { databaseConfig } from '@/config/database.config'
+import { RedisConfig, redisConfig } from '@/config/redis.config'
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      cache: true,
+      load: [baseConfig, databaseConfig, awsConfig, redisConfig],
+    }),
     CacheModule.register(),
     ThrottlerModule.forRoot([
       {
@@ -33,12 +42,33 @@ import { envConfig } from '@/config/env/env.config'
       },
     ]),
     EventEmitterModule.forRoot(),
-    BullModule.forRoot({
-      redis: {
-        username: envConfig.get('REDIS_USERNAME'),
-        host: envConfig.get('REDIS_HOST'),
-        port: envConfig.get('REDIS_PORT'),
-        password: envConfig.get('REDIS_PASSWORD'),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (
+        configService: ConfigService,
+      ): Promise<BullModuleOptions> => {
+        const redisConfig = configService.get<RedisConfig>('redis')
+        const { username, port, host, password } = redisConfig ?? {}
+
+        if (!host || !port) {
+          throw new Error(
+            `Redis configuration is missing. Got ${JSON.stringify(
+              redisConfig,
+              null,
+              2,
+            )}`,
+          )
+        }
+
+        return {
+          redis: {
+            username,
+            host,
+            port,
+            password,
+          },
+        }
       },
     }),
     BullModule.registerQueue({

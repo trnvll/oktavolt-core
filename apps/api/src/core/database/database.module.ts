@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import { schema } from 'database'
-import { envConfig } from '@/config/env/env.config'
+import { ConfigService } from '@nestjs/config'
+import { DatabaseConfig } from '@/config/database.config'
 
 export const DATABASE_CONN = 'DATABASE_CONN'
 
@@ -10,12 +11,17 @@ export const DATABASE_CONN = 'DATABASE_CONN'
   providers: [
     {
       provide: DATABASE_CONN,
-      useFactory: async () => {
-        const connection = postgres(
-          process.env.DATABASE_URL ?? envConfig.get('DATABASE_URL'),
-        )
+      useFactory: async (configService: ConfigService) => {
+        const databaseConfig = configService.get<DatabaseConfig>('database')
+
+        if (!databaseConfig?.uri) {
+          throw new Error('Database URI is missing.')
+        }
+
+        const connection = postgres(databaseConfig.uri)
         return drizzle(connection, { schema })
       },
+      inject: [ConfigService],
     },
   ],
   exports: [DATABASE_CONN],

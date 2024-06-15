@@ -1,15 +1,22 @@
 import { Injectable } from '@nestjs/common'
 import { OpenAIEmbeddings } from '@langchain/openai'
-import { envConfig } from '@/config/env/env.config'
+import { ConfigService } from '@nestjs/config'
+import { ExternalConfig } from '@/config/external.config'
 
 @Injectable()
 export class LlmEmbeddingsService {
   private embeddings: OpenAIEmbeddings
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
+    const externalConfig = configService.get<ExternalConfig>('external')
+
+    if (!externalConfig?.openaiApiKey) {
+      throw new Error('OpenAI API Key is missing.')
+    }
+
     this.embeddings = new OpenAIEmbeddings({
       modelName: 'text-embedding-3-small',
-      openAIApiKey: envConfig.get('OPENAI_API_KEY'),
+      openAIApiKey: externalConfig.openaiApiKey,
     })
   }
 
