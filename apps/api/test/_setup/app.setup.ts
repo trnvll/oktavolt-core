@@ -5,6 +5,7 @@ import { DatabaseExceptionFilter } from '@/filters/database-exception.filter'
 import { cleanTestDatabase, setupTestDatabase } from './db.setup'
 import { vi } from 'vitest'
 import { DatabaseService } from '@/core/database/database.service'
+import { setupSeed } from './seed.setup'
 
 interface SetupTestAppProps {
   mockProviders?: Array<[any, any]>
@@ -42,6 +43,8 @@ export const setupTestApp = async ({
   await app.init()
 
   console.log('✓ Setup completed for test fixture')
+
+  setupSeed()
 
   return {
     app,

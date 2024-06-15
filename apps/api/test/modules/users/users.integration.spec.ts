@@ -23,10 +23,7 @@ import { Queue } from 'bull'
 import { getQueueToken } from '@nestjs/bull'
 import { pruneFlakyVariables } from '../../_utils/test.utils'
 import { setupTestApp } from '../../_setup/app.setup'
-import { testConstants } from '../../_utils/constants.utils'
 import { plainToInstance } from 'class-transformer'
-
-faker.seed(testConstants.SEED)
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication
