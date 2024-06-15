@@ -5,6 +5,12 @@ import { RootAwsConfig } from '@/config/aws.config'
 import { RootDatabaseConfig } from '@/config/database.config'
 import { RootRedisConfig } from '@/config/redis.config'
 
+export enum NodeEnvEnum {
+  DEVELOPMENT = 'development',
+  TEST = 'test',
+  PRODUCTION = 'production',
+}
+
 export type RootConfig = RootAuthConfig &
   RootBaseConfig &
   RootAwsConfig &
