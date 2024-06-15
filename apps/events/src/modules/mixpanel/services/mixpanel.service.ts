@@ -3,15 +3,22 @@ import { Injectable } from '@nestjs/common'
 import { CreateEventDto, TrackingEventDetailsDto } from 'shared'
 import Mixpanel from 'mixpanel'
 import { CreateEventDtoToMixpanelDtoMapper } from '@/modules/mixpanel/mappers/create-event-dto-to-mixpanel-dto.mapper'
-import { envConfig } from '@/config/env/env.config'
 import { LogActivity } from 'utils'
+import { ConfigService } from '@nestjs/config'
+import { ExternalConfig } from '@/config/external.config'
 
 @Injectable()
 export class MixpanelService implements IEventHandler {
   private mixpanel: Mixpanel.Mixpanel
 
-  constructor() {
-    this.mixpanel = Mixpanel.init(envConfig.get('MIXPANEL_TOKEN'))
+  constructor(private readonly configService: ConfigService) {
+    const externalConfig = this.configService.get<ExternalConfig>('external')
+
+    if (!externalConfig?.mixpanelToken) {
+      throw new Error('Mixpanel token is missing.')
+    }
+
+    this.mixpanel = Mixpanel.init(externalConfig.mixpanelToken)
   }
 
   @LogActivity({ logEntry: false })

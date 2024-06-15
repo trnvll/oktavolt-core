@@ -25,7 +25,6 @@ import { externalConfig } from '@/config/external.config'
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
       load: [
         baseConfig,
         awsConfig,
@@ -33,6 +32,8 @@ import { externalConfig } from '@/config/external.config'
         externalConfig,
         databaseConfig,
       ],
+      isGlobal: true,
+      cache: true,
     }),
     CacheModule.register(),
     ThrottlerModule.forRoot([

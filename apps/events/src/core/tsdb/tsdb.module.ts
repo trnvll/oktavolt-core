@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common'
-import { envConfig } from '@/config/env/env.config'
 import { schema } from 'tsdb'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
+import { ConfigService } from '@nestjs/config'
+import { DatabaseConfig } from '@/config/database.config'
 
 export const TSDB_CONN = 'TSDB_CONN'
 
@@ -10,10 +11,17 @@ export const TSDB_CONN = 'TSDB_CONN'
   providers: [
     {
       provide: TSDB_CONN,
-      useFactory: async () => {
-        const connection = postgres(envConfig.get('TS_DATABASE_URL'))
+      useFactory: async (configService: ConfigService) => {
+        const databaseConfig = configService.get<DatabaseConfig>('database')
+
+        if (!databaseConfig?.uri) {
+          throw new Error('Time series database url is missing.')
+        }
+
+        const connection = postgres(databaseConfig.uri)
         return drizzle(connection, { schema })
       },
+      inject: [ConfigService],
     },
   ],
   exports: [TSDB_CONN],
