@@ -1,11 +1,12 @@
 import { Test } from '@nestjs/testing'
-import { Type, ValidationPipe } from '@nestjs/common'
+import { CanActivate, Type, ValidationPipe } from '@nestjs/common'
 import { AppModule } from '@/app.module'
 import { DatabaseExceptionFilter } from '@/filters/database-exception.filter'
 import { cleanTestDatabase, setupTestDatabase } from './db.setup'
 import { vi } from 'vitest'
 import { DatabaseService } from '@/core/database/database.service'
 import { setupSeed } from './seed.setup'
+import { AuthGuard } from '@nestjs/passport'
 
 interface SetupTestAppProps {
   mockProviders?: Array<[any, any]>
@@ -23,6 +24,10 @@ export const setupTestApp = async ({
   const moduleFixtureBuilder = Test.createTestingModule({
     imports: [AppModule],
   })
+
+  // Override guards with mock guards
+  const mockGuard: CanActivate = { canActivate: vi.fn(() => true) }
+  moduleFixtureBuilder.overrideGuard(AuthGuard('jwt')).useValue(mockGuard)
 
   // Override providers with mock services
   if (mockProviders) {
