@@ -6,13 +6,16 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  UseGuards,
 } from '@nestjs/common'
 import { CommsService } from '@/modules/comms/services/comms.service'
 import { CreateCommsDto } from '@/modules/comms/dtos/create-comms.dto'
 import { FindUserByIdPipe } from '@/modules/users/pipes/find-user-by-id.pipe'
 import { SelectUser } from 'database'
 import { LogActivity } from 'utils'
+import { AuthGuard } from '@nestjs/passport'
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('users/:userId/comms')
 export class CommsController {
   constructor(private readonly commsService: CommsService) {}

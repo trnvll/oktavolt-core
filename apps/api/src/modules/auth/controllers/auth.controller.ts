@@ -7,12 +7,15 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  UseGuards,
 } from '@nestjs/common'
 import { FindUserByIdPipe } from '@/modules/users/pipes/find-user-by-id.pipe'
 import { SelectUser } from 'database'
 import { CreateAuthsDto } from '@/modules/auth/dtos/create-auths.dto'
 import { LogActivity } from 'utils'
+import { AuthGuard } from '@nestjs/passport'
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('users/:userId/auths')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

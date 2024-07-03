@@ -6,13 +6,16 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  UseGuards,
 } from '@nestjs/common'
 import { FindUserByIdPipe } from '@/modules/users/pipes/find-user-by-id.pipe'
 import { SelectUser } from 'database'
 import { RelationshipsService } from '@/modules/relationships/services/relationships.service'
 import { CreateRelationshipsDto } from '@/modules/relationships/dtos/create-relationships.dto'
 import { LogActivity } from 'utils'
+import { AuthGuard } from '@nestjs/passport'
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('users/:userId/relationships')
 export class RelationshipsController {
   constructor(private readonly relationshipsService: RelationshipsService) {}

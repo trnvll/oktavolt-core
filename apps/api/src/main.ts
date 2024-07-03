@@ -9,8 +9,6 @@ import {
 } from '@nestjs/platform-fastify'
 import helmet from '@fastify/helmet'
 
-declare const module: any
-
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
@@ -41,10 +39,5 @@ async function bootstrap() {
   })
 
   await app.listen(process.env.PORT || 8080, '0.0.0.0')
-
-  if (module.hot) {
-    module.hot.accept()
-    module.hot.dispose(() => app.close())
-  }
 }
 void bootstrap()
