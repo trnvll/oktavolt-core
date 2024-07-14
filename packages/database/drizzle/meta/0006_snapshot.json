@@ -1,10 +1,8 @@
 {
-  "id": "f233f882-c37f-4da7-b253-6b81aadf9aa8",
-  "prevId": "aea5f882-d05b-45be-9014-5851abb448d2",
-  "version": "5",
-  "dialect": "pg",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "authentication": {
+    "public.authentication": {
       "name": "authentication",
       "schema": "",
       "columns": {
@@ -70,21 +68,21 @@
         "authentication_user_id_users_user_id_fk": {
           "name": "authentication_user_id_users_user_id_fk",
           "tableFrom": "authentication",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "communications": {
+    "public.communications": {
       "name": "communications",
       "schema": "",
       "columns": {
@@ -168,34 +166,34 @@
         "communications_relationship_id_relationships_relationship_id_fk": {
           "name": "communications_relationship_id_relationships_relationship_id_fk",
           "tableFrom": "communications",
-          "tableTo": "relationships",
           "columnsFrom": [
             "relationship_id"
           ],
+          "tableTo": "relationships",
           "columnsTo": [
             "relationship_id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "communications_user_id_users_user_id_fk": {
           "name": "communications_user_id_users_user_id_fk",
           "tableFrom": "communications",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "digital_media": {
+    "public.digital_media": {
       "name": "digital_media",
       "schema": "",
       "columns": {
@@ -273,21 +271,21 @@
         "digital_media_user_id_users_user_id_fk": {
           "name": "digital_media_user_id_users_user_id_fk",
           "tableFrom": "digital_media",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "financial_transactions": {
+    "public.financial_transactions": {
       "name": "financial_transactions",
       "schema": "",
       "columns": {
@@ -359,34 +357,34 @@
         "financial_transactions_user_id_users_user_id_fk": {
           "name": "financial_transactions_user_id_users_user_id_fk",
           "tableFrom": "financial_transactions",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "financial_transactions_relationship_id_relationships_relationship_id_fk": {
           "name": "financial_transactions_relationship_id_relationships_relationship_id_fk",
           "tableFrom": "financial_transactions",
-          "tableTo": "relationships",
           "columnsFrom": [
             "relationship_id"
           ],
+          "tableTo": "relationships",
           "columnsTo": [
             "relationship_id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "preferences": {
+    "public.preferences": {
       "name": "preferences",
       "schema": "",
       "columns": {
@@ -440,21 +438,21 @@
         "preferences_user_id_users_user_id_fk": {
           "name": "preferences_user_id_users_user_id_fk",
           "tableFrom": "preferences",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "relationships": {
+    "public.relationships": {
       "name": "relationships",
       "schema": "",
       "columns": {
@@ -532,21 +530,21 @@
         "relationships_user_id_users_user_id_fk": {
           "name": "relationships_user_id_users_user_id_fk",
           "tableFrom": "relationships",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "users": {
+    "public.users": {
       "name": "users",
       "schema": "",
       "columns": {
@@ -619,10 +617,10 @@
       "uniqueConstraints": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     }
@@ -630,8 +628,10 @@
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "f233f882-c37f-4da7-b253-6b81aadf9aa8",
+  "prevId": "aea5f882-d05b-45be-9014-5851abb448d2"
 }

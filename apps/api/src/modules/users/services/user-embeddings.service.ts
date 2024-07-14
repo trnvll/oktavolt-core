@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { DatabaseService } from '@/core/database/database.service'
 import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
 import { SelectUser, UserEmbeddings } from 'database'
-import { l2Distance } from 'pgvector/drizzle-orm'
+import { cosineDistance, desc, gt, sql } from 'drizzle-orm'
 
 @Injectable()
 export class UserEmbeddingsService {
@@ -31,10 +31,16 @@ export class UserEmbeddingsService {
     const vector = await this.llmEmbeddingsService.generateEmbeddingForQuery(
       query,
     )
+    const similarity = sql<number>`1 - (${cosineDistance(
+      UserEmbeddings.embedding,
+      vector,
+    )})`
+
     return this.database.db
-      .select({ userId: UserEmbeddings.userId })
+      .select({ userId: UserEmbeddings.userId, similarity })
       .from(UserEmbeddings)
-      .orderBy(l2Distance(UserEmbeddings.embedding, vector))
+      .where(gt(similarity, 0.2))
+      .orderBy((t) => desc(t.similarity))
       .limit(limit)
   }
 

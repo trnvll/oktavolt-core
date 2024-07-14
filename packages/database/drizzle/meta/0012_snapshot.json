@@ -1,10 +1,8 @@
 {
-  "id": "ba02e336-c81e-4254-873e-3767ff822851",
-  "prevId": "16acb50f-9615-44fa-9af7-ad34928ccd3c",
-  "version": "5",
-  "dialect": "pg",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "authentication": {
+    "public.authentication": {
       "name": "authentication",
       "schema": "",
       "columns": {
@@ -76,21 +74,21 @@
         "authentication_user_id_users_user_id_fk": {
           "name": "authentication_user_id_users_user_id_fk",
           "tableFrom": "authentication",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "communications": {
+    "public.communications": {
       "name": "communications",
       "schema": "",
       "columns": {
@@ -180,34 +178,34 @@
         "communications_relationship_id_relationships_relationship_id_fk": {
           "name": "communications_relationship_id_relationships_relationship_id_fk",
           "tableFrom": "communications",
-          "tableTo": "relationships",
           "columnsFrom": [
             "relationship_id"
           ],
+          "tableTo": "relationships",
           "columnsTo": [
             "relationship_id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "communications_user_id_users_user_id_fk": {
           "name": "communications_user_id_users_user_id_fk",
           "tableFrom": "communications",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "digital_media": {
+    "public.digital_media": {
       "name": "digital_media",
       "schema": "",
       "columns": {
@@ -291,21 +289,21 @@
         "digital_media_user_id_users_user_id_fk": {
           "name": "digital_media_user_id_users_user_id_fk",
           "tableFrom": "digital_media",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "financial_transactions": {
+    "public.financial_transactions": {
       "name": "financial_transactions",
       "schema": "",
       "columns": {
@@ -383,34 +381,34 @@
         "financial_transactions_user_id_users_user_id_fk": {
           "name": "financial_transactions_user_id_users_user_id_fk",
           "tableFrom": "financial_transactions",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "financial_transactions_relationship_id_relationships_relationship_id_fk": {
           "name": "financial_transactions_relationship_id_relationships_relationship_id_fk",
           "tableFrom": "financial_transactions",
-          "tableTo": "relationships",
           "columnsFrom": [
             "relationship_id"
           ],
+          "tableTo": "relationships",
           "columnsTo": [
             "relationship_id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "preferences": {
+    "public.preferences": {
       "name": "preferences",
       "schema": "",
       "columns": {
@@ -470,21 +468,21 @@
         "preferences_user_id_users_user_id_fk": {
           "name": "preferences_user_id_users_user_id_fk",
           "tableFrom": "preferences",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "relationships": {
+    "public.relationships": {
       "name": "relationships",
       "schema": "",
       "columns": {
@@ -568,21 +566,21 @@
         "relationships_user_id_users_user_id_fk": {
           "name": "relationships_user_id_users_user_id_fk",
           "tableFrom": "relationships",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "users": {
+    "public.users": {
       "name": "users",
       "schema": "",
       "columns": {
@@ -661,14 +659,14 @@
       "uniqueConstraints": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
-    "user_embeddings": {
+    "public.user_embeddings": {
       "name": "user_embeddings",
       "schema": "",
       "columns": {
@@ -716,15 +714,15 @@
         "user_embeddings_user_id_users_user_id_fk": {
           "name": "user_embeddings_user_id_users_user_id_fk",
           "tableFrom": "user_embeddings",
-          "tableTo": "users",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "user_id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -734,8 +732,10 @@
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "ba02e336-c81e-4254-873e-3767ff822851",
+  "prevId": "16acb50f-9615-44fa-9af7-ad34928ccd3c"
 }

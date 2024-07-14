@@ -3,9 +3,9 @@ import { config } from '@/utils/config'
 
 export default defineConfig({
   schema: './lib/models/index.ts',
-  driver: 'pg',
+  dialect: 'postgresql',
   dbCredentials: {
-    connectionString: config().DATABASE_URL,
+    url: config().DATABASE_URL,
   },
   out: './drizzle',
   verbose: true,
