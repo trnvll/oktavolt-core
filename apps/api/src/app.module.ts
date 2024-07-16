@@ -21,6 +21,7 @@ import { awsConfig } from '@/config/aws.config'
 import { databaseConfig } from '@/config/database.config'
 import { RedisConfig, redisConfig } from '@/config/redis.config'
 import { externalConfig } from '@/config/external.config'
+import { EmbeddingsModule } from '@/modules/embeddings/embeddings.module'
 
 @Module({
   imports: [
@@ -91,6 +92,7 @@ import { externalConfig } from '@/config/external.config'
     SqsModule,
     LlmModule,
     NotificationsModule,
+    EmbeddingsModule,
   ],
   providers: [
     {

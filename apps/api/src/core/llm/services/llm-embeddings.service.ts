@@ -25,7 +25,7 @@ export class LlmEmbeddingsService {
       return this.embeddings.embedDocuments(content)
     } catch (err) {
       console.error('Error generating embeddings', err)
-      return []
+      throw err
     }
   }
 
@@ -34,7 +34,7 @@ export class LlmEmbeddingsService {
       return this.embeddings.embedQuery(query)
     } catch (err) {
       console.error('Error generating embedding for query', err)
-      return []
+      throw err
     }
   }
 }
