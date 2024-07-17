@@ -15,7 +15,7 @@ dirs:
 $(DIRS):
 	$(MAKE) -C $@ $(filter-out $@,$(MAKECMDGOALS))
 
-# Build the API Docker image
+# Build the API Docker image locally (for testing)
 docker-build-api:
 	docker build -t oktavolt-api -f apps/api/Dockerfile .
 
@@ -23,7 +23,7 @@ fly-secrets-api:
 	cat apps/api/.env | flyctl secrets import --config fly.api.toml
 
 # Deploy with Fly.io
-fly-deploy-api: docker-build-api
+fly-deploy-api:
 	fly deploy --config fly.api.toml
 	cat apps/api/.env | flyctl secrets import --config fly.api.toml
 
@@ -31,5 +31,4 @@ fly-deploy-api: docker-build-api
 %:
 	@:
 
-# Declare PHONY targets
-.PHONY: all dirs $(DIRS)
+.PHONY: all dirs $(DIRS) docker-build-api fly-secrets-api fly-deploy-api

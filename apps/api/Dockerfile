@@ -2,7 +2,7 @@ FROM node:18-alpine AS builder
 RUN apk update
 # Set working directory
 WORKDIR /app
-RUN npm -g install turbo
+RUN npm -g install turbo@2.0.6
 COPY . .
 RUN turbo prune --scope=api --docker
 
@@ -21,7 +21,7 @@ WORKDIR /app
 COPY --from=installer /app/ .
 COPY --from=builder /app/out/full/ .
 COPY .gitignore .gitignore
-RUN npx turbo run build --filter=api
+RUN npx turbo@2.0.6 run build --filter=api --force
 
 FROM node:18-alpine as runner
 WORKDIR /app

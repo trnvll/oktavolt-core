@@ -21,7 +21,7 @@ WORKDIR /app
 COPY --from=installer /app/ .
 COPY --from=builder /app/out/full/ .
 COPY .gitignore .gitignore
-RUN npx turbo@2.0.6 run build --filter=api
+RUN npx turbo@2.0.6 run build --filter=api --force
 
 FROM node:18-alpine as runner
 WORKDIR /app
