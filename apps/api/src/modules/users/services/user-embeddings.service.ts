@@ -3,29 +3,15 @@ import { DatabaseService } from '@/core/database/database.service'
 import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
 import { SelectUser, UserEmbeddings } from 'database'
 import { cosineDistance, desc, gt, sql } from 'drizzle-orm'
+import { LlmDataTransformationService } from '@/core/llm/services/llm-data-transformation.service'
 
 @Injectable()
 export class UserEmbeddingsService {
   constructor(
     private database: DatabaseService,
     private llmEmbeddingsService: LlmEmbeddingsService,
+    private readonly llmDataTransformationService: LlmDataTransformationService,
   ) {}
-
-  async generateAndSaveEmbeddings(user: SelectUser) {
-    const content = this.formatUserData(user)
-    try {
-      const embeddings = await this.llmEmbeddingsService.generateEmbeddings([
-        content,
-      ])
-      await this.database.db.insert(UserEmbeddings).values({
-        userId: user.userId,
-        embedding: embeddings[0],
-        content: content,
-      })
-    } catch (err) {
-      console.error('Error generating and saving embeddings', err)
-    }
-  }
 
   async findNearestEmbeddings(query: string, limit = 5) {
     const vector = await this.llmEmbeddingsService.generateEmbeddingForQuery(
@@ -44,8 +30,32 @@ export class UserEmbeddingsService {
       .limit(limit)
   }
 
-  private formatUserData(user: SelectUser): string {
-    const { firstName, lastName, email, dob, phone, createdAt, context } = user
-    return `${firstName} ${lastName} | Email: ${email} | Phone: ${phone} | Date of Birth: ${dob} | Context: ${context} | Created At: ${createdAt}`
+  async generateAndSaveEmbeddings(user: SelectUser) {
+    const content = await this.createEmbedding(user)
+    try {
+      const embeddings = await this.llmEmbeddingsService.generateEmbeddings([
+        content,
+      ])
+      await this.database.db.insert(UserEmbeddings).values({
+        userId: user.userId,
+        embedding: embeddings[0],
+        content: content,
+      })
+    } catch (err) {
+      console.error('Error generating and saving embeddings', err)
+    }
+  }
+
+  private createEmbedding(user: SelectUser) {
+    const userData = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phoneNumber: user.phone,
+      dateOfBirth: user.dob,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    }
+    return this.llmDataTransformationService.transform('users', userData)
   }
 }

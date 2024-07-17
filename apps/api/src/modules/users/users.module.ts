@@ -12,6 +12,7 @@ import { QueueEnum } from '@/types/queues/queue.enum'
 import { NotificationsService } from '@/core/notifications/services/notifications.service'
 import { SqsService } from '@/core/sqs/sqs.service'
 import { UsersQueryService } from '@/modules/users/services/users-query.service'
+import { LlmDataTransformationService } from '@/core/llm/services/llm-data-transformation.service'
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UsersQueryService } from '@/modules/users/services/users-query.service'
     UsersService,
     UserEmbeddingsService,
     LlmEmbeddingsService,
+    LlmDataTransformationService,
     DatabaseService,
     UsersEventsHandler,
     UsersEventsConsumer,
