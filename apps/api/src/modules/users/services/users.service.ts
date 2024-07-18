@@ -14,6 +14,7 @@ import { UserEmbeddingsService } from '@/modules/users/services/user-embeddings.
 import { UsersQueryService } from '@/modules/users/services/users-query.service'
 import { UserSortFields } from '@/modules/users/types/user-sort-fields'
 import { FindAllUsersMapper } from '@/modules/users/mappers/find-users.mapper'
+import { LlmQueryService } from '@/core/llm/services/llm-query.service'
 
 @Injectable()
 export class UsersService {
@@ -22,11 +23,22 @@ export class UsersService {
     private readonly eventEmitter: EventEmitter2,
     private readonly userEmbeddingsService: UserEmbeddingsService,
     private readonly usersQueryService: UsersQueryService,
+    private readonly llmQueryService: LlmQueryService,
   ) {}
 
   @LogActivity()
   async omni(query: string) {
-    return this.userEmbeddingsService.findNearestEmbeddings(query)
+    const nearestResults =
+      await this.userEmbeddingsService.findNearestEmbeddings(query, 1)
+
+    const content = nearestResults[0].content
+
+    if (!content) {
+      return this.llmQueryService.query(query)
+    }
+    return this.llmQueryService.query(
+      `Given this context: ${content} please answer this question in a concise way: ${query}`,
+    )
   }
 
   @LogActivity()

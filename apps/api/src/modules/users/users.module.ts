@@ -13,6 +13,7 @@ import { NotificationsService } from '@/core/notifications/services/notification
 import { SqsService } from '@/core/sqs/sqs.service'
 import { UsersQueryService } from '@/modules/users/services/users-query.service'
 import { LlmDataTransformationService } from '@/core/llm/services/llm-data-transformation.service'
+import { LlmQueryService } from '@/core/llm/services/llm-query.service'
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { LlmDataTransformationService } from '@/core/llm/services/llm-data-trans
     UserEmbeddingsService,
     LlmEmbeddingsService,
     LlmDataTransformationService,
+    LlmQueryService,
     DatabaseService,
     UsersEventsHandler,
     UsersEventsConsumer,

@@ -4,6 +4,7 @@ import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service
 import { SelectUser, UserEmbeddings } from 'database'
 import { cosineDistance, desc, gt, sql } from 'drizzle-orm'
 import { LlmDataTransformationService } from '@/core/llm/services/llm-data-transformation.service'
+import { LogActivity, LogLevelEnum } from 'utils'
 
 @Injectable()
 export class UserEmbeddingsService {
@@ -13,6 +14,10 @@ export class UserEmbeddingsService {
     private readonly llmDataTransformationService: LlmDataTransformationService,
   ) {}
 
+  @LogActivity({
+    logEntry: false,
+    level: LogLevelEnum.DEBUG,
+  })
   async findNearestEmbeddings(query: string, limit = 5) {
     const vector = await this.llmEmbeddingsService.generateEmbeddingForQuery(
       query,
@@ -23,7 +28,11 @@ export class UserEmbeddingsService {
     )})`
 
     return this.database.db
-      .select({ userId: UserEmbeddings.userId, similarity })
+      .select({
+        userId: UserEmbeddings.userId,
+        content: UserEmbeddings.content,
+        similarity,
+      })
       .from(UserEmbeddings)
       .where(gt(similarity, 0.2))
       .orderBy((t) => desc(t.similarity))
