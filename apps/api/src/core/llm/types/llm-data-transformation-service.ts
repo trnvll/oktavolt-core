@@ -1,3 +1,6 @@
 import { schema } from 'database'
 
-export type LlmDataTransformationEntityType = Partial<keyof typeof schema>
+export type LlmDataTransformationEntityType = keyof Pick<
+  typeof schema,
+  'users' | 'prefs' | 'relations' | 'comms'
+>

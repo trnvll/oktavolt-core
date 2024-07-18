@@ -3,7 +3,6 @@ import { PromptTemplate } from '@langchain/core/prompts'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { ExternalConfig } from '@/config/external.config'
-import { schema } from 'database'
 import { LlmDataTransformationEntityType } from '@/core/llm/types/llm-data-transformation-service'
 
 @Injectable()
@@ -21,7 +20,7 @@ export class LlmDataTransformationService {
   }
 
   async transform(
-    entityType: keyof typeof schema,
+    entityType: LlmDataTransformationEntityType,
     data: Record<string, any>,
   ): Promise<string> {
     const prompt = this.getPromptForEntityType(entityType)
@@ -36,7 +35,7 @@ export class LlmDataTransformationService {
   private getPromptForEntityType(
     entityType: LlmDataTransformationEntityType,
   ): PromptTemplate {
-    const prompts = {
+    const prompts: Record<LlmDataTransformationEntityType, PromptTemplate> = {
       users: PromptTemplate.fromTemplate(
         'Convert the following user data into a natural language description. Only include available information, and format it in a coherent paragraph:\n{data}\nNatural language description:',
       ),
@@ -49,7 +48,7 @@ export class LlmDataTransformationService {
       prefs: PromptTemplate.fromTemplate(
         'Explain the following user preference data in natural language. Describe the preferences clearly and concisely:\n{data}\nPreference explanation:',
       ),
-    } as Record<LlmDataTransformationEntityType, PromptTemplate>
+    }
 
     return prompts[entityType] || prompts.users
   }
