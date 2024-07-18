@@ -1,0 +1,3 @@
+Summarize the following communication data in natural language. Include key points about the type of communication, participants, and any important details:
+{data}
+Communication summary:

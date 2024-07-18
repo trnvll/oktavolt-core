@@ -1,0 +1,3 @@
+Convert the following user data into a natural language description. Only include available information, and format it in a coherent paragraph:
+{data}
+Natural language description:

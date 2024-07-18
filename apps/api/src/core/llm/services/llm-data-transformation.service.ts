@@ -8,8 +8,9 @@ import { LlmDataTransformationEntityType } from '@/core/llm/types/llm-data-trans
 @Injectable()
 export class LlmDataTransformationService {
   private model: OpenAI
+  private prompts: Record<LlmDataTransformationEntityType, PromptTemplate>
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(configService: ConfigService) {
     const externalConfig = configService.getOrThrow<ExternalConfig>('external')
 
     this.model = new OpenAI({
@@ -17,6 +18,8 @@ export class LlmDataTransformationService {
       temperature: 0.7,
       openAIApiKey: externalConfig.openaiApiKey,
     })
+
+    this.loadPrompts()
   }
 
   async transform(
@@ -32,10 +35,8 @@ export class LlmDataTransformationService {
     return response.trim()
   }
 
-  private getPromptForEntityType(
-    entityType: LlmDataTransformationEntityType,
-  ): PromptTemplate {
-    const prompts: Record<LlmDataTransformationEntityType, PromptTemplate> = {
+  private loadPrompts() {
+    this.prompts = {
       users: PromptTemplate.fromTemplate(
         'Convert the following user data into a natural language description. Only include available information, and format it in a coherent paragraph:\n{data}\nNatural language description:',
       ),
@@ -49,8 +50,28 @@ export class LlmDataTransformationService {
         'Explain the following user preference data in natural language. Describe the preferences clearly and concisely:\n{data}\nPreference explanation:',
       ),
     }
+    /*
+    const currentFilePath = fileURLToPath(import.meta.url)
+    const currentDir = dirname(currentFilePath)
+    const filePath = join(currentDir, '..', 'prompts', 'models')
+    console.log('filePath:', filePath)
+    this.prompts = {
+      users: PromptTemplate.fromTemplate(loadPromptFile('users.txt', filePath)),
+      relations: PromptTemplate.fromTemplate(
+        loadPromptFile('relations.txt', filePath),
+      ),
+      comms: PromptTemplate.fromTemplate(loadPromptFile('comms.txt', filePath)),
+      prefs: PromptTemplate.fromTemplate(
+        loadPromptFile('prompts/prefs.txt', filePath),
+      ),
+    }
+     */
+  }
 
-    return prompts[entityType] || prompts.users
+  private getPromptForEntityType(
+    entityType: LlmDataTransformationEntityType,
+  ): PromptTemplate {
+    return this.prompts[entityType]
   }
 
   private formatData(data: Record<string, any>): string {

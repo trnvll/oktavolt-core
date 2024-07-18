@@ -1,0 +1,3 @@
+Explain the following user preference data in natural language. Describe the preferences clearly and concisely:
+{data}
+Preference explanation:
