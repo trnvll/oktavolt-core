@@ -11,9 +11,10 @@ import { BullModule } from '@nestjs/bull'
 import { QueueEnum } from '@/types/queues/queue.enum'
 import { NotificationsService } from '@/core/notifications/services/notifications.service'
 import { SqsService } from '@/core/sqs/sqs.service'
-import { UsersQueryService } from '@/modules/users/services/users-query.service'
 import { LlmDataTransformationService } from '@/core/llm/services/llm-data-transformation.service'
 import { LlmQueryService } from '@/core/llm/services/llm-query.service'
+import { UsersQueryService } from '@/modules/users/services/queries/users-query.service'
+import { UserEmbeddingsQueryService } from '@/modules/users/services/queries/user-embeddings-query.service'
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { LlmQueryService } from '@/core/llm/services/llm-query.service'
     UsersEventsHandler,
     UsersEventsConsumer,
     UsersQueryService,
+    UserEmbeddingsQueryService,
   ],
   exports: [UsersService, UserEmbeddingsService],
   controllers: [UsersController],

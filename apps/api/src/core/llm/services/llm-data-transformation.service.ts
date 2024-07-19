@@ -14,7 +14,7 @@ export class LlmDataTransformationService {
     const externalConfig = configService.getOrThrow<ExternalConfig>('external')
 
     this.model = new OpenAI({
-      modelName: 'gpt-4o', // shouldn't be any problem to change this to gpt-3.5 if costly
+      modelName: 'gpt-4o-mini',
       temperature: 0.7,
       openAIApiKey: externalConfig.openaiApiKey,
     })

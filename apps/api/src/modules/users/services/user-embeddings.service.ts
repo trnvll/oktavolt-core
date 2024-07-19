@@ -2,41 +2,31 @@ import { Injectable } from '@nestjs/common'
 import { DatabaseService } from '@/core/database/database.service'
 import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
 import { SelectUser, UserEmbeddings } from 'database'
-import { cosineDistance, desc, gt, sql } from 'drizzle-orm'
 import { LlmDataTransformationService } from '@/core/llm/services/llm-data-transformation.service'
 import { LogActivity, LogLevelEnum } from 'utils'
+import { UserEmbeddingsQueryService } from '@/modules/users/services/queries/user-embeddings-query.service'
 
 @Injectable()
 export class UserEmbeddingsService {
   constructor(
-    private database: DatabaseService,
-    private llmEmbeddingsService: LlmEmbeddingsService,
+    private readonly database: DatabaseService,
+    private readonly llmEmbeddingsService: LlmEmbeddingsService,
     private readonly llmDataTransformationService: LlmDataTransformationService,
+    private readonly userEmbeddingsQueryService: UserEmbeddingsQueryService,
   ) {}
 
   @LogActivity({
     logEntry: false,
     level: LogLevelEnum.DEBUG,
   })
-  async findNearestEmbeddings(query: string, limit = 5) {
-    const vector = await this.llmEmbeddingsService.generateEmbeddingForQuery(
+  async findNearestEmbeddings(query: string) {
+    const embedding = await this.llmEmbeddingsService.generateEmbeddingForQuery(
       query,
     )
-    const similarity = sql<number>`1 - (${cosineDistance(
-      UserEmbeddings.embedding,
-      vector,
-    )})`
-
-    return this.database.db
-      .select({
-        userId: UserEmbeddings.userId,
-        content: UserEmbeddings.content,
-        similarity,
-      })
-      .from(UserEmbeddings)
-      .where(gt(similarity, 0.2))
-      .orderBy((t) => desc(t.similarity))
-      .limit(limit)
+    return this.userEmbeddingsQueryService.findNearestEmbeddings(embedding, {
+      limit: 1,
+      minSimilarity: 0.3,
+    })
   }
 
   async generateAndSaveEmbeddings(user: SelectUser) {

@@ -17,7 +17,7 @@ export class LlmQueryService {
       this.configService.getOrThrow<ExternalConfig>('external')
 
     const llmType = 'openai' // could do this based off of config and what is in request
-    const model = 'gpt-4o' // could do this based off of config and what is in request
+    const model = 'gpt-4o-mini' // could do this based off of config and what is in request
 
     switch (llmType) {
       case 'openai':
