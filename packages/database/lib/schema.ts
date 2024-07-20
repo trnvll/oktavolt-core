@@ -1,10 +1,13 @@
 import {
   Authentication,
   Communications,
+  CommunicationEmbeddings,
   DigitalMedia,
   FinancialTransactions,
   Preferences,
+  PreferenceEmbeddings,
   Relationships,
+  RelationshipEmbeddings,
   UserEmbeddings,
   Users,
 } from '@/models'
@@ -18,4 +21,7 @@ export const schema = {
   relations: Relationships,
   auth: Authentication,
   userEmbeddings: UserEmbeddings,
+  commEmbeddings: CommunicationEmbeddings,
+  prefEmbeddings: PreferenceEmbeddings,
+  relationEmbeddings: RelationshipEmbeddings,
 }
