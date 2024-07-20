@@ -1,3 +1,3 @@
-Describe the following relationship data in natural language. Focus on the connection between entities and any relevant details:
+Convert the following structured relationship data into a clear, detailed paragraph of text. Include all available information, but present it in a natural, readable format:
 {data}
-Relationship description:
+Format the text to read like a natural description of the relationship, including its history, significance, and any notable details. Ensure all provided information is incorporated seamlessly.

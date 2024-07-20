@@ -4,6 +4,8 @@ import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { ExternalConfig } from '@/config/external.config'
 import { LlmDataTransformationEntityType } from '@/core/llm/types/llm-data-transformation-service'
+import * as fs from 'fs'
+import * as path from 'path'
 
 @Injectable()
 export class LlmDataTransformationService {
@@ -36,36 +38,25 @@ export class LlmDataTransformationService {
   }
 
   private loadPrompts() {
-    this.prompts = {
-      users: PromptTemplate.fromTemplate(
-        'Convert the following user data into a natural language description. Only include available information, and format it in a coherent paragraph:\n{data}\nNatural language description:',
-      ),
-      relations: PromptTemplate.fromTemplate(
-        'Describe the following relationship data in natural language. Focus on the connection between entities and any relevant details:\n{data}\nRelationship description:',
-      ),
-      comms: PromptTemplate.fromTemplate(
-        'Summarize the following communication data in natural language. Include key points about the type of communication, participants, and any important details:\n{data}\nCommunication summary:',
-      ),
-      prefs: PromptTemplate.fromTemplate(
-        'Explain the following user preference data in natural language. Describe the preferences clearly and concisely:\n{data}\nPreference explanation:',
-      ),
+    const getFilePath = (fileName: string) => {
+      const basePath = path.join(__dirname, '../prompts/models')
+      return path.join(basePath, fileName)
     }
-    /*
-    const currentFilePath = fileURLToPath(import.meta.url)
-    const currentDir = dirname(currentFilePath)
-    const filePath = join(currentDir, '..', 'prompts', 'models')
-    console.log('filePath:', filePath)
+
+    const usersPrompt = fs.readFileSync(getFilePath('users.txt'), 'utf8')
+    const relationsPrompt = fs.readFileSync(
+      getFilePath('relations.txt'),
+      'utf8',
+    )
+    const commsPrompt = fs.readFileSync(getFilePath('comms.txt'), 'utf8')
+    const prefsPrompt = fs.readFileSync(getFilePath('prefs.txt'), 'utf8')
+
     this.prompts = {
-      users: PromptTemplate.fromTemplate(loadPromptFile('users.txt', filePath)),
-      relations: PromptTemplate.fromTemplate(
-        loadPromptFile('relations.txt', filePath),
-      ),
-      comms: PromptTemplate.fromTemplate(loadPromptFile('comms.txt', filePath)),
-      prefs: PromptTemplate.fromTemplate(
-        loadPromptFile('prompts/prefs.txt', filePath),
-      ),
+      users: PromptTemplate.fromTemplate(usersPrompt),
+      relations: PromptTemplate.fromTemplate(relationsPrompt),
+      comms: PromptTemplate.fromTemplate(commsPrompt),
+      prefs: PromptTemplate.fromTemplate(prefsPrompt),
     }
-     */
   }
 
   private getPromptForEntityType(

@@ -47,6 +47,7 @@ export class UserEmbeddingsService {
 
   private createEmbedding(user: SelectUser) {
     const userData = {
+      userId: user.userId,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,

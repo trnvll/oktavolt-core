@@ -1,3 +1,3 @@
-Convert the following user data into a natural language description. Only include available information, and format it in a coherent paragraph:
+Convert the following structured user data into a clear, detailed paragraph of text. Include all available information, presenting it in a natural, readable format that provides a comprehensive overview of the user:
 {data}
-Natural language description:
+Format the text to read like a natural description of the user, including their basic information, account details, preferences, and any other relevant data. Ensure all provided information is incorporated seamlessly, focusing on creating a comprehensive user profile that could be used to understand the user's background, preferences, and behavior on the platform.
