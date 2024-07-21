@@ -11,7 +11,7 @@ export enum RelationshipsEventsConsumerEnum {
 }
 
 @Injectable()
-@Processor(QueueEnum.CommsEvents)
+@Processor(QueueEnum.RelationshipsEvents)
 export class RelationshipsEventsConsumer {
   constructor(
     private readonly relationshipsEmbeddingsService: RelationshipsEmbeddingsService,
