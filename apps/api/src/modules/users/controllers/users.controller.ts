@@ -12,7 +12,6 @@ import {
 import { UsersService } from '@/modules/users/services/users.service'
 import { CreateUsersDto } from '@/modules/users/dtos/create-user.dto'
 import { LogActivity } from 'utils'
-import { QueryUsersDto } from '@/modules/users/dtos/query-users.dto'
 import { UserSortFields } from '@/modules/users/types/user-sort-fields'
 import { PaginationDto, SortDto } from 'shared'
 import { AuthGuard } from '@nestjs/passport'
@@ -21,14 +20,6 @@ import { AuthGuard } from '@nestjs/passport'
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @Get('o')
-  @LogActivity({
-    level: 'debug',
-  })
-  async query(@Query() queryDto: QueryUsersDto) {
-    return this.usersService.omni(queryDto.query)
-  }
 
   @Get()
   @LogActivity({

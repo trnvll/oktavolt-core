@@ -7,11 +7,18 @@ export const Embeddings = pgTable(
   'embeddings',
   {
     ...timestamps,
-    userId: integer('user_id').references(() => Users.userId),
-    commId: integer('comm_id').references(() => Communications.commId),
-    prefId: integer('pref_id').references(() => Preferences.prefId),
+    userId: integer('user_id').references(() => Users.userId, {
+      onDelete: 'cascade',
+    }),
+    commId: integer('comm_id').references(() => Communications.commId, {
+      onDelete: 'cascade',
+    }),
+    prefId: integer('pref_id').references(() => Preferences.prefId, {
+      onDelete: 'cascade',
+    }),
     relationshipId: integer('relation_id').references(
       () => Relationships.relationshipId,
+      { onDelete: 'cascade' },
     ),
     content: text('content').notNull(),
     embedding: vector('embedding', { dimensions: 1536 }).notNull(),

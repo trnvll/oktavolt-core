@@ -12,7 +12,6 @@ import { QueueEnum } from '@/types/queues/queue.enum'
 import { NotificationsService } from '@/core/notifications/services/notifications.service'
 import { SqsService } from '@/core/sqs/sqs.service'
 import { LlmDataTransformationService } from '@/core/llm/services/llm-data-transformation.service'
-import { LlmQueryService } from '@/core/llm/services/llm-query.service'
 import { UsersQueryService } from '@/modules/users/services/queries/users-query.service'
 import { UserEmbeddingsQueryService } from '@/modules/users/services/queries/user-embeddings-query.service'
 
@@ -29,7 +28,6 @@ import { UserEmbeddingsQueryService } from '@/modules/users/services/queries/use
     UserEmbeddingsService,
     LlmEmbeddingsService,
     LlmDataTransformationService,
-    LlmQueryService,
     DatabaseService,
     UsersEventsHandler,
     UsersEventsConsumer,

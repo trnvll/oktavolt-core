@@ -10,10 +10,8 @@ import { EventsEnum } from '@/core/events/types/events.enum'
 import { EntityTypeEnum, EventActionEnum, PaginationDto, SortDto } from 'shared'
 import { CreateEventUserCreatedDto } from '@/core/events/dtos/create-event-user-created.dto'
 import { CreateEventUserDeletedDto } from '@/core/events/dtos/create-event-user-deleted.dto'
-import { UserEmbeddingsService } from '@/modules/users/services/user-embeddings.service'
 import { UserSortFields } from '@/modules/users/types/user-sort-fields'
 import { FindAllUsersMapper } from '@/modules/users/mappers/find-users.mapper'
-import { LlmQueryService } from '@/core/llm/services/llm-query.service'
 import { UsersQueryService } from '@/modules/users/services/queries/users-query.service'
 
 @Injectable()
@@ -21,25 +19,8 @@ export class UsersService {
   constructor(
     private readonly database: DatabaseService,
     private readonly eventEmitter: EventEmitter2,
-    private readonly userEmbeddingsService: UserEmbeddingsService,
     private readonly usersQueryService: UsersQueryService,
-    private readonly llmQueryService: LlmQueryService,
   ) {}
-
-  @LogActivity()
-  async omni(query: string) {
-    const nearestResults =
-      await this.userEmbeddingsService.findNearestEmbeddings(query)
-
-    const content = nearestResults[0].content
-
-    if (!content) {
-      return this.llmQueryService.query(query)
-    }
-    return this.llmQueryService.query(
-      `Given this context: ${content} please answer this question in a concise way: ${query}`,
-    )
-  }
 
   @LogActivity()
   async findAll(

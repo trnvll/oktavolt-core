@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { DatabaseService } from '@/core/database/database.service'
 import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
 import { LlmDataTransformationService } from '@/core/llm/services/llm-data-transformation.service'
-import { CommunicationEmbeddings, SelectCommunications } from 'database'
+import { Embeddings, SelectCommunications } from 'database'
 
 @Injectable()
 export class CommsEmbeddingsService {
@@ -18,7 +18,7 @@ export class CommsEmbeddingsService {
       const embeddings = await this.llmEmbeddingsService.generateEmbeddings([
         content,
       ])
-      await this.database.db.insert(CommunicationEmbeddings).values({
+      await this.database.db.insert(Embeddings).values({
         commId: comm.commId,
         embedding: embeddings[0],
         content: content,

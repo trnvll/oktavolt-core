@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { DatabaseService } from '@/core/database/database.service'
 import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
-import { SelectUser, UserEmbeddings } from 'database'
+import { Embeddings, SelectUser } from 'database'
 import { LlmDataTransformationService } from '@/core/llm/services/llm-data-transformation.service'
 import { LogActivity, LogLevelEnum } from 'utils'
 import { UserEmbeddingsQueryService } from '@/modules/users/services/queries/user-embeddings-query.service'
@@ -35,7 +35,7 @@ export class UserEmbeddingsService {
       const embeddings = await this.llmEmbeddingsService.generateEmbeddings([
         content,
       ])
-      await this.database.db.insert(UserEmbeddings).values({
+      await this.database.db.insert(Embeddings).values({
         userId: user.userId,
         embedding: embeddings[0],
         content: content,
