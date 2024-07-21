@@ -13,7 +13,6 @@ import { NotificationsService } from '@/core/notifications/services/notification
 import { SqsService } from '@/core/sqs/sqs.service'
 import { LlmDataTransformationService } from '@/core/llm/services/llm-data-transformation.service'
 import { UsersQueryService } from '@/modules/users/services/queries/users-query.service'
-import { UserEmbeddingsQueryService } from '@/modules/users/services/queries/user-embeddings-query.service'
 
 @Module({
   imports: [
@@ -32,7 +31,6 @@ import { UserEmbeddingsQueryService } from '@/modules/users/services/queries/use
     UsersEventsHandler,
     UsersEventsConsumer,
     UsersQueryService,
-    UserEmbeddingsQueryService,
   ],
   exports: [UsersService, UserEmbeddingsService],
   controllers: [UsersController],

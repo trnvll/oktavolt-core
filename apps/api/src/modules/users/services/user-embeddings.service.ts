@@ -3,8 +3,6 @@ import { DatabaseService } from '@/core/database/database.service'
 import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
 import { Embeddings, SelectUser } from 'database'
 import { LlmDataTransformationService } from '@/core/llm/services/llm-data-transformation.service'
-import { LogActivity, LogLevelEnum } from 'utils'
-import { UserEmbeddingsQueryService } from '@/modules/users/services/queries/user-embeddings-query.service'
 
 @Injectable()
 export class UserEmbeddingsService {
@@ -12,22 +10,7 @@ export class UserEmbeddingsService {
     private readonly database: DatabaseService,
     private readonly llmEmbeddingsService: LlmEmbeddingsService,
     private readonly llmDataTransformationService: LlmDataTransformationService,
-    private readonly userEmbeddingsQueryService: UserEmbeddingsQueryService,
   ) {}
-
-  @LogActivity({
-    logEntry: false,
-    level: LogLevelEnum.DEBUG,
-  })
-  async findNearestEmbeddings(query: string) {
-    const embedding = await this.llmEmbeddingsService.generateEmbeddingForQuery(
-      query,
-    )
-    return this.userEmbeddingsQueryService.findNearestEmbeddings(embedding, {
-      limit: 1,
-      minSimilarity: 0.3,
-    })
-  }
 
   async generateAndSaveEmbeddings(user: SelectUser) {
     const content = await this.createEmbedding(user)

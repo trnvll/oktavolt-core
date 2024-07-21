@@ -3,7 +3,6 @@ import { RelationshipsModule } from '@/modules/relationships/relationships.modul
 import { UsersModule } from '@/modules/users/users.module'
 import { CommsModule } from '@/modules/comms/comms.module'
 import { PrefsModule } from '@/modules/prefs/prefs.module'
-import { AuthModule } from '@/modules/auth/auth.module'
 import { AuthzModule } from '@/core/authz/authz.module'
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager'
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
@@ -90,7 +89,6 @@ import { EmbeddingsModule } from '@/modules/embeddings/embeddings.module'
     CommsModule,
     RelationshipsModule,
     PrefsModule,
-    AuthModule,
     EventsModule,
     SqsModule,
     LlmModule,
