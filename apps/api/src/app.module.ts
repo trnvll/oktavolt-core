@@ -84,6 +84,9 @@ import { EmbeddingsModule } from '@/modules/embeddings/embeddings.module'
     BullModule.registerQueue({
       name: QueueEnum.CommsEvents,
     }),
+    BullModule.registerQueue({
+      name: QueueEnum.RelationshipsEvents,
+    }),
     AuthzModule,
     UsersModule,
     CommsModule,

@@ -14,12 +14,18 @@ import { EventsEnum } from '@/core/events/types/events.enum'
 import { CreateEventUserDataUpdatedDto } from '@/core/events/dtos/create-event-user-data-updated.dto'
 import { EntityTypeEnum, EventActionEnum } from 'shared'
 import { EventEmitter2 } from '@nestjs/event-emitter'
+import { InjectQueue } from '@nestjs/bull'
+import { QueueEnum } from '@/types/queues/queue.enum'
+import { Queue } from 'bull'
+import { RelationshipsEventsConsumerEnum } from '@/modules/relationships/consumers/relationships-events.consumer'
 
 @Injectable()
 export class RelationshipsService {
   constructor(
     private readonly database: DatabaseService,
     private readonly eventEmitter: EventEmitter2,
+    @InjectQueue(QueueEnum.RelationshipsEvents)
+    private readonly relationshipsEventsQueue: Queue,
   ) {}
 
   @LogActivity()
@@ -61,6 +67,11 @@ export class RelationshipsService {
       .insert(Relationships)
       .values(entities)
       .returning()
+
+    await this.relationshipsEventsQueue.add(
+      RelationshipsEventsConsumerEnum.CreateRelationshipsEmbedding,
+      result[0],
+    )
 
     this.eventEmitter.emit(
       EventsEnum.UserDataUpdated,

@@ -46,7 +46,7 @@ export class CreateRelationshipDto {
 
   @IsString()
   @IsOptional()
-  notes?: string
+  context?: string
 
   static toEntity(
     userId: number,
@@ -59,7 +59,7 @@ export class CreateRelationshipDto {
       email: dto.email,
       phone: dto.phone,
       address: dto.address,
-      notes: dto.notes,
+      context: dto.context,
     }
   }
 }
