@@ -23,11 +23,16 @@ export class CreatePrefDto {
   @IsString()
   value?: string
 
+  @IsOptional()
+  @IsString()
+  context?: string
+
   static toEntity(userId: number, dto: CreatePrefDto): InsertPreferences {
     return {
       userId,
       preferenceType: dto.preferenceType,
       value: dto.value,
+      context: dto.context,
     }
   }
 }

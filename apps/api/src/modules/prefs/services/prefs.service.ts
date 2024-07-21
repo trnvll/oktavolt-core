@@ -10,12 +10,18 @@ import { EventEmitter2 } from '@nestjs/event-emitter'
 import { EventsEnum } from '@/core/events/types/events.enum'
 import { CreateEventUserDataUpdatedDto } from '@/core/events/dtos/create-event-user-data-updated.dto'
 import { EntityTypeEnum, EventActionEnum } from 'shared'
+import { InjectQueue } from '@nestjs/bull'
+import { QueueEnum } from '@/types/queues/queue.enum'
+import { Queue } from 'bull'
+import { PrefsEventsConsumerEnum } from '@/modules/prefs/consumers/prefs-events.consumer'
 
 @Injectable()
 export class PrefsService {
   constructor(
     private readonly database: DatabaseService,
     private readonly eventEmitter: EventEmitter2,
+    @InjectQueue(QueueEnum.PrefsEvents)
+    private readonly prefsEventsQueue: Queue,
   ) {}
 
   @LogActivity()
@@ -54,6 +60,11 @@ export class PrefsService {
       .insert(Preferences)
       .values(entity)
       .returning()
+
+    await this.prefsEventsQueue.add(
+      PrefsEventsConsumerEnum.CreatePrefsEmbedding,
+      result[0],
+    )
 
     this.eventEmitter.emit(
       EventsEnum.UserDataUpdated,
