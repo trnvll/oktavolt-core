@@ -30,7 +30,7 @@ export class PrefsEmbeddingsService {
 
   private createEmbedding(pref: SelectPreferences) {
     const prefData = {
-      id: pref.prefId,
+      prefId: pref.prefId,
       type: pref.preferenceType,
       context: pref.context,
       createdAt: pref.createdAt,

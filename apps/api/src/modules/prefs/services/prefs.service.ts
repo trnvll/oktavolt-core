@@ -114,7 +114,10 @@ export class PrefsService {
   @LogActivity()
   async delete(user: SelectUser, prefId: number) {
     const pref = await this.database.db.query.prefs.findFirst({
-      where: eq(Preferences.prefId, prefId),
+      where: and(
+        eq(Preferences.prefId, prefId),
+        eq(Preferences.userId, user.userId),
+      ),
     })
 
     if (!pref) {
@@ -123,7 +126,12 @@ export class PrefsService {
 
     const result = await this.database.db
       .delete(Preferences)
-      .where(eq(Preferences.prefId, prefId))
+      .where(
+        and(
+          eq(Preferences.prefId, prefId),
+          eq(Preferences.userId, user.userId),
+        ),
+      )
       .returning()
 
     this.eventEmitter.emit(
