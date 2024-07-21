@@ -14,12 +14,18 @@ import { EventEmitter2 } from '@nestjs/event-emitter'
 import { EventsEnum } from '@/core/events/types/events.enum'
 import { CreateEventUserDataUpdatedDto } from '@/core/events/dtos/create-event-user-data-updated.dto'
 import { EntityTypeEnum, EventActionEnum } from 'shared'
+import { InjectQueue } from '@nestjs/bull'
+import { QueueEnum } from '@/types/queues/queue.enum'
+import { Queue } from 'bull'
+import { CommsEventsConsumerEnum } from '@/modules/comms/consumers/comms-events.consumer'
 
 @Injectable()
 export class CommsService {
   constructor(
     private readonly database: DatabaseService,
     private readonly eventEmitter: EventEmitter2,
+    @InjectQueue(QueueEnum.CommsEvents)
+    private readonly commsEventsQueue: Queue,
   ) {}
 
   @LogActivity()
@@ -55,6 +61,11 @@ export class CommsService {
       .insert(Communications)
       .values(entities)
       .returning()
+
+    await this.commsEventsQueue.add(
+      CommsEventsConsumerEnum.CreateCommsEmbedding,
+      result[0],
+    )
 
     this.eventEmitter.emit(
       EventsEnum.UserDataUpdated,

@@ -100,7 +100,9 @@ export class UsersEventsConsumer {
   }
 
   @Process(UserEventsConsumerEnum.CreateUserEmbedding)
-  @LogActivity()
+  @LogActivity({
+    logExit: false,
+  })
   async handleCreateUserEmbedding(job: Job<SelectUser>) {
     await this.userEmbeddingsService.generateAndSaveEmbeddings(job.data)
   }
