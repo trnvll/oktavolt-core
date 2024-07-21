@@ -10,6 +10,7 @@ import {
   RelationshipEmbeddings,
   UserEmbeddings,
   Users,
+  Embeddings,
 } from '@/models'
 
 export const schema = {
@@ -24,4 +25,5 @@ export const schema = {
   commEmbeddings: CommunicationEmbeddings,
   prefEmbeddings: PreferenceEmbeddings,
   relationEmbeddings: RelationshipEmbeddings,
+  embeddings: Embeddings,
 }
