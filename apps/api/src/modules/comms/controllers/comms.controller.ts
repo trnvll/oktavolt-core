@@ -14,12 +14,18 @@ import { FindUserByIdPipe } from '@/modules/users/pipes/find-user-by-id.pipe'
 import { SelectUser } from 'database'
 import { LogActivity } from 'utils'
 import { AuthGuard } from '@nestjs/passport'
+import { ApiOperation } from '@nestjs/swagger'
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('users/:userId/comms')
 export class CommsController {
   constructor(private readonly commsService: CommsService) {}
   @Get()
+  @ApiOperation({
+    summary: 'Get all communications.',
+    description:
+      'Endpoint that returns a list of all communications or conversations for a user.',
+  })
   @LogActivity({
     level: 'debug',
   })
@@ -28,6 +34,11 @@ export class CommsController {
   }
 
   @Get(':commId')
+  @ApiOperation({
+    summary: 'Get a communication.',
+    description:
+      'Endpoint that returns a single communication or conversation for a user, by their user and communication id.',
+  })
   @LogActivity({
     level: 'debug',
   })
@@ -39,6 +50,11 @@ export class CommsController {
   }
 
   @Post()
+  @ApiOperation({
+    summary: 'Create a communication.',
+    description:
+      'Endpoint that creates a new communication or conversation for a user.',
+  })
   @LogActivity({
     level: 'debug',
   })
@@ -51,6 +67,11 @@ export class CommsController {
   }
 
   @Delete(':commId')
+  @ApiOperation({
+    summary: 'Delete a communication.',
+    description:
+      'Endpoint that deletes a single communication or conversation for a user, by their user and communication id.',
+  })
   @LogActivity({
     level: 'debug',
   })

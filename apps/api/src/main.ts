@@ -8,6 +8,7 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify'
 import helmet from '@fastify/helmet'
+// import metadata from '@/metadata'
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(

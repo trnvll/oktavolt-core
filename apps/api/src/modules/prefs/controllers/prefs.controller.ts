@@ -14,12 +14,17 @@ import { SelectUser } from 'database'
 import { CreatePrefsDto } from '@/modules/prefs/dtos/create-prefs.dto'
 import { LogActivity } from 'utils'
 import { AuthGuard } from '@nestjs/passport'
+import { ApiOperation } from '@nestjs/swagger'
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('users/:userId/prefs')
 export class PrefsController {
   constructor(private readonly prefsService: PrefsService) {}
   @Get()
+  @ApiOperation({
+    summary: 'Get all preferences.',
+    description: 'Endpoint that returns a list of all preferences for a user.',
+  })
   @LogActivity({
     level: 'debug',
   })
@@ -28,6 +33,11 @@ export class PrefsController {
   }
 
   @Get(':prefId')
+  @ApiOperation({
+    summary: 'Get a preference.',
+    description:
+      'Endpoint that returns a single preference for a user, by their user and preference id.',
+  })
   @LogActivity({
     level: 'debug',
   })
@@ -39,6 +49,10 @@ export class PrefsController {
   }
 
   @Post()
+  @ApiOperation({
+    summary: 'Create a preference.',
+    description: 'Endpoint that creates a new preference for a user.',
+  })
   @LogActivity({
     level: 'debug',
   })
@@ -51,6 +65,11 @@ export class PrefsController {
   }
 
   @Delete(':prefId')
+  @ApiOperation({
+    summary: 'Delete a preference.',
+    description:
+      'Endpoint that deletes a single preference for a user, by their user and preference id.',
+  })
   @LogActivity({
     level: 'debug',
   })

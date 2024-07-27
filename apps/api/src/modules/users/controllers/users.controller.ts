@@ -15,6 +15,7 @@ import { LogActivity } from 'utils'
 import { UserSortFields } from '@/modules/users/types/user-sort-fields'
 import { PaginationDto, SortDto } from 'shared'
 import { AuthGuard } from '@nestjs/passport'
+import { ApiOperation } from '@nestjs/swagger'
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('users')
@@ -22,6 +23,10 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @ApiOperation({
+    summary: 'Get all users.',
+    description: 'Endpoint that returns a list of all users.',
+  })
   @LogActivity({
     level: 'debug',
   })
@@ -33,6 +38,10 @@ export class UsersController {
   }
 
   @Get(':userId')
+  @ApiOperation({
+    summary: 'Get a user.',
+    description: 'Endpoint that returns a single user by their user id.',
+  })
   @LogActivity({
     level: 'debug',
   })
@@ -41,6 +50,10 @@ export class UsersController {
   }
 
   @Post()
+  @ApiOperation({
+    summary: 'Create a user.',
+    description: 'Endpoint that creates a new user.',
+  })
   @LogActivity({
     level: 'debug',
   })
@@ -49,6 +62,10 @@ export class UsersController {
   }
 
   @Delete(':userId')
+  @ApiOperation({
+    summary: 'Delete a user.',
+    description: 'Endpoint that deletes a user by their user id.',
+  })
   @LogActivity({
     level: 'debug',
   })

@@ -14,12 +14,18 @@ import { RelationshipsService } from '@/modules/relationships/services/relations
 import { CreateRelationshipsDto } from '@/modules/relationships/dtos/create-relationships.dto'
 import { LogActivity } from 'utils'
 import { AuthGuard } from '@nestjs/passport'
+import { ApiOperation } from '@nestjs/swagger'
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('users/:userId/relationships')
 export class RelationshipsController {
   constructor(private readonly relationshipsService: RelationshipsService) {}
   @Get()
+  @ApiOperation({
+    summary: 'Get all relationships.',
+    description:
+      'Endpoint that returns a list of all relationships for a user.',
+  })
   @LogActivity({
     level: 'debug',
   })
@@ -28,6 +34,11 @@ export class RelationshipsController {
   }
 
   @Get(':relationshipId')
+  @ApiOperation({
+    summary: 'Get a relationship.',
+    description:
+      'Endpoint that returns a single relationship for a user, by their user and relationship id.',
+  })
   @LogActivity({
     level: 'debug',
   })
@@ -39,6 +50,10 @@ export class RelationshipsController {
   }
 
   @Post()
+  @ApiOperation({
+    summary: 'Create a relationship.',
+    description: 'Endpoint that creates a new relationship for a user.',
+  })
   @LogActivity({
     level: 'debug',
   })
@@ -51,6 +66,11 @@ export class RelationshipsController {
   }
 
   @Delete(':relationshipId')
+  @ApiOperation({
+    summary: 'Delete a relationship.',
+    description:
+      'Endpoint that deletes a single relationship for a user, by their user and relationship id.',
+  })
   @LogActivity({
     level: 'debug',
   })
