@@ -47,7 +47,6 @@ export class UsersService {
     return FindOneUserDto.fromEntity(plainUser)
   }
 
-  @LogActivity()
   async create(userDto: CreateUsersDto) {
     const entities = CreateUsersDto.toEntity(userDto.data)
     const result = await this.database.db

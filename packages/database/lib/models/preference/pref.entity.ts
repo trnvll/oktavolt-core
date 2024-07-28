@@ -1,5 +1,5 @@
 import { integer, pgTable, serial, text } from 'drizzle-orm/pg-core'
-import { Users } from '@/models/user/model'
+import { Users } from '@/models/user/user.entity'
 import { timestamps } from '@/utils/timestamps'
 import { varchar } from 'drizzle-orm/pg-core'
 

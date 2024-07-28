@@ -6,13 +6,8 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator'
-import {
-  CommunicationTypeEnum,
-  CommunicationProviderEnum,
-  InsertCommunications,
-} from 'database'
+import { InsertCommunications } from 'database'
 import { Transform, Type } from 'class-transformer'
-import { LogActivity } from 'utils'
 
 export class CreateCommsDto {
   @IsArray()
@@ -20,15 +15,14 @@ export class CreateCommsDto {
   @Type(() => CreateCommDto)
   data: CreateCommDto[]
 
-  @LogActivity({ level: 'debug' })
   static toEntity(userId: number, dto: CreateCommDto[]) {
     return dto.map((comm) => CreateCommDto.toEntity(userId, comm))
   }
 }
 
 export class CreateCommDto {
-  @IsEnum(CommunicationTypeEnum)
-  type: CommunicationTypeEnum
+  // @IsEnum(CommunicationTypeEnum)
+  type: any
 
   @IsString()
   content: string
@@ -45,8 +39,8 @@ export class CreateCommDto {
   @IsString()
   receiver: string
 
-  @IsEnum(CommunicationProviderEnum)
-  provider: CommunicationProviderEnum
+  // @IsEnum(CommunicationProviderEnum)
+  provider: any
 
   static toEntity(userId: number, dto: CreateCommDto): InsertCommunications {
     return {

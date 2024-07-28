@@ -1,9 +1,9 @@
-import { RelationshipTypeEnum, SelectRelationships } from 'database'
+import { SelectRelationships } from 'database'
 
 export class FindOneRelationshipDto {
   relationshipId: number
   name: string
-  relationType: RelationshipTypeEnum
+  relationType: any
   email: string | null
   phone: string | null
   address: string | null

@@ -5,3 +5,13 @@ export class GenerateEmbeddingsDto {
   @IsNotEmpty()
   content: string
 }
+
+export class GenerateEmbeddingsResponseDto {
+  embeddings: number[][]
+
+  static fromEntity(embeddings: number[][]): GenerateEmbeddingsResponseDto {
+    return {
+      embeddings,
+    }
+  }
+}

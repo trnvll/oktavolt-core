@@ -9,7 +9,6 @@ import { DatabaseService } from '@/core/database/database.service'
 import { and, eq } from 'drizzle-orm'
 import { Relationships, SelectUser, Users } from 'database'
 import { CreateRelationshipsDto } from '@/modules/relationships/dtos/create-relationships.dto'
-import { LogActivity } from 'utils'
 import { EventsEnum } from '@/core/events/types/events.enum'
 import { CreateEventUserDataUpdatedDto } from '@/core/events/dtos/create-event-user-data-updated.dto'
 import { EntityTypeEnum, EventActionEnum } from 'shared'
@@ -28,7 +27,6 @@ export class RelationshipsService {
     private readonly relationshipsEventsQueue: Queue,
   ) {}
 
-  @LogActivity()
   async findAll(user: SelectUser) {
     const relationships = await this.database.db.query.relations.findMany({
       where: eq(Relationships.userId, user.userId),
@@ -37,7 +35,6 @@ export class RelationshipsService {
     return FindAllRelationshipsDto.fromEntity(relationships)
   }
 
-  @LogActivity()
   async findOne(user: SelectUser, relationshipId: number) {
     const relationship = await this.database.db.query.relations.findFirst({
       where: and(
@@ -53,7 +50,6 @@ export class RelationshipsService {
     return FindOneRelationshipDto.fromEntity(relationship)
   }
 
-  @LogActivity()
   async create(
     user: SelectUser,
     createRelationshipsDto: CreateRelationshipsDto,
@@ -91,7 +87,6 @@ export class RelationshipsService {
     return result
   }
 
-  @LogActivity()
   async delete(user: SelectUser, relationshipId: number) {
     const relationship = await this.database.db.query.relations.findFirst({
       where: and(

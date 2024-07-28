@@ -1,13 +1,12 @@
 import {
   IsArray,
   IsEmail,
-  IsEnum,
   IsOptional,
   IsPhoneNumber,
   IsString,
   ValidateNested,
 } from 'class-validator'
-import { InsertRelationships, RelationshipTypeEnum } from 'database'
+import { InsertRelationships } from 'database'
 import { Type } from 'class-transformer'
 import { LogActivity } from 'utils'
 
@@ -29,8 +28,8 @@ export class CreateRelationshipDto {
   @IsString()
   name: string
 
-  @IsEnum(RelationshipTypeEnum)
-  relationType: RelationshipTypeEnum
+  // @IsEnum(RelationshipTypeEnum)
+  relationType: any
 
   @IsEmail()
   @IsOptional()

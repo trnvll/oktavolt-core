@@ -12,7 +12,6 @@ import { PrefsService } from '@/modules/prefs/services/prefs.service'
 import { FindUserByIdPipe } from '@/modules/users/pipes/find-user-by-id.pipe'
 import { SelectUser } from 'database'
 import { CreatePrefsDto } from '@/modules/prefs/dtos/create-prefs.dto'
-import { LogActivity } from 'utils'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiOperation } from '@nestjs/swagger'
 
@@ -25,9 +24,6 @@ export class PrefsController {
     summary: 'Get all preferences.',
     description: 'Endpoint that returns a list of all preferences for a user.',
   })
-  @LogActivity({
-    level: 'debug',
-  })
   findAll(@Param('userId', FindUserByIdPipe) user: SelectUser) {
     return this.prefsService.findAll(user)
   }
@@ -37,9 +33,6 @@ export class PrefsController {
     summary: 'Get a preference.',
     description:
       'Endpoint that returns a single preference for a user, by their user and preference id.',
-  })
-  @LogActivity({
-    level: 'debug',
   })
   findOne(
     @Param('userId', FindUserByIdPipe) user: SelectUser,
@@ -52,9 +45,6 @@ export class PrefsController {
   @ApiOperation({
     summary: 'Create a preference.',
     description: 'Endpoint that creates a new preference for a user.',
-  })
-  @LogActivity({
-    level: 'debug',
   })
   create(
     @Param('userId', FindUserByIdPipe) user: SelectUser,
@@ -69,9 +59,6 @@ export class PrefsController {
     summary: 'Delete a preference.',
     description:
       'Endpoint that deletes a single preference for a user, by their user and preference id.',
-  })
-  @LogActivity({
-    level: 'debug',
   })
   delete(
     @Param('userId', FindUserByIdPipe) user: SelectUser,

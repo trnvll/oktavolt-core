@@ -1,2 +1,2 @@
-export * from './model'
+export * from './embedding.entity'
 export * from './types'

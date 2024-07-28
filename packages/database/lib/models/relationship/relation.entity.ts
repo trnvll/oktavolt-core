@@ -1,5 +1,5 @@
 import { integer, pgTable, serial, text, varchar } from 'drizzle-orm/pg-core'
-import { Users } from '@/models/user/model'
+import { Users } from '@/models/user/user.entity'
 import { RelationshipTypeEnum } from '@/models/relationship/enums'
 import { timestamps } from '@/utils/timestamps'
 

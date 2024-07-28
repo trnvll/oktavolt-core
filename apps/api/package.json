@@ -10,7 +10,7 @@
     "dev": "nest start -b swc -w",
     "dev:tc": "nest start -b swc -w --type-check",
     "dev:hmr": "nest build --webpack --webpackPath webpack-hmr.config.js --watch",
-    "gen:openapi": "nest start -b tsc --entryFile openapi",
+    "gen:openapi": "nest start -b swc --type-check --entryFile openapi",
     "start:prod": "node dist/main",
     "db:up": "docker-compose up -d",
     "db:down": "docker-compose down",

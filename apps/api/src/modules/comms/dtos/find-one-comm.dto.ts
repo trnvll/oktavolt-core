@@ -1,17 +1,13 @@
-import {
-  CommunicationProviderEnum,
-  CommunicationTypeEnum,
-  SelectCommunications,
-} from 'database'
+import { SelectCommunications } from 'database'
 
 export class FindOneCommDto {
   commId: number
-  type: CommunicationTypeEnum
+  type: any
   content: string
   timestamp: Date | null
   sender: string | null
   receiver: string
-  provider: CommunicationProviderEnum
+  provider: any
 
   static fromEntity(entity: SelectCommunications) {
     const dto = new FindOneCommDto()

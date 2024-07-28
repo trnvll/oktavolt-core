@@ -1,3 +1,3 @@
-export * from './model'
+export * from './comm.entity'
 export * from './types'
 export * from './enums'

@@ -1,2 +1,2 @@
-export * from './model'
+export * from './pref.entity'
 export * from './types'

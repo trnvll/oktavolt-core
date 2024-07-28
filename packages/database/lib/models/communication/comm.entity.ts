@@ -1,6 +1,6 @@
 import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
-import { Users } from '@/models/user/model'
-import { Relationships } from '@/models/relationship/model'
+import { Users } from '@/models/user/user.entity'
+import { Relationships } from '@/models/relationship/relation.entity'
 import {
   CommunicationProviderEnum,
   CommunicationTypeEnum,

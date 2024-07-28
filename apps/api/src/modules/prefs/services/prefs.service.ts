@@ -5,7 +5,6 @@ import { and, eq } from 'drizzle-orm'
 import { FindOnePrefDto } from '@/modules/prefs/dtos/find-one-pref.dto'
 import { FindAllPrefsDto } from '@/modules/prefs/dtos/find-all-prefs.dto'
 import { CreatePrefsDto } from '@/modules/prefs/dtos/create-prefs.dto'
-import { LogActivity } from 'utils'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { EventsEnum } from '@/core/events/types/events.enum'
 import { CreateEventUserDataUpdatedDto } from '@/core/events/dtos/create-event-user-data-updated.dto'
@@ -24,7 +23,6 @@ export class PrefsService {
     private readonly prefsEventsQueue: Queue,
   ) {}
 
-  @LogActivity()
   async findAll(user: SelectUser) {
     const prefs = await this.database.db.query.prefs.findMany({
       where: eq(Preferences.userId, user.userId),
@@ -33,7 +31,6 @@ export class PrefsService {
     return FindAllPrefsDto.fromEntity(prefs)
   }
 
-  @LogActivity()
   async findOne(user: SelectUser, prefId: number) {
     const pref = await this.database.db.query.prefs.findFirst({
       where: and(
@@ -49,7 +46,6 @@ export class PrefsService {
     return FindOnePrefDto.fromEntity(pref)
   }
 
-  @LogActivity()
   async create(user: SelectUser, createPreferencesDto: CreatePrefsDto) {
     const entity = CreatePrefsDto.toEntity(
       user.userId,
@@ -111,7 +107,6 @@ export class PrefsService {
   }
    */
 
-  @LogActivity()
   async delete(user: SelectUser, prefId: number) {
     const pref = await this.database.db.query.prefs.findFirst({
       where: and(

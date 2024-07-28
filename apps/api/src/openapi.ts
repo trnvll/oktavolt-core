@@ -21,9 +21,7 @@ async function bootstrap() {
   await SwaggerModule.loadPluginMetadata(metadata)
   const document = SwaggerModule.createDocument(app, config)
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  await fs.writeFile('openapi.json', JSON.stringify(document))
+  fs.writeFileSync('openapi.json', JSON.stringify(document))
   process.exit()
 }
 void bootstrap()

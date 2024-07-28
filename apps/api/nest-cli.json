@@ -6,7 +6,14 @@
     "assets": [
       "**/*.txt"
     ],
-    "plugins": ["@nestjs/swagger"],
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": {
+          "dtoFileNameSuffix": [".dto.ts"]
+        }
+      }
+    ],
     "deleteOutDir": true
   }
 }

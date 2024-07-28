@@ -1,6 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
-import { LogActivity, LogLevelEnum } from 'utils'
 import { EmbeddingsQueryService } from '@/modules/embeddings/services/embeddings-query.service'
 import { LlmQueryService } from '@/core/llm/services/llm-query.service'
 
@@ -12,7 +11,6 @@ export class EmbeddingsService {
     private readonly embeddingsQueryService: EmbeddingsQueryService,
   ) {}
 
-  @LogActivity()
   async omni(query: string) {
     const nearestResults = await this.findNearestEmbeddings(query)
 
@@ -34,10 +32,6 @@ export class EmbeddingsService {
     }
   }
 
-  @LogActivity({
-    logEntry: false,
-    level: LogLevelEnum.DEBUG,
-  })
   private async findNearestEmbeddings(query: string) {
     const embedding = await this.llmEmbeddingsService.generateEmbeddingForQuery(
       query,
