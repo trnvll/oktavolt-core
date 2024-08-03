@@ -10,6 +10,7 @@ import { BullModule } from '@nestjs/bull'
 import { QueueEnum } from '@/types/queues/queue.enum'
 import { ChatsEmbeddingsService } from '@/modules/chats/services/chats-embeddings.service'
 import { ChatsEventsConsumer } from '@/modules/chats/consumers/chats-events.consumer'
+import { SqsService } from '@/core/sqs/sqs.service'
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ChatsEventsConsumer } from '@/modules/chats/consumers/chats-events.cons
     LlmChatService,
     LlmEmbeddingsService,
     LlmDataTransformationService,
+    SqsService,
   ],
   exports: [ChatsService, ChatsEmbeddingsService],
 })
