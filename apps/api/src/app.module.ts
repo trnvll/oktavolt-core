@@ -22,6 +22,7 @@ import { RedisConfig, redisConfig } from '@/config/redis.config'
 import { externalConfig } from '@/config/external.config'
 import { EmbeddingsModule } from '@/modules/embeddings/embeddings.module'
 import { OmniModule } from '@/modules/omni/omni.module'
+import { ChatModule } from '@/modules/chat/chat.module'
 
 @Module({
   imports: [
@@ -99,6 +100,7 @@ import { OmniModule } from '@/modules/omni/omni.module'
     NotificationsModule,
     EmbeddingsModule,
     OmniModule,
+    ChatModule,
   ],
   providers: [
     {
