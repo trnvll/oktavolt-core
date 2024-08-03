@@ -3,7 +3,6 @@ import { Construct } from 'constructs'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
-import { envConfig } from '@/config/env/env.config'
 
 interface EventsLambdaStackProps extends StackProps {
   eventsBucket: s3.Bucket
@@ -23,11 +22,11 @@ export class EventsLambdaStack extends Stack {
       handler: 'handler',
       environment: {
         EVENTS_BUCKET_NAME: eventsBucket.bucketName,
-        TS_DATABASE_URL: envConfig.get('TS_DATABASE_URL'),
+        TS_DATABASE_URL: process.env.TS_DATABASE_URL ?? '',
+        MIXPANEL_TOKEN: process.env.MIXPANEL_TOKEN ?? '', // FIXME: need to do this in proper way, maybe just use dotenv
       },
       bundling: {
         externalModules: [
-          'cache-manager',
           '@nestjs/websockets',
           '@nestjs/microservices',
           'class-transformer/storage',
