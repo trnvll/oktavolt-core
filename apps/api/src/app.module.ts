@@ -21,6 +21,7 @@ import { databaseConfig } from '@/config/database.config'
 import { RedisConfig, redisConfig } from '@/config/redis.config'
 import { externalConfig } from '@/config/external.config'
 import { EmbeddingsModule } from '@/modules/embeddings/embeddings.module'
+import { OmniModule } from '@/modules/omni/omni.module'
 
 @Module({
   imports: [
@@ -97,6 +98,7 @@ import { EmbeddingsModule } from '@/modules/embeddings/embeddings.module'
     LlmModule,
     NotificationsModule,
     EmbeddingsModule,
+    OmniModule,
   ],
   providers: [
     {

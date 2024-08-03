@@ -12,6 +12,10 @@ export class LlmQueryService {
     this.init()
   }
 
+  getLlm() {
+    return this.llm
+  }
+
   private init() {
     const externalConfig =
       this.configService.getOrThrow<ExternalConfig>('external')

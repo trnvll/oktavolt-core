@@ -26,6 +26,8 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Oktavolt API Specification')
     .setVersion('1.0')
+    .addBearerAuth()
+    .addServer('v1')
     .build()
 
   await SwaggerModule.loadPluginMetadata(metadata)
