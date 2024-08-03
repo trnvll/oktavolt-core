@@ -84,6 +84,21 @@ export class ChatsService {
       })
       .returning()
 
+    this.eventEmitter.emit(
+      EventsEnum.UserDataUpdated,
+      new CreateEventUserDataUpdatedDto({
+        userId: user.userId,
+        data: {
+          entityType: EntityTypeEnum.Chat,
+          entityIds: responseResult.map((entity) => entity.chatId),
+          dataChange: {
+            newValue: responseResult,
+          },
+          action: EventActionEnum.Create,
+        },
+      }),
+    )
+
     await this.chatsEventsQueue.add(
       ChatsEventsConsumerEnum.CreateChatsEmbedding,
       responseResult[0],
