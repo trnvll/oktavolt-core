@@ -4,6 +4,7 @@ import {
   Relationships,
   Users,
   Embeddings,
+  Chats,
 } from '@/models'
 
 export const schema = {
@@ -12,4 +13,5 @@ export const schema = {
   prefs: Preferences,
   relations: Relationships,
   embeddings: Embeddings,
+  chats: Chats,
 }

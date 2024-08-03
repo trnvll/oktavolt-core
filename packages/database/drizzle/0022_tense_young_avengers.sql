@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS "ix_chat_id" ON "embeddings" USING btree ("chat_id");

@@ -1,7 +1,13 @@
 import { integer, jsonb, pgTable, text } from 'drizzle-orm/pg-core'
 import { timestamps } from '@/utils/timestamps'
 import { index, vector } from 'drizzle-orm/pg-core'
-import { Communications, Preferences, Relationships, Users } from '@/models'
+import {
+  Chats,
+  Communications,
+  Preferences,
+  Relationships,
+  Users,
+} from '@/models'
 
 export const Embeddings = pgTable(
   'embeddings',
@@ -20,6 +26,9 @@ export const Embeddings = pgTable(
       () => Relationships.relationshipId,
       { onDelete: 'cascade' },
     ),
+    chatId: integer('chat_id').references(() => Chats.chatId, {
+      onDelete: 'cascade',
+    }),
     content: text('content').notNull(),
     embedding: vector('embedding', { dimensions: 1536 }).notNull(),
     metadata: jsonb('metadata'),
@@ -33,5 +42,6 @@ export const Embeddings = pgTable(
     commIdIndex: index('ix_comm_id').on(table.commId),
     prefIdIndex: index('ix_pref_id').on(table.prefId),
     relationshipIdIndex: index('ix_relationship_id').on(table.relationshipId),
+    chatIdIndex: index('ix_chat_id').on(table.chatId),
   }),
 )

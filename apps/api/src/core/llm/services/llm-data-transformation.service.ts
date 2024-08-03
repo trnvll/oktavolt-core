@@ -50,12 +50,14 @@ export class LlmDataTransformationService {
     )
     const commsPrompt = fs.readFileSync(getFilePath('comms.txt'), 'utf8')
     const prefsPrompt = fs.readFileSync(getFilePath('prefs.txt'), 'utf8')
+    const chatsPrompt = fs.readFileSync(getFilePath('chats.txt'), 'utf8')
 
     this.prompts = {
       users: PromptTemplate.fromTemplate(usersPrompt),
       relations: PromptTemplate.fromTemplate(relationsPrompt),
       comms: PromptTemplate.fromTemplate(commsPrompt),
       prefs: PromptTemplate.fromTemplate(prefsPrompt),
+      chats: PromptTemplate.fromTemplate(chatsPrompt),
     }
   }
 

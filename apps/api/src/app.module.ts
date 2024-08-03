@@ -22,7 +22,7 @@ import { RedisConfig, redisConfig } from '@/config/redis.config'
 import { externalConfig } from '@/config/external.config'
 import { EmbeddingsModule } from '@/modules/embeddings/embeddings.module'
 import { OmniModule } from '@/modules/omni/omni.module'
-import { ChatModule } from '@/modules/chat/chat.module'
+import { ChatsModule } from '@/modules/chats/chats.module'
 
 @Module({
   imports: [
@@ -89,6 +89,9 @@ import { ChatModule } from '@/modules/chat/chat.module'
     BullModule.registerQueue({
       name: QueueEnum.RelationshipsEvents,
     }),
+    BullModule.registerQueue({
+      name: QueueEnum.ChatsEvents,
+    }),
     AuthzModule,
     UsersModule,
     CommsModule,
@@ -100,7 +103,7 @@ import { ChatModule } from '@/modules/chat/chat.module'
     NotificationsModule,
     EmbeddingsModule,
     OmniModule,
-    ChatModule,
+    ChatsModule,
   ],
   providers: [
     {

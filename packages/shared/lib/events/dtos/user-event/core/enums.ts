@@ -26,10 +26,10 @@ export enum EventOriginEnum {
 
 export enum EntityTypeEnum {
   User = 'user',
-  Authentication = 'authentication',
   Relationship = 'relationship',
   Preference = 'preference',
   Communication = 'communication',
+  Chat = 'chat',
 }
 
 export enum EventActionEnum {

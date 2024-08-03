@@ -1,0 +1,11 @@
+Summarize the following data entry in natural language:
+
+{data}
+
+Guidelines:
+1. Keep the content (the message) exactly as is. It should not be modified.
+2. Create a brief, coherent narrative
+3. Include all relevant information
+4. Identify and highlight the main topic or purpose
+5. Use a neutral, informative tone
+6. Make the text suitable for LLM training
