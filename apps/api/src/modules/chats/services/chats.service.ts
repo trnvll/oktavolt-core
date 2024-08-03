@@ -13,6 +13,8 @@ import { EventsEnum } from '@/core/events/types/events.enum'
 import { CreateEventUserDataUpdatedDto } from '@/core/events/dtos/create-event-user-data-updated.dto'
 import { EntityTypeEnum, EventActionEnum } from 'shared'
 import { EventEmitter2 } from '@nestjs/event-emitter'
+import { and, desc, eq, or } from 'drizzle-orm'
+import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages'
 
 @Injectable()
 export class ChatsService {
@@ -57,6 +59,7 @@ export class ChatsService {
     )
 
     const response = await this.llmChatService.chat(result[0].content, {
+      history: await this.getChatHistory(user.userId),
       systemPrompt: this.prompts.systemBase,
     })
 
@@ -75,6 +78,33 @@ export class ChatsService {
     )
 
     return response
+  }
+
+  private async getChatHistory(userId: number, limit = 5) {
+    const chats = await this.database.db.query.chats.findMany({
+      where: and(
+        eq(Chats.userId, userId),
+        or(
+          eq(Chats.type, ChatTypeEnum.Human),
+          eq(Chats.type, ChatTypeEnum.Assistant),
+        ),
+      ),
+      orderBy: [desc(Chats.createdAt)],
+      limit,
+    })
+
+    return chats
+      .map((chat) => {
+        switch (chat.type) {
+          case ChatTypeEnum.Assistant:
+            return new AIMessage(chat.content)
+          case ChatTypeEnum.Human:
+            return new HumanMessage(chat.content)
+          default:
+            console.error('Invalid chat type, skipping from history:', chat)
+        }
+      })
+      .filter(Boolean) as BaseMessage[]
   }
 
   private loadPrompts() {
