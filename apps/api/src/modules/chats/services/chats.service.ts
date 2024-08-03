@@ -6,15 +6,17 @@ import { InjectQueue } from '@nestjs/bull'
 import { QueueEnum } from '@/types/queues/queue.enum'
 import { Queue } from 'bull'
 import { DatabaseService } from '@/core/database/database.service'
-import { Chats, ChatTypeEnum, SelectUser } from 'database'
+import { Chats, ChatTypeEnum, Embeddings, SelectUser } from 'database'
 import { CreateChatsDto } from '@/modules/chats/dtos/create-chat.dto'
 import { ChatsEventsConsumerEnum } from '@/modules/chats/consumers/chats-events.consumer'
 import { EventsEnum } from '@/core/events/types/events.enum'
 import { CreateEventUserDataUpdatedDto } from '@/core/events/dtos/create-event-user-data-updated.dto'
 import { EntityTypeEnum, EventActionEnum } from 'shared'
 import { EventEmitter2 } from '@nestjs/event-emitter'
-import { and, desc, eq, or } from 'drizzle-orm'
+import { and, desc, eq, gt, or, cosineDistance, sql } from 'drizzle-orm'
 import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages'
+import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
+import { LogActivity, LogLevelEnum } from 'utils'
 
 @Injectable()
 export class ChatsService {
@@ -24,6 +26,7 @@ export class ChatsService {
     private readonly database: DatabaseService,
     private readonly eventEmitter: EventEmitter2,
     private readonly llmChatService: LlmChatService,
+    private readonly llmEmbeddingsService: LlmEmbeddingsService,
     @InjectQueue(QueueEnum.ChatsEvents)
     private readonly chatsEventsQueue: Queue,
   ) {
@@ -58,8 +61,17 @@ export class ChatsService {
       }),
     )
 
+    const embedding = await this.llmEmbeddingsService.generateEmbeddings([
+      result[0].content,
+    ])
+
+    const [historicalChats, relevantChats] = await Promise.all([
+      this.getChatHistory(user.userId),
+      this.getRelevantChats(embedding[0], user.userId),
+    ])
+
     const response = await this.llmChatService.chat(result[0].content, {
-      history: await this.getChatHistory(user.userId),
+      history: [...historicalChats, ...relevantChats],
       systemPrompt: this.prompts.systemBase,
     })
 
@@ -80,7 +92,8 @@ export class ChatsService {
     return response
   }
 
-  private async getChatHistory(userId: number, limit = 5) {
+  @LogActivity({ level: LogLevelEnum.DEBUG })
+  private async getChatHistory(userId: number, limit = 3) {
     const chats = await this.database.db.query.chats.findMany({
       where: and(
         eq(Chats.userId, userId),
@@ -94,17 +107,51 @@ export class ChatsService {
     })
 
     return chats
-      .map((chat) => {
-        switch (chat.type) {
-          case ChatTypeEnum.Assistant:
-            return new AIMessage(chat.content)
-          case ChatTypeEnum.Human:
-            return new HumanMessage(chat.content)
-          default:
-            console.error('Invalid chat type, skipping from history:', chat)
-        }
-      })
+      .map((chat) =>
+        this.getMessageInstanceFromChatType(chat.content, chat.type),
+      )
       .filter(Boolean) as BaseMessage[]
+  }
+
+  @LogActivity({ level: LogLevelEnum.DEBUG, logEntry: false })
+  private async getRelevantChats(
+    embedding: number[],
+    userId: number,
+    limit = 2,
+    minSimilarity = 0.3,
+  ) {
+    const similarity = sql<number>`1 - (${cosineDistance(
+      Embeddings.embedding,
+      embedding,
+    )})`
+
+    const chats = await this.database.db
+      .select({ similarity, content: Chats.content, type: Chats.type })
+      .from(Embeddings)
+      .innerJoin(Chats, eq(Embeddings.chatId, Chats.chatId))
+      .where(and(eq(Chats.userId, userId), gt(similarity, minSimilarity)))
+      .orderBy((t) => desc(t.similarity))
+      .limit(limit)
+
+    return chats
+      .map((chat) =>
+        this.getMessageInstanceFromChatType(chat.content, chat.type),
+      )
+      .filter(Boolean) as BaseMessage[]
+  }
+
+  private getMessageInstanceFromChatType(
+    content: string,
+    chatType: ChatTypeEnum,
+  ) {
+    switch (chatType) {
+      case ChatTypeEnum.Assistant:
+        return new AIMessage(content)
+      case ChatTypeEnum.Human:
+        return new HumanMessage(content)
+      default:
+        console.error('Invalid chat type, skipping from history:', chatType)
+    }
   }
 
   private loadPrompts() {
