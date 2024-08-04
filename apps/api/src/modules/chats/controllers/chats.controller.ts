@@ -7,7 +7,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common'
 import { ChatsService } from '@/modules/chats/services/chats.service'
-import { CreateChatsDto } from '@/modules/chats/dtos/create-chat.dto'
+import { CreateChatDto } from '@/modules/chats/dtos/create-chat.dto'
 import { FindUserByIdPipe } from '@/modules/users/pipes/find-user-by-id.pipe'
 import { SelectUser } from 'database'
 import { AuthGuard } from '@nestjs/passport'
@@ -22,7 +22,7 @@ export class ChatsController {
   @Post()
   async chat(
     @Param('userId', FindUserByIdPipe) user: SelectUser,
-    @Body() chatDto: CreateChatsDto,
+    @Body() chatDto: CreateChatDto,
   ) {
     return this.chatService.chat(user, chatDto)
   }

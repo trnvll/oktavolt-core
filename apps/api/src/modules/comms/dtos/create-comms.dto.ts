@@ -8,6 +8,10 @@ import {
 } from 'class-validator'
 import { InsertCommunications } from 'database'
 import { Transform, Type } from 'class-transformer'
+import {
+  CommunicationProviderEnum,
+  CommunicationTypeEnum,
+} from '@/patch/enums/external'
 
 export class CreateCommsDto {
   @IsArray()
@@ -21,8 +25,8 @@ export class CreateCommsDto {
 }
 
 export class CreateCommDto {
-  // @IsEnum(CommunicationTypeEnum)
-  type: any
+  @IsEnum(CommunicationTypeEnum)
+  type: CommunicationTypeEnum
 
   @IsString()
   content: string
@@ -39,17 +43,17 @@ export class CreateCommDto {
   @IsString()
   receiver: string
 
-  // @IsEnum(CommunicationProviderEnum)
-  provider: any
+  @IsEnum(CommunicationProviderEnum)
+  provider: CommunicationProviderEnum
 
   static toEntity(userId: number, dto: CreateCommDto): InsertCommunications {
     return {
       userId,
-      type: dto.type,
+      type: dto.type as any,
       content: dto.content,
       sender: dto.sender,
       receiver: dto.receiver,
-      provider: dto.provider,
+      provider: dto.provider as any,
       timestamp: dto.timestamp,
     }
   }

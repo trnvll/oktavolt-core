@@ -1,6 +1,7 @@
 import {
   IsArray,
   IsEmail,
+  IsEnum,
   IsOptional,
   IsPhoneNumber,
   IsString,
@@ -8,7 +9,7 @@ import {
 } from 'class-validator'
 import { InsertRelationships } from 'database'
 import { Type } from 'class-transformer'
-import { LogActivity } from 'utils'
+import { RelationshipTypeEnum } from '@/patch/enums/external'
 
 export class CreateRelationshipsDto {
   @IsArray()
@@ -16,7 +17,6 @@ export class CreateRelationshipsDto {
   @Type(() => CreateRelationshipDto)
   data: CreateRelationshipDto[]
 
-  @LogActivity({ level: 'debug' })
   static toEntity(userId: number, dto: CreateRelationshipDto[]) {
     return dto.map((relation) =>
       CreateRelationshipDto.toEntity(userId, relation),
@@ -28,8 +28,8 @@ export class CreateRelationshipDto {
   @IsString()
   name: string
 
-  // @IsEnum(RelationshipTypeEnum)
-  relationType: any
+  @IsEnum(RelationshipTypeEnum)
+  relationType: RelationshipTypeEnum
 
   @IsEmail()
   @IsOptional()
@@ -54,7 +54,7 @@ export class CreateRelationshipDto {
     return {
       userId,
       name: dto.name,
-      relationType: dto.relationType,
+      relationType: dto.relationType as any,
       email: dto.email,
       phone: dto.phone,
       address: dto.address,

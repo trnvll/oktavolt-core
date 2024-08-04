@@ -7,7 +7,7 @@ import { QueueEnum } from '@/types/queues/queue.enum'
 import { Queue } from 'bull'
 import { DatabaseService } from '@/core/database/database.service'
 import { Chats, ChatTypeEnum, Embeddings, SelectUser } from 'database'
-import { CreateChatsDto } from '@/modules/chats/dtos/create-chat.dto'
+import { CreateChatDto } from '@/modules/chats/dtos/create-chat.dto'
 import { ChatsEventsConsumerEnum } from '@/modules/chats/consumers/chats-events.consumer'
 import { EventsEnum } from '@/core/events/types/events.enum'
 import { CreateEventUserDataUpdatedDto } from '@/core/events/dtos/create-event-user-data-updated.dto'
@@ -33,12 +33,12 @@ export class ChatsService {
     this.loadPrompts()
   }
 
-  async chat(user: SelectUser, createChatsDto: CreateChatsDto) {
-    const entities = CreateChatsDto.toEntity(user.userId, createChatsDto.data)
+  async chat(user: SelectUser, createChatDto: CreateChatDto) {
+    const entity = CreateChatDto.toEntity(user.userId, createChatDto)
 
     const result = await this.database.db
       .insert(Chats)
-      .values(entities)
+      .values(entity)
       .returning()
 
     await this.chatsEventsQueue.add(

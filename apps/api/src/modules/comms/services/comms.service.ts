@@ -58,9 +58,13 @@ export class CommsService {
       .values(entities)
       .returning()
 
-    await this.commsEventsQueue.add(
-      CommsEventsConsumerEnum.CreateCommsEmbedding,
-      result[0],
+    await Promise.all(
+      result.map((res) =>
+        this.commsEventsQueue.add(
+          CommsEventsConsumerEnum.CreateCommsEmbedding,
+          res,
+        ),
+      ),
     )
 
     this.eventEmitter.emit(

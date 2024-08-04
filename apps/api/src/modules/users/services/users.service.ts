@@ -3,7 +3,7 @@ import { DatabaseService } from '@/core/database/database.service'
 import { Users } from 'database'
 import { eq } from 'drizzle-orm'
 import { FindOneUserDto } from '@/modules/users/dtos/find-one-user.dto'
-import { CreateUsersDto } from '@/modules/users/dtos/create-user.dto'
+import { CreateUserDto } from '@/modules/users/dtos/create-user.dto'
 import { LogActivity } from 'utils'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { EventsEnum } from '@/core/events/types/events.enum'
@@ -47,11 +47,12 @@ export class UsersService {
     return FindOneUserDto.fromEntity(plainUser)
   }
 
-  async create(userDto: CreateUsersDto) {
-    const entities = CreateUsersDto.toEntity(userDto.data)
+  async create(userDto: CreateUserDto) {
+    const entity = CreateUserDto.toEntity(userDto)
+
     const result = await this.database.db
       .insert(Users)
-      .values(entities)
+      .values(entity)
       .returning()
 
     this.eventEmitter.emit(

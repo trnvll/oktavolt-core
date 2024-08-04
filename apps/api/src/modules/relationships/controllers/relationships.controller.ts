@@ -12,7 +12,6 @@ import { FindUserByIdPipe } from '@/modules/users/pipes/find-user-by-id.pipe'
 import { SelectUser } from 'database'
 import { RelationshipsService } from '@/modules/relationships/services/relationships.service'
 import { CreateRelationshipsDto } from '@/modules/relationships/dtos/create-relationships.dto'
-import { LogActivity } from 'utils'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiOperation } from '@nestjs/swagger'
 
@@ -26,9 +25,6 @@ export class RelationshipsController {
     description:
       'Endpoint that returns a list of all relationships for a user.',
   })
-  @LogActivity({
-    level: 'debug',
-  })
   findAll(@Param('userId', FindUserByIdPipe) user: SelectUser) {
     return this.relationshipsService.findAll(user)
   }
@@ -38,9 +34,6 @@ export class RelationshipsController {
     summary: 'Get a relationship.',
     description:
       'Endpoint that returns a single relationship for a user, by their user and relationship id.',
-  })
-  @LogActivity({
-    level: 'debug',
   })
   findOne(
     @Param('userId', FindUserByIdPipe) user: SelectUser,
@@ -53,9 +46,6 @@ export class RelationshipsController {
   @ApiOperation({
     summary: 'Create a relationship.',
     description: 'Endpoint that creates a new relationship for a user.',
-  })
-  @LogActivity({
-    level: 'debug',
   })
   create(
     @Param('userId', FindUserByIdPipe) user: SelectUser,
@@ -70,9 +60,6 @@ export class RelationshipsController {
     summary: 'Delete a relationship.',
     description:
       'Endpoint that deletes a single relationship for a user, by their user and relationship id.',
-  })
-  @LogActivity({
-    level: 'debug',
   })
   delete(
     @Param('userId', FindUserByIdPipe) user: SelectUser,

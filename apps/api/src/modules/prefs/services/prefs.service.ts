@@ -57,9 +57,13 @@ export class PrefsService {
       .values(entity)
       .returning()
 
-    await this.prefsEventsQueue.add(
-      PrefsEventsConsumerEnum.CreatePrefsEmbedding,
-      result[0],
+    await Promise.all(
+      result.map((res) =>
+        this.prefsEventsQueue.add(
+          PrefsEventsConsumerEnum.CreatePrefsEmbedding,
+          res,
+        ),
+      ),
     )
 
     this.eventEmitter.emit(

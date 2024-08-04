@@ -64,9 +64,13 @@ export class RelationshipsService {
       .values(entities)
       .returning()
 
-    await this.relationshipsEventsQueue.add(
-      RelationshipsEventsConsumerEnum.CreateRelationshipsEmbedding,
-      result[0],
+    await Promise.all(
+      result.map((res) =>
+        this.relationshipsEventsQueue.add(
+          RelationshipsEventsConsumerEnum.CreateRelationshipsEmbedding,
+          res,
+        ),
+      ),
     )
 
     this.eventEmitter.emit(

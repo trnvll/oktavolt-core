@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { UsersService } from '@/modules/users/services/users.service'
-import { CreateUsersDto } from '@/modules/users/dtos/create-user.dto'
+import { CreateUserDto } from '@/modules/users/dtos/create-user.dto'
 import { UserSortFields } from '@/modules/users/types/user-sort-fields'
 import { PaginationDto, SortDto } from 'shared'
 import { AuthGuard } from '@nestjs/passport'
@@ -47,8 +47,8 @@ export class UsersController {
     summary: 'Create a user.',
     description: 'Endpoint that creates a new user.',
   })
-  create(@Body() createUsersDto: CreateUsersDto) {
-    return this.usersService.create(createUsersDto)
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.create(createUserDto)
   }
 
   @Delete(':userId')

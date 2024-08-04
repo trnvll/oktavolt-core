@@ -1,33 +1,20 @@
-import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator'
-import { LogActivity } from 'utils'
-import { Type } from 'class-transformer'
-import { ChatTypeEnum, InsertChat } from 'database'
-
-export class CreateChatsDto {
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateChatDto)
-  data: CreateChatDto[]
-
-  @LogActivity({ level: 'debug' })
-  static toEntity(userId: number, dto: CreateChatDto[]) {
-    return dto.map((chat) => CreateChatDto.toEntity(userId, chat))
-  }
-}
+import { IsEnum, IsOptional, IsString } from 'class-validator'
+import { InsertChat } from 'database'
+import { ChatTypeEnum } from '@/patch/enums/external'
 
 export class CreateChatDto {
   @IsString()
   message: string
 
   @IsOptional()
-  @IsString()
-  type = ChatTypeEnum.Human
+  @IsEnum(ChatTypeEnum)
+  type = ChatTypeEnum
 
   static toEntity(userId: number, dto: CreateChatDto): InsertChat {
     return {
       userId,
       content: dto.message,
-      type: dto.type,
+      type: dto.type as any,
     }
   }
 }
