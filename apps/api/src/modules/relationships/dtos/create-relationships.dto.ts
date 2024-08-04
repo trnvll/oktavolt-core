@@ -1,4 +1,5 @@
 import {
+  ArrayMaxSize,
   IsArray,
   IsEmail,
   IsEnum,
@@ -14,6 +15,7 @@ import { RelationshipTypeEnum } from '@/patch/enums/external'
 export class CreateRelationshipsDto {
   @IsArray()
   @ValidateNested({ each: true })
+  @ArrayMaxSize(10)
   @Type(() => CreateRelationshipDto)
   data: CreateRelationshipDto[]
 

@@ -1,4 +1,5 @@
 import {
+  ArrayMaxSize,
   IsArray,
   IsDate,
   IsEnum,
@@ -16,6 +17,7 @@ import {
 export class CreateCommsDto {
   @IsArray()
   @ValidateNested({ each: true })
+  @ArrayMaxSize(10)
   @Type(() => CreateCommDto)
   data: CreateCommDto[]
 
