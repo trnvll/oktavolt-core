@@ -78,7 +78,7 @@ export class ChatsService {
     const responseResult = await this.database.db
       .insert(Chats)
       .values({
-        content: response,
+        content: response?.content as string, // FIXME: what should I get?
         type: ChatTypeEnum.Assistant,
         userId: user.userId,
       })

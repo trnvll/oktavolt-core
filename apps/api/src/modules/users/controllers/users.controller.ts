@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
@@ -52,6 +54,7 @@ export class UsersController {
   }
 
   @Delete(':userId')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Delete a user.',
     description: 'Endpoint that deletes a user by their user id.',

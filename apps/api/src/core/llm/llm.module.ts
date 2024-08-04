@@ -4,15 +4,24 @@ import { LlmDataTransformationService } from '@/core/llm/services/llm-data-trans
 import { LlmQueryService } from '@/core/llm/services/llm-query.service'
 import { LlmOpenapiActionsService } from '@/core/llm/services/llm-openapi-actions.service'
 import { LlmChatService } from '@/core/llm/services/llm-chat.service'
+import { UsersService } from '@/modules/users/services/users.service'
+import { LlmToolsService } from '@/core/llm/services/llm-tools.service'
+import { DatabaseModule } from '@/core/database/database.module'
+import { DatabaseService } from '@/core/database/database.service'
+import { UsersQueryService } from '@/modules/users/services/queries/users-query.service'
 
 @Module({
-  imports: [],
+  imports: [DatabaseModule],
   providers: [
     LlmEmbeddingsService,
     LlmDataTransformationService,
     LlmQueryService,
     LlmOpenapiActionsService,
     LlmChatService,
+    LlmToolsService,
+    UsersService,
+    UsersQueryService,
+    DatabaseService,
   ],
   exports: [
     LlmEmbeddingsService,
@@ -20,6 +29,7 @@ import { LlmChatService } from '@/core/llm/services/llm-chat.service'
     LlmQueryService,
     LlmOpenapiActionsService,
     LlmChatService,
+    LlmToolsService,
   ],
 })
 export class LlmModule {}

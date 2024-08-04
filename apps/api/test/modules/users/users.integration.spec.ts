@@ -1,5 +1,4 @@
 import { INestApplication } from '@nestjs/common'
-import { CreateUsersDto } from '@/modules/users/dtos/create-user.dto'
 import request from 'supertest'
 import { faker } from '@faker-js/faker'
 import { DatabaseService } from '@/core/database/database.service'
@@ -24,6 +23,7 @@ import { getQueueToken } from '@nestjs/bull'
 import { pruneFlakyVariables } from '../../_utils/test.utils'
 import { setupTestApp } from '../../_setup/app.setup'
 import { plainToInstance } from 'class-transformer'
+import { CreateUserDto } from '@/modules/users/dtos/create-user.dto'
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication
@@ -77,30 +77,26 @@ describe('UsersController (e2e)', () => {
     // 4. Should store the user created event.
     // 5. User data dto should have been returned in the response.
 
-    const createUsersDto: CreateUsersDto = {
-      data: [
-        {
-          email: faker.internet.email(),
-          firstName: faker.person.firstName(),
-          lastName: faker.person.lastName(),
-          phone: faker.phone.number(),
-          dateOfBirth: faker.date.past().toISOString() as any,
-        },
-      ],
+    const createUserDto: CreateUserDto = {
+      email: faker.internet.email(),
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+      phone: faker.phone.number(),
+      dateOfBirth: faker.date.past().toISOString() as any,
     }
 
     const response = await request(app.getHttpServer())
       .post('/users')
-      .send(createUsersDto)
+      .send(createUserDto)
       .expect(201)
 
     // Business rule 1.
     const savedUser = await context.database.db.query.users.findFirst({
-      where: eq(Users.email, createUsersDto.data[0].email),
+      where: eq(Users.email, createUserDto.email),
     })
     expect(savedUser).toBeDefined()
     if (!savedUser) throw new Error('User not found.')
-    expect(savedUser.email).toBe(createUsersDto.data[0].email)
+    expect(savedUser.email).toBe(createUserDto.email)
 
     // Business rule 2.
     expect(
@@ -132,35 +128,34 @@ describe('UsersController (e2e)', () => {
     // 1. Should return all users from the database in an appropriate, paginated response.
 
     // Arrange
-    let dto: CreateUsersDto = {
-      data: [
-        {
-          email: faker.internet.email(),
-          firstName: faker.person.firstName(),
-          lastName: faker.person.lastName(),
-          phone: faker.phone.number(),
-          dateOfBirth: faker.date.past().toISOString() as any,
-        },
-        {
-          email: faker.internet.email(),
-          firstName: faker.person.firstName(),
-          lastName: faker.person.lastName(),
-          phone: faker.phone.number(),
-          dateOfBirth: faker.date.past().toISOString() as any,
-        },
-        {
-          email: faker.internet.email(),
-          firstName: faker.person.firstName(),
-          lastName: faker.person.lastName(),
-          phone: faker.phone.number(),
-          dateOfBirth: faker.date.past().toISOString() as any,
-        },
-      ],
-    }
-    dto = plainToInstance(CreateUsersDto, dto)
+    let dtos: CreateUserDto[] = [
+      {
+        email: faker.internet.email(),
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
+        phone: faker.phone.number(),
+        dateOfBirth: faker.date.past().toISOString() as any,
+      },
+      {
+        email: faker.internet.email(),
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
+        phone: faker.phone.number(),
+        dateOfBirth: faker.date.past().toISOString() as any,
+      },
+      {
+        email: faker.internet.email(),
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
+        phone: faker.phone.number(),
+        dateOfBirth: faker.date.past().toISOString() as any,
+      },
+    ]
+
+    dtos = dtos.map((dto) => plainToInstance(CreateUserDto, dto))
     await context.database.db
       .insert(Users)
-      .values(CreateUsersDto.toEntity(dto.data))
+      .values(dtos.map((dto) => CreateUserDto.toEntity(dto)))
 
     const response = await request(app.getHttpServer())
       .get('/users')

@@ -1,17 +1,18 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { BaseLLM } from '@langchain/core/dist/language_models/llms'
-import { OpenAI } from '@langchain/openai'
+import { ChatOpenAI } from '@langchain/openai'
 import { ExternalConfig } from '@/config/external.config'
 import {
   BaseMessage,
   HumanMessage,
   SystemMessage,
 } from '@langchain/core/messages'
+import { BaseChatModel } from '@langchain/core/dist/language_models/chat_models'
+import { DynamicStructuredTool } from '@langchain/core/tools'
 
 @Injectable()
 export class LlmChatService {
-  private llm: BaseLLM
+  private llm: BaseChatModel
 
   constructor(private configService: ConfigService) {
     this.init()
@@ -30,10 +31,10 @@ export class LlmChatService {
 
     switch (llmType) {
       case 'openai':
-        this.llm = new OpenAI({
+        this.llm = new ChatOpenAI({
           openAIApiKey: externalConfig.openaiApiKey,
           modelName: model,
-          temperature: 0.7,
+          temperature: 0.5,
         })
         break
       default:
@@ -43,8 +44,13 @@ export class LlmChatService {
 
   async chat(
     message: string,
-    context?: { history?: BaseMessage[]; systemPrompt?: string; tools?: any },
+    context?: {
+      systemPrompt?: string
+      history?: BaseMessage[]
+      tools?: DynamicStructuredTool[]
+    },
   ) {
+    // add history
     const messages: BaseMessage[] = []
 
     if (context?.systemPrompt) {
@@ -56,6 +62,15 @@ export class LlmChatService {
     }
 
     messages.push(new HumanMessage(message))
+
+    if (context?.tools) {
+      console.log(
+        'Executing LLM with tools:',
+        JSON.stringify(context.tools.map((tool) => tool.name)),
+      )
+      const llmWithTools = this.llm.bindTools?.(context.tools)
+      return llmWithTools?.invoke(messages)
+    }
 
     return this.llm.invoke(messages)
   }
