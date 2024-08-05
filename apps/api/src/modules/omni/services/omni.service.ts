@@ -3,19 +3,19 @@ import { LlmOpenapiActionsService } from '@/core/llm/services/llm-openapi-action
 import * as fs from 'fs'
 import path from 'path'
 import { JsonObject } from 'langchain/tools'
-import { LlmToolsService } from '@/core/llm/services/llm-tools.service'
 import { LlmChatService } from '@/core/llm/services/llm-chat.service'
+import { UsersLlmToolsService } from '@/modules/users/services/users-llm-tools.service'
 
 @Injectable()
 export class OmniService {
   constructor(
     private readonly llmOpenapiActionsService: LlmOpenapiActionsService,
-    private readonly llmToolsService: LlmToolsService,
+    private readonly usersLlmToolsService: UsersLlmToolsService,
     private readonly llmChatService: LlmChatService,
   ) {}
 
   async omni(query: string) {
-    const userTools = this.llmToolsService.getUserTools()
+    const userTools = this.usersLlmToolsService.getTools()
     const response = await this.llmChatService.chat(query, {
       tools: userTools as any,
     })

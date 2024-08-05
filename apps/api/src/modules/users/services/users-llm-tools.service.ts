@@ -2,16 +2,15 @@ import { Injectable } from '@nestjs/common'
 import { UsersService } from '@/modules/users/services/users.service'
 import { DynamicStructuredTool } from '@langchain/core/tools'
 import { PaginationDto, SortDto } from 'shared'
-import { plainToInstance } from 'class-transformer'
-import { validate } from 'class-validator'
 import { z } from 'zod'
 import { CreateUserDto } from '@/modules/users/dtos/create-user.dto'
+import { validateToolDto } from '@/utils/fns/validate-tool-dto'
 
 @Injectable()
-export class LlmToolsService {
+export class UsersLlmToolsService {
   constructor(private readonly usersService: UsersService) {}
 
-  getUserTools() {
+  getTools() {
     return [
       new DynamicStructuredTool({
         name: 'FindAllUsers',
@@ -23,11 +22,11 @@ export class LlmToolsService {
           sortOrder: z.enum(['ASC', 'DESC']),
         }),
         func: async (input) => {
-          const sortDto = await this.validateDto(SortDto, {
+          const sortDto = await validateToolDto(SortDto, {
             sortBy: input.sortBy,
             sortOrder: input.sortOrder,
           })
-          const paginationDto = await this.validateDto(PaginationDto, {
+          const paginationDto = await validateToolDto(PaginationDto, {
             page: input.page,
             limit: input.limit,
           })
@@ -62,7 +61,7 @@ export class LlmToolsService {
             .describe('Optional context for the user'),
         }),
         func: async (input) => {
-          const createUserDto = await this.validateDto(CreateUserDto, {
+          const createUserDto = await validateToolDto(CreateUserDto, {
             firstName: input.firstName,
             lastName: input.lastName,
             email: input.email,
@@ -85,14 +84,5 @@ export class LlmToolsService {
         },
       }),
     ]
-  }
-
-  private async validateDto(dtoClass: any, data: any) {
-    const dto = plainToInstance(dtoClass, data)
-    const errors = await validate(dto)
-    if (errors.length > 0) {
-      throw new Error(`Class validation failed: ${JSON.stringify(errors)}`)
-    }
-    return dto as any
   }
 }

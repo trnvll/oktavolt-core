@@ -5,7 +5,6 @@ import { LlmQueryService } from '@/core/llm/services/llm-query.service'
 import { LlmOpenapiActionsService } from '@/core/llm/services/llm-openapi-actions.service'
 import { LlmChatService } from '@/core/llm/services/llm-chat.service'
 import { UsersService } from '@/modules/users/services/users.service'
-import { LlmToolsService } from '@/core/llm/services/llm-tools.service'
 import { DatabaseModule } from '@/core/database/database.module'
 import { DatabaseService } from '@/core/database/database.service'
 import { UsersQueryService } from '@/modules/users/services/queries/users-query.service'
@@ -18,7 +17,6 @@ import { UsersQueryService } from '@/modules/users/services/queries/users-query.
     LlmQueryService,
     LlmOpenapiActionsService,
     LlmChatService,
-    LlmToolsService,
     UsersService,
     UsersQueryService,
     DatabaseService,
@@ -29,7 +27,6 @@ import { UsersQueryService } from '@/modules/users/services/queries/users-query.
     LlmQueryService,
     LlmOpenapiActionsService,
     LlmChatService,
-    LlmToolsService,
   ],
 })
 export class LlmModule {}
