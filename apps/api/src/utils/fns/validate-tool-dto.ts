@@ -1,11 +1,14 @@
-import { plainToInstance } from 'class-transformer'
+import { ClassConstructor, plainToInstance } from 'class-transformer'
 import { validate } from 'class-validator'
 
-export const validateToolDto = async (dtoClass: any, data: any) => {
+export const validateToolDto = async <T extends ClassConstructor<any>>(
+  dtoClass: T,
+  data: Partial<InstanceType<T>>,
+): Promise<InstanceType<T>> => {
   const dto = plainToInstance(dtoClass, data)
   const errors = await validate(dto)
   if (errors.length > 0) {
-    throw new Error(`Class validation failed: ${JSON.stringify(errors)}`)
+    throw new Error(`[validateToolDto] failed: ${JSON.stringify(errors)}`)
   }
-  return dto as any
+  return dto as InstanceType<T>
 }

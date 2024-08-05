@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { UsersService } from '@/modules/users/services/users.service'
 import { DynamicStructuredTool } from '@langchain/core/tools'
-import { PaginationDto, SortDto } from 'shared'
+import { PaginationDto, SortDto, SortOrderEnum } from 'shared'
 import { z } from 'zod'
 import { CreateUserDto } from '@/modules/users/dtos/create-user.dto'
 import { validateToolDto } from '@/utils/fns/validate-tool-dto'
+import { UserSortFields } from '@/modules/users/types/user-sort-fields'
 
 @Injectable()
 export class UsersLlmToolsService {
@@ -22,9 +23,9 @@ export class UsersLlmToolsService {
           sortOrder: z.enum(['ASC', 'DESC']),
         }),
         func: async (input) => {
-          const sortDto = await validateToolDto(SortDto, {
+          const sortDto = await validateToolDto(SortDto<UserSortFields>, {
             sortBy: input.sortBy,
-            sortOrder: input.sortOrder,
+            sortOrder: input.sortOrder as SortOrderEnum,
           })
           const paginationDto = await validateToolDto(PaginationDto, {
             page: input.page,
