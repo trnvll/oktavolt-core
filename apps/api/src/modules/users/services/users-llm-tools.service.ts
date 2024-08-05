@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { UsersService } from '@/modules/users/services/users.service'
 import { DynamicStructuredTool } from '@langchain/core/tools'
-import { PaginationDto, SortDto, SortOrderEnum } from 'shared'
+import { PaginationDto, SearchDto, SortDto, SortOrderEnum } from 'shared'
 import { z } from 'zod'
 import { CreateUserDto } from '@/modules/users/dtos/create-user.dto'
 import { validateToolDto } from '@/utils/fns/validate-tool-dto'
@@ -21,6 +21,12 @@ export class UsersLlmToolsService {
           limit: z.number().int().positive(),
           sortBy: z.enum(['createdAt']),
           sortOrder: z.enum(['ASC', 'DESC']),
+          query: z
+            .string()
+            .optional()
+            .describe(
+              'Search query to find users by first name, last name, phone number, email and context.',
+            ),
         }),
         func: async (input) => {
           const sortDto = await validateToolDto(SortDto<UserSortFields>, {
@@ -31,7 +37,14 @@ export class UsersLlmToolsService {
             page: input.page,
             limit: input.limit,
           })
-          return await this.usersService.findAll(paginationDto, sortDto)
+          const searchDto = await validateToolDto(SearchDto, {
+            query: input.query,
+          })
+          return await this.usersService.findAll(
+            paginationDto,
+            sortDto,
+            searchDto,
+          )
         },
       }),
       new DynamicStructuredTool({

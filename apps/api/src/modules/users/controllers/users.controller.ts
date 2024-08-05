@@ -14,7 +14,7 @@ import {
 import { UsersService } from '@/modules/users/services/users.service'
 import { CreateUserDto } from '@/modules/users/dtos/create-user.dto'
 import { UserSortFields } from '@/modules/users/types/user-sort-fields'
-import { PaginationDto, SortDto } from 'shared'
+import { PaginationDto, SearchDto, SortDto } from 'shared'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiOperation } from '@nestjs/swagger'
 
@@ -31,8 +31,9 @@ export class UsersController {
   async findAll(
     @Query() paginationDto: PaginationDto,
     @Query() sortDto: SortDto<UserSortFields>,
+    @Query() searchDto: SearchDto,
   ) {
-    return this.usersService.findAll(paginationDto, sortDto)
+    return this.usersService.findAll(paginationDto, sortDto, searchDto)
   }
 
   @Get(':userId')

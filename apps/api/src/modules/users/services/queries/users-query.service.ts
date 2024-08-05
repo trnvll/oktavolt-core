@@ -1,10 +1,11 @@
 import {
   PaginationDto,
   ResultsWithMetadata,
+  SearchDto,
   SortDto,
   SortOrderEnum,
 } from 'shared'
-import { asc, count, desc } from 'drizzle-orm'
+import { asc, count, desc, ilike, or, sql, SQL } from 'drizzle-orm'
 import { DatabaseService } from '@/core/database/database.service'
 import { Injectable } from '@nestjs/common'
 import { SelectUser, Users } from 'database'
@@ -17,18 +18,35 @@ export class UsersQueryService {
   async findAllUsers(
     paginationDto: PaginationDto,
     sortDto: SortDto<UserSortFields>,
+    searchDto: SearchDto,
   ): Promise<ResultsWithMetadata<SelectUser>> {
     const { page, limit, offset } = paginationDto
     const { sortBy, sortOrder } = sortDto
+    const { query } = searchDto
 
-    const query = this.database.db
-      .select()
-      .from(Users)
-      .limit(limit)
-      .offset(offset)
+    let whereClause: SQL<unknown> | undefined
+
+    if (query) {
+      whereClause = or(
+        ilike(Users.firstName, `%${query}%`),
+        ilike(Users.lastName, `%${query}%`),
+        ilike(Users.email, `%${query}%`),
+        ilike(Users.phone, `%${query}%`),
+        ilike(Users.context, `%${query}%`),
+        sql`${Users.firstName} || ' ' || ${Users.lastName} ILIKE ${
+          '%' + query + '%'
+        }`,
+      )
+    }
+
+    const qb = this.database.db.select().from(Users).limit(limit).offset(offset)
+
+    if (whereClause) {
+      qb.where(whereClause)
+    }
 
     if (sortBy && sortOrder) {
-      query.orderBy(
+      qb.orderBy(
         sortOrder === SortOrderEnum.ASC
           ? asc(Users[sortBy])
           : desc(Users[sortBy]),
@@ -37,8 +55,12 @@ export class UsersQueryService {
 
     const countQuery = this.database.db.select({ count: count() }).from(Users)
 
+    if (whereClause) {
+      countQuery.where(whereClause)
+    }
+
     const [results, totalCount] = await Promise.all([
-      query.execute(),
+      qb.execute(),
       countQuery.execute(),
     ])
 

@@ -7,7 +7,13 @@ import { CreateUserDto } from '@/modules/users/dtos/create-user.dto'
 import { LogActivity } from 'utils'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { EventsEnum } from '@/core/events/types/events.enum'
-import { EntityTypeEnum, EventActionEnum, PaginationDto, SortDto } from 'shared'
+import {
+  EntityTypeEnum,
+  EventActionEnum,
+  PaginationDto,
+  SearchDto,
+  SortDto,
+} from 'shared'
 import { CreateEventUserCreatedDto } from '@/core/events/dtos/create-event-user-created.dto'
 import { CreateEventUserDeletedDto } from '@/core/events/dtos/create-event-user-deleted.dto'
 import { UserSortFields } from '@/modules/users/types/user-sort-fields'
@@ -26,10 +32,12 @@ export class UsersService {
   async findAll(
     paginationDto: PaginationDto,
     sortDto: SortDto<UserSortFields>,
+    searchDto: SearchDto,
   ) {
     const queryResult = await this.usersQueryService.findAllUsers(
       paginationDto,
       sortDto,
+      searchDto,
     )
     return FindAllUsersMapper.fromEntity(queryResult)
   }
