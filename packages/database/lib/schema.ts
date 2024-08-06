@@ -5,6 +5,7 @@ import {
   Users,
   Embeddings,
   Chats,
+  ToolExecs,
 } from '@/models'
 
 export const schema = {
@@ -14,4 +15,5 @@ export const schema = {
   relations: Relationships,
   embeddings: Embeddings,
   chats: Chats,
+  toolExecs: ToolExecs,
 }
