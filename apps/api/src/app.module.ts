@@ -23,6 +23,7 @@ import { externalConfig } from '@/config/external.config'
 import { EmbeddingsModule } from '@/modules/embeddings/embeddings.module'
 import { OmniModule } from '@/modules/omni/omni.module'
 import { ChatsModule } from '@/modules/chats/chats.module'
+import { ToolExecsModule } from '@/modules/tool-execs/tool-execs.module'
 
 @Module({
   imports: [
@@ -104,6 +105,7 @@ import { ChatsModule } from '@/modules/chats/chats.module'
     EmbeddingsModule,
     OmniModule,
     ChatsModule,
+    ToolExecsModule,
   ],
   providers: [
     {
