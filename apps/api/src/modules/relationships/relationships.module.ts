@@ -9,6 +9,9 @@ import { QueueEnum } from '@/types/queues/queue.enum'
 import { LlmDataTransformationService } from '@/core/llm/services/llm-data-transformation.service'
 import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
 import { RelationshipsEventsConsumer } from '@/modules/relationships/consumers/relationships-events.consumer'
+import { RelationshipsLlmToolsService } from '@/modules/relationships/services/relationships-llm-tools.service'
+import { UsersService } from '@/modules/users/services/users.service'
+import { UsersQueryService } from '@/modules/users/services/queries/users-query.service'
 
 @Module({
   imports: [
@@ -22,8 +25,15 @@ import { RelationshipsEventsConsumer } from '@/modules/relationships/consumers/r
     RelationshipsEventsConsumer,
     LlmDataTransformationService,
     LlmEmbeddingsService,
+    RelationshipsLlmToolsService,
+    UsersService,
+    UsersQueryService,
   ],
-  exports: [RelationshipsService, RelationshipsEmbeddingsService],
+  exports: [
+    RelationshipsService,
+    RelationshipsEmbeddingsService,
+    RelationshipsLlmToolsService,
+  ],
   controllers: [RelationshipsController],
 })
 export class RelationshipsModule {}

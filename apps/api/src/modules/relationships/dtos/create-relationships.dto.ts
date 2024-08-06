@@ -4,7 +4,6 @@ import {
   IsEmail,
   IsEnum,
   IsOptional,
-  IsPhoneNumber,
   IsString,
   ValidateNested,
 } from 'class-validator'
@@ -37,7 +36,8 @@ export class CreateRelationshipDto {
   @IsOptional()
   email?: string
 
-  @IsPhoneNumber()
+  // @IsPhoneNumber()
+  @IsString()
   @IsOptional()
   phone?: string
 

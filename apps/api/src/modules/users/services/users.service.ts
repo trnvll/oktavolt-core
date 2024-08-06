@@ -114,4 +114,20 @@ export class UsersService {
 
     return result
   }
+
+  async findUserById(userId: number) {
+    if (!userId) {
+      throw new NotFoundException('No user ID provided.')
+    }
+
+    const user = await this.database.db.query.users.findFirst({
+      where: eq(Users.userId, userId),
+    })
+
+    if (!user) {
+      throw new NotFoundException('User not found.')
+    }
+
+    return user
+  }
 }

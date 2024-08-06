@@ -9,11 +9,19 @@ import { DatabaseModule } from '@/core/database/database.module'
 import { DatabaseService } from '@/core/database/database.service'
 import { UsersQueryService } from '@/modules/users/services/queries/users-query.service'
 import { UsersLlmToolsService } from '@/modules/users/services/users-llm-tools.service'
+import { RelationshipsLlmToolsService } from '@/modules/relationships/services/relationships-llm-tools.service'
+import { RelationshipsService } from '@/modules/relationships/services/relationships.service'
+import { BullModule } from '@nestjs/bull'
+import { QueueEnum } from '@/types/queues/queue.enum'
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [
+    DatabaseModule,
+    BullModule.registerQueue({ name: QueueEnum.RelationshipsEvents }),
+  ],
   controllers: [OmniController],
   providers: [
+    DatabaseService,
     OmniService,
     LlmOpenapiActionsService,
     LlmQueryService,
@@ -21,7 +29,8 @@ import { UsersLlmToolsService } from '@/modules/users/services/users-llm-tools.s
     LlmChatService,
     UsersService,
     UsersQueryService,
-    DatabaseService,
+    RelationshipsLlmToolsService,
+    RelationshipsService,
   ],
   exports: [OmniService],
 })
