@@ -13,11 +13,13 @@ import { RelationshipsLlmToolsService } from '@/modules/relationships/services/r
 import { RelationshipsService } from '@/modules/relationships/services/relationships.service'
 import { BullModule } from '@nestjs/bull'
 import { QueueEnum } from '@/types/queues/queue.enum'
+import { ChatsFnsService } from '@/modules/chats/services/chats-fns.service'
 
 @Module({
   imports: [
     DatabaseModule,
     BullModule.registerQueue({ name: QueueEnum.RelationshipsEvents }),
+    BullModule.registerQueue({ name: QueueEnum.ChatsEvents }),
   ],
   controllers: [OmniController],
   providers: [
@@ -31,6 +33,7 @@ import { QueueEnum } from '@/types/queues/queue.enum'
     UsersQueryService,
     RelationshipsLlmToolsService,
     RelationshipsService,
+    ChatsFnsService,
   ],
   exports: [OmniService],
 })

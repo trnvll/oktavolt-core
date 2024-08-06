@@ -11,6 +11,7 @@ import { QueueEnum } from '@/types/queues/queue.enum'
 import { ChatsEmbeddingsService } from '@/modules/chats/services/chats-embeddings.service'
 import { ChatsEventsConsumer } from '@/modules/chats/consumers/chats-events.consumer'
 import { SqsService } from '@/core/sqs/sqs.service'
+import { ChatsFnsService } from '@/modules/chats/services/chats-fns.service'
 
 @Module({
   imports: [
@@ -23,11 +24,12 @@ import { SqsService } from '@/core/sqs/sqs.service'
     ChatsService,
     ChatsEmbeddingsService,
     ChatsEventsConsumer,
+    ChatsFnsService,
     LlmChatService,
     LlmEmbeddingsService,
     LlmDataTransformationService,
     SqsService,
   ],
-  exports: [ChatsService, ChatsEmbeddingsService],
+  exports: [ChatsService, ChatsEmbeddingsService, ChatsFnsService],
 })
 export class ChatsModule {}

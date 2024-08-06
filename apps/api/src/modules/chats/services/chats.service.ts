@@ -17,6 +17,7 @@ import { and, desc, eq, gt, or, cosineDistance, sql } from 'drizzle-orm'
 import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages'
 import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
 import { LogActivity, LogLevelEnum } from 'utils'
+import { ChatsFnsService } from '@/modules/chats/services/chats-fns.service'
 
 @Injectable()
 export class ChatsService {
@@ -29,37 +30,13 @@ export class ChatsService {
     private readonly llmEmbeddingsService: LlmEmbeddingsService,
     @InjectQueue(QueueEnum.ChatsEvents)
     private readonly chatsEventsQueue: Queue,
+    private readonly chatsFnsService: ChatsFnsService,
   ) {
     this.loadPrompts()
   }
 
   async chat(user: SelectUser, createChatDto: CreateChatDto) {
-    const entity = CreateChatDto.toEntity(user.userId, createChatDto)
-
-    const result = await this.database.db
-      .insert(Chats)
-      .values(entity)
-      .returning()
-
-    await this.chatsEventsQueue.add(
-      ChatsEventsConsumerEnum.CreateChatsEmbedding,
-      result[0],
-    )
-
-    this.eventEmitter.emit(
-      EventsEnum.UserDataUpdated,
-      new CreateEventUserDataUpdatedDto({
-        userId: user.userId,
-        data: {
-          entityType: EntityTypeEnum.Chat,
-          entityIds: result.map((entity) => entity.chatId),
-          dataChange: {
-            newValue: result,
-          },
-          action: EventActionEnum.Create,
-        },
-      }),
-    )
+    const result = await this.chatsFnsService.createChat(user, createChatDto)
 
     const embedding = await this.llmEmbeddingsService.generateEmbeddings([
       result[0].content,

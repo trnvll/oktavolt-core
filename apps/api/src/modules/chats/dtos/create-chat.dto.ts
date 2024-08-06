@@ -8,7 +8,7 @@ export class CreateChatDto {
 
   @IsOptional()
   @IsEnum(ChatTypeEnum)
-  type = ChatTypeEnum
+  type = ChatTypeEnum.Human
 
   static toEntity(userId: number, dto: CreateChatDto): InsertChat {
     return {

@@ -1,13 +1,19 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common'
 import { OmniService } from '@/modules/omni/services/omni.service'
+import { FindUserByIdPipe } from '@/modules/users/pipes/find-user-by-id.pipe'
+import { SelectUser } from 'database'
+import { CreateChatDto } from '@/modules/chats/dtos/create-chat.dto'
 
-@Controller('omni')
+@Controller('users/:userId/omni')
 export class OmniController {
   constructor(private readonly omniService: OmniService) {}
 
   @Post()
-  async omni(@Body('query') query: string) {
-    return this.omniService.omni(query)
+  async omni(
+    @Param('userId', FindUserByIdPipe) user: SelectUser,
+    @Body() chatDto: CreateChatDto,
+  ) {
+    return this.omniService.omni(user, chatDto)
   }
 
   @Get()
