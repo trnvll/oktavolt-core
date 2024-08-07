@@ -9,6 +9,7 @@ import {
 } from '@langchain/core/messages'
 import { BaseChatModel } from '@langchain/core/dist/language_models/chat_models'
 import { DynamicStructuredTool } from '@langchain/core/tools'
+import { json } from 'shared'
 
 @Injectable()
 export class LlmChatService {
@@ -66,7 +67,7 @@ export class LlmChatService {
     if (context?.tools) {
       console.log(
         'Executing LLM with tools:',
-        JSON.stringify(context.tools.map((tool) => tool.name)),
+        json(context.tools.map((tool) => tool.name)),
       )
       const llmWithTools = this.llm.bindTools?.(context.tools)
       return llmWithTools?.invoke(messages)

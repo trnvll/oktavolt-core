@@ -10,6 +10,7 @@ import { pull } from 'langchain/hub'
 import { ChatOpenAI } from '@langchain/openai'
 import { ConfigService } from '@nestjs/config'
 import { ExternalConfig } from '@/config/external.config'
+import { json } from 'shared'
 
 @Injectable()
 export class LlmOpenapiActionsService {
@@ -39,7 +40,7 @@ export class LlmOpenapiActionsService {
       // console.log('Toolkit created:', JSON.stringify(toolkit, null, 2))
 
       const tools = toolkit.tools
-      console.log('Tools:', JSON.stringify(tools, null, 2))
+      console.log('Tools:', json(tools))
 
       const prompt = await pull<ChatPromptTemplate>(
         'hwchase17/openai-functions-agent',

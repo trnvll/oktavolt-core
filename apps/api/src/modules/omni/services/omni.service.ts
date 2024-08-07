@@ -12,6 +12,7 @@ import { ChatsFnsService } from '@/modules/chats/services/chats-fns.service'
 import { DatabaseService } from '@/core/database/database.service'
 import { ToolExecStatus } from '@/patch/enums/external'
 import { eq } from 'drizzle-orm'
+import { json } from 'shared'
 
 @Injectable()
 export class OmniService {
@@ -36,10 +37,7 @@ export class OmniService {
       tools: tools as any,
     })
 
-    console.log(
-      'Tool calls',
-      JSON.stringify(response?.lc_kwargs?.tool_calls, null, 2),
-    )
+    console.log('Tool calls', json(response?.lc_kwargs?.tool_calls))
 
     // should be taken care of by tools service
     if (response?.lc_kwargs?.tool_calls) {

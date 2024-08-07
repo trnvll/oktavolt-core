@@ -24,6 +24,7 @@ import { EmbeddingsModule } from '@/modules/embeddings/embeddings.module'
 import { OmniModule } from '@/modules/omni/omni.module'
 import { ChatsModule } from '@/modules/chats/chats.module'
 import { ToolExecsModule } from '@/modules/tool-execs/tool-execs.module'
+import { json } from 'shared'
 
 @Module({
   imports: [
@@ -63,11 +64,7 @@ import { ToolExecsModule } from '@/modules/tool-execs/tool-execs.module'
 
         if (!host || !port) {
           throw new Error(
-            `Redis configuration is missing. Got ${JSON.stringify(
-              redisConfig,
-              null,
-              2,
-            )}`,
+            `Redis configuration is missing. Got ${json(redisConfig)}`,
           )
         }
 

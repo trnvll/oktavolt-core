@@ -12,6 +12,7 @@ import {
   EventOriginEnum,
   EventTargetEnum,
   EventTypeEnum,
+  json,
 } from 'shared'
 import { Logger } from '@nestjs/common'
 import { SqsService } from '@/core/sqs/sqs.service'
@@ -60,7 +61,7 @@ export class UsersEventsConsumer {
       origin: EventOriginEnum.Api,
       timestamp: new Date(),
     }
-    this.logger.debug(`Sending event to SQS: ${JSON.stringify(dto, null, 2)}`)
+    this.logger.debug(`Sending event to SQS: ${json(dto)}`)
 
     await this.sqsService.sendMessage(dto)
   }
@@ -77,7 +78,7 @@ export class UsersEventsConsumer {
       origin: EventOriginEnum.Api,
       timestamp: new Date(),
     }
-    this.logger.debug(`Sending event to SQS: ${JSON.stringify(dto, null, 2)}`)
+    this.logger.debug(`Sending event to SQS: ${json(dto)}`)
 
     await this.sqsService.sendMessage(dto)
   }
@@ -94,7 +95,7 @@ export class UsersEventsConsumer {
       origin: EventOriginEnum.Api,
       timestamp: new Date(),
     }
-    this.logger.debug(`Sending event to SQS: ${JSON.stringify(dto, null, 2)}`)
+    this.logger.debug(`Sending event to SQS: ${json(dto)}`)
 
     await this.sqsService.sendMessage(dto)
   }

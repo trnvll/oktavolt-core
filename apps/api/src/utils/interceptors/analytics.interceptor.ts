@@ -11,6 +11,7 @@ import {
   EventOriginEnum,
   EventTargetEnum,
   EventTypeEnum,
+  json,
   TrackingEventDetailsDto,
 } from 'shared'
 import { AppRequestInterface } from '@/types/app-request.interface'
@@ -44,7 +45,7 @@ export class AnalyticsInterceptor implements NestInterceptor {
       timestamp: new Date(),
     }
 
-    console.log('Analytics interceptor dto:', JSON.stringify(dto, null, 2))
+    console.log('Analytics interceptor dto:', json(dto))
 
     await this.sqsService.sendMessage(dto)
 

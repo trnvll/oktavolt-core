@@ -12,5 +12,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "minify": false
+  "minify": true
 }

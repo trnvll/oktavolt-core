@@ -1,5 +1,6 @@
 import { Logger, LogLevel } from '@nestjs/common'
 import { LogLevelEnum } from '@/enums'
+import { json } from 'shared'
 
 interface LogOptions {
   allowedLevels?: LogLevelEnum[]
@@ -34,9 +35,7 @@ export function LogActivity(options: LogOptions = {}) {
     descriptor.value = function (...args: any[]) {
       const logger = new Logger(className)
       if (shouldLog && logEntry) {
-        logger[level](
-          `${message}, Method: ${key}, Args: ${JSON.stringify(args, null, 2)}`,
-        )
+        logger[level](`${message}, Method: ${key}, Args: ${json(args)}`)
       }
 
       try {
@@ -47,11 +46,7 @@ export function LogActivity(options: LogOptions = {}) {
         const handleResult = (resolvedResult: any) => {
           if (shouldLog && logExit) {
             logger[level](
-              `${message}, Method: ${key}, Result: ${JSON.stringify(
-                resolvedResult,
-                null,
-                2,
-              )}`,
+              `${message}, Method: ${key}, Result: ${json(resolvedResult)}`,
             )
           }
           return resolvedResult
