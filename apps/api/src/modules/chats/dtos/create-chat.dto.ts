@@ -12,7 +12,15 @@ export class CreateChatDto {
 
   @IsOptional()
   @IsBoolean()
-  raw = false
+  useTools = true // TODO: optional tools, history, similarity etc
+
+  @IsOptional()
+  @IsBoolean()
+  useChatContext = true
+
+  @IsOptional()
+  @IsBoolean()
+  toolExecRawResponse = true
 
   static toEntity(userId: number, dto: CreateChatDto): InsertChat {
     return {

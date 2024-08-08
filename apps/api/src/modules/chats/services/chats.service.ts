@@ -84,7 +84,7 @@ export class ChatsService {
         result[0].chatId,
       )
 
-      if (createChatDto.raw) {
+      if (createChatDto.toolExecRawResponse) {
         return toolExecResult
       }
 
