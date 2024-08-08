@@ -11,13 +11,18 @@ import { CreateChatDto } from '@/modules/chats/dtos/create-chat.dto'
 import { ChatsEventsConsumerEnum } from '@/modules/chats/consumers/chats-events.consumer'
 import { EventsEnum } from '@/core/events/types/events.enum'
 import { CreateEventUserDataUpdatedDto } from '@/core/events/dtos/create-event-user-data-updated.dto'
-import { EntityTypeEnum, EventActionEnum } from 'shared'
+import { EntityTypeEnum, EventActionEnum, json } from 'shared'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { and, desc, eq, gt, or, cosineDistance, sql } from 'drizzle-orm'
 import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages'
 import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
 import { LogActivity, LogLevelEnum } from 'utils'
 import { ChatsFnsService } from '@/modules/chats/services/chats-fns.service'
+import { getToolsFromToolDefs } from '@/utils/fns/get-tools-from-tool-defs'
+import { UsersLlmToolsService } from '@/modules/users/services/users-llm-tools.service'
+import { ToolExecsFnsService } from '@/modules/tool-execs/services/tool-execs-fns.service'
+import { ToolExecsLlmToolsService } from '@/modules/tool-execs/services/tool-execs-llm-tools.service'
+import { ToolExecsService } from '@/modules/tool-execs/services/tool-execs.service'
 
 @Injectable()
 export class ChatsService {
@@ -28,9 +33,13 @@ export class ChatsService {
     private readonly eventEmitter: EventEmitter2,
     private readonly llmChatService: LlmChatService,
     private readonly llmEmbeddingsService: LlmEmbeddingsService,
+    private readonly usersLlmToolsService: UsersLlmToolsService,
     @InjectQueue(QueueEnum.ChatsEvents)
     private readonly chatsEventsQueue: Queue,
     private readonly chatsFnsService: ChatsFnsService,
+    private readonly toolExecsLlmToolsService: ToolExecsLlmToolsService,
+    private readonly toolExecsFnsService: ToolExecsFnsService,
+    private readonly toolExecsService: ToolExecsService,
   ) {
     this.loadPrompts()
   }
@@ -42,15 +51,58 @@ export class ChatsService {
       result[0].content,
     ])
 
+    const userToolDefs = this.usersLlmToolsService.getToolDefs()
+    const toolExecsLlmToolDefs = this.toolExecsLlmToolsService.getToolDefs()
+
+    const tools = [
+      ...getToolsFromToolDefs(userToolDefs),
+      ...getToolsFromToolDefs(toolExecsLlmToolDefs),
+    ]
+
     const [historicalChats, relevantChats] = await Promise.all([
       this.getChatHistory(user.userId),
       this.getRelevantChats(embedding[0], user.userId),
     ])
 
-    const response = await this.llmChatService.chat(result[0].content, {
-      history: [...historicalChats, ...relevantChats],
+    let response = await this.llmChatService.chat(result[0].content, {
+      history: [...relevantChats, ...historicalChats],
       systemPrompt: this.prompts.systemBase,
+      tools,
     })
+    // TODO: raw response vs natural language
+    // TODO: if any other than confirmation tool is called, create in db and execute or not depending on `confirm` property of tool def
+    // TODO: if no tool is called, default to returning plain response and answering the user's question
+
+    if (response && this.toolExecsFnsService.hasToolCalls(response)) {
+      console.log(
+        'Has tool calls:',
+        json(response.lc_kwargs.tool_calls.map((tool: any) => tool.name)),
+      )
+
+      const toolExecResult = await this.toolExecsService.executeToolCall(
+        response,
+        result[0].chatId,
+      )
+
+      if (createChatDto.raw) {
+        return toolExecResult
+      }
+
+      const llmToolExecResult = new HumanMessage(
+        `Here is the tool ${toolExecResult.name} (${
+          toolExecResult.description
+        }) execution result ${json(toolExecResult.response)}`,
+      )
+
+      console.log('Tool execution result:', json(llmToolExecResult.content))
+
+      response = await this.llmChatService.chat(result[0].content, {
+        history: [llmToolExecResult],
+        systemPrompt:
+          this.prompts.systemBase +
+          '\nGiven the context and previous conversation, answer the user query with existing data.',
+      })
+    }
 
     const responseResult = await this.database.db
       .insert(Chats)
@@ -81,7 +133,10 @@ export class ChatsService {
       responseResult[0],
     )
 
-    return response
+    return {
+      chatId: result[0].chatId,
+      response: responseResult[0].content,
+    }
   }
 
   @LogActivity({ level: LogLevelEnum.DEBUG })

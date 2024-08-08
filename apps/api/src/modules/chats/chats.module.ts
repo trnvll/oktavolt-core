@@ -12,11 +12,16 @@ import { ChatsEmbeddingsService } from '@/modules/chats/services/chats-embedding
 import { ChatsEventsConsumer } from '@/modules/chats/consumers/chats-events.consumer'
 import { SqsService } from '@/core/sqs/sqs.service'
 import { ChatsFnsService } from '@/modules/chats/services/chats-fns.service'
+import { ToolExecsModule } from '@/modules/tool-execs/tool-execs.module'
+import { UsersLlmToolsService } from '@/modules/users/services/users-llm-tools.service'
+import { UsersService } from '@/modules/users/services/users.service'
+import { UsersQueryService } from '@/modules/users/services/queries/users-query.service'
 
 @Module({
   imports: [
     DatabaseModule,
     BullModule.registerQueue({ name: QueueEnum.ChatsEvents }),
+    ToolExecsModule,
   ],
   controllers: [ChatsController],
   providers: [
@@ -29,6 +34,9 @@ import { ChatsFnsService } from '@/modules/chats/services/chats-fns.service'
     LlmEmbeddingsService,
     LlmDataTransformationService,
     SqsService,
+    UsersLlmToolsService,
+    UsersService,
+    UsersQueryService,
   ],
   exports: [ChatsService, ChatsEmbeddingsService, ChatsFnsService],
 })

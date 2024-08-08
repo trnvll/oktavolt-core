@@ -13,6 +13,7 @@ import { DatabaseService } from '@/core/database/database.service'
 import { ToolExecStatus } from '@/patch/enums/external'
 import { eq } from 'drizzle-orm'
 import { json } from 'shared'
+import { getToolsFromToolDefs } from '@/utils/fns/get-tools-from-tool-defs'
 
 @Injectable()
 export class OmniService {
@@ -28,26 +29,32 @@ export class OmniService {
   async omni(user: SelectUser, chatDto: CreateChatDto) {
     const result = await this.chatsFnsService.createChat(user, chatDto)
 
-    const userTools = this.usersLlmToolsService.getTools()
-    const relationshipTools = this.relationshipsLlmToolsService.getTools()
+    const userToolDefs = this.usersLlmToolsService.getToolDefs()
+    const relationshipToolDefs = this.relationshipsLlmToolsService.getToolDefs()
 
-    const tools = [...userTools, ...relationshipTools]
+    const toolDefs = [...userToolDefs, ...relationshipToolDefs]
+    const tools = [
+      ...getToolsFromToolDefs(userToolDefs),
+      ...getToolsFromToolDefs(relationshipToolDefs),
+    ]
 
     const response = await this.llmChatService.chat(chatDto.message, {
-      tools: tools as any,
+      tools,
     })
 
     console.log('Tool calls', json(response?.lc_kwargs?.tool_calls))
 
     // should be taken care of by tools service
-    if (response?.lc_kwargs?.tool_calls) {
+    if (response?.lc_kwargs?.tool_calls?.length) {
       const calledTool = response.lc_kwargs.tool_calls[0]
-      const tool = tools.find((tool) => tool.name === calledTool.name)
+      const toolDef = toolDefs.find((def) => def.tool.name === calledTool.name)
 
-      if (!tool) {
+      if (!toolDef) {
         console.error(`Tools was not found, tool name: ${calledTool.name}`)
         throw new InternalServerErrorException('Tool was not found.')
       }
+
+      const { tool, confirm } = toolDef
 
       const entity = await this.database.db
         .insert(ToolExecs)
@@ -55,7 +62,7 @@ export class OmniService {
           chatId: result[0].chatId,
           toolName: tool.name,
           executionData: calledTool,
-          status: ToolExecStatus.Approved,
+          status: confirm ? ToolExecStatus.Pending : ToolExecStatus.Approved,
         })
         .returning()
 
