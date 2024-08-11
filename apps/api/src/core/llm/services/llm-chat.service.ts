@@ -58,7 +58,7 @@ export class LlmChatService {
       messages.push(...context.history)
     }
 
-    messages.push(message)
+    messages.push(message) // TODO: fix this ordering
 
     if (context?.tools) {
       console.log(

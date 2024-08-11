@@ -28,7 +28,14 @@ export class OmniService {
   ) {}
 
   async omni(user: SelectUser, chatDto: CreateChatDto) {
-    const result = await this.chatsFnsService.createChat(user, chatDto)
+    const result = await this.chatsFnsService.createChat(
+      user,
+      {
+        content: chatDto.message,
+        type: chatDto.type,
+      },
+      true,
+    )
 
     const userToolDefs = this.usersLlmToolsService.getToolDefs()
     const relationshipToolDefs = this.relationshipsLlmToolsService.getToolDefs()
