@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { BaseMessageChunk } from '@langchain/core/messages'
+import { GetLlmTool } from '@/types/tools/get-llm-tools'
 
 @Injectable()
 export class ToolExecsFnsService {
@@ -11,6 +12,11 @@ export class ToolExecsFnsService {
 
   getCalledTool(response: BaseMessageChunk) {
     return response.lc_kwargs.tool_calls[0]
+  }
+
+  getCalledToolDef(response: BaseMessageChunk, toolDefs: GetLlmTool[]) {
+    const calledTool = this.getCalledTool(response)
+    return toolDefs.find((def) => def.tool.name === calledTool.name)
   }
 
   isGenericToolCall(response: BaseMessageChunk) {

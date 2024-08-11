@@ -169,6 +169,20 @@
       "when": 1722974978363,
       "tag": "0023_tricky_warbird",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1723373770506,
+      "tag": "0024_salty_umar",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1723375535823,
+      "tag": "0025_slow_white_tiger",
+      "breakpoints": true
     }
   ]
 }

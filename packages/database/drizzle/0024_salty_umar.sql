@@ -1,0 +1,1 @@
+ALTER TABLE "tool_executions" ADD COLUMN "response" jsonb;

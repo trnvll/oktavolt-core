@@ -7,13 +7,14 @@ import { LlmChatService } from '@/core/llm/services/llm-chat.service'
 import { UsersLlmToolsService } from '@/modules/users/services/users-llm-tools.service'
 import { RelationshipsLlmToolsService } from '@/modules/relationships/services/relationships-llm-tools.service'
 import { CreateChatDto } from '@/modules/chats/dtos/create-chat.dto'
-import { SelectUser, ToolExecs } from 'database'
+import { ChatsToToolExecs, SelectUser, ToolExecs } from 'database'
 import { ChatsFnsService } from '@/modules/chats/services/chats-fns.service'
 import { DatabaseService } from '@/core/database/database.service'
 import { ToolExecStatus } from '@/patch/enums/external'
 import { eq } from 'drizzle-orm'
 import { json } from 'shared'
 import { getToolsFromToolDefs } from '@/utils/fns/get-tools-from-tool-defs'
+import { HumanMessage } from '@langchain/core/messages'
 
 @Injectable()
 export class OmniService {
@@ -38,9 +39,12 @@ export class OmniService {
       ...getToolsFromToolDefs(relationshipToolDefs),
     ]
 
-    const response = await this.llmChatService.chat(chatDto.message, {
-      tools,
-    })
+    const response = await this.llmChatService.chat(
+      new HumanMessage(chatDto.message),
+      {
+        tools,
+      },
+    )
 
     console.log('Tool calls', json(response?.lc_kwargs?.tool_calls))
 
@@ -59,12 +63,16 @@ export class OmniService {
       const entity = await this.database.db
         .insert(ToolExecs)
         .values({
-          chatId: result[0].chatId,
           toolName: tool.name,
           executionData: calledTool,
           status: confirm ? ToolExecStatus.Pending : ToolExecStatus.Approved,
         })
         .returning()
+
+      await this.database.db.insert(ChatsToToolExecs).values({
+        chatId: result[0].chatId,
+        toolExecId: entity[0].toolExecId,
+      })
 
       const toolResponse = await tool.func(
         response.lc_kwargs.tool_calls[0].args,

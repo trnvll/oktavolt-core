@@ -2,11 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { ChatOpenAI } from '@langchain/openai'
 import { ExternalConfig } from '@/config/external.config'
-import {
-  BaseMessage,
-  HumanMessage,
-  SystemMessage,
-} from '@langchain/core/messages'
+import { BaseMessage, SystemMessage } from '@langchain/core/messages'
 import { BaseChatModel } from '@langchain/core/dist/language_models/chat_models'
 import { DynamicStructuredTool } from '@langchain/core/tools'
 import { json } from 'shared'
@@ -44,7 +40,7 @@ export class LlmChatService {
   }
 
   async chat(
-    message: string,
+    message: BaseMessage,
     context?: {
       systemPrompt?: string
       history?: BaseMessage[]
@@ -62,7 +58,7 @@ export class LlmChatService {
       messages.push(...context.history)
     }
 
-    messages.push(new HumanMessage(message))
+    messages.push(message)
 
     if (context?.tools) {
       console.log(

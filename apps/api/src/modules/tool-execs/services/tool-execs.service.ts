@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { DatabaseService } from '@/core/database/database.service'
-import { ToolExecs } from 'database'
+import { ChatsToToolExecs, ToolExecs } from 'database'
 import { ToolExecStatus } from '@/patch/enums/external'
 import { desc, eq } from 'drizzle-orm'
 import { UsersLlmToolsService } from '@/modules/users/services/users-llm-tools.service'
@@ -36,8 +36,9 @@ export class ToolExecsService {
       throw new Error('Tool not found.')
     }
 
-    const { tool, confirm } = toolDef
+    const { tool } = toolDef
 
+    /*
     if (confirm) {
       await this.database.db.insert(ToolExecs).values({
         chatId,
@@ -53,16 +54,21 @@ export class ToolExecsService {
         response: 'Tool call is pending confirmation.',
       }
     }
+     */
 
     const entity = await this.database.db
       .insert(ToolExecs)
       .values({
-        chatId,
         toolName: tool.name,
         executionData: toolCall,
         status: ToolExecStatus.Approved,
       })
       .returning()
+
+    await this.database.db.insert(ChatsToToolExecs).values({
+      chatId,
+      toolExecId: entity[0].toolExecId,
+    })
 
     const toolResponse = await tool.func(toolCall.args)
 
@@ -71,14 +77,17 @@ export class ToolExecsService {
       .set({
         status: ToolExecStatus.Executed,
         executedAt: new Date(),
+        response: toolResponse,
       })
       .where(eq(ToolExecs.toolExecId, entity[0].toolExecId))
 
     return {
+      toolExecId: entity[0].toolExecId,
       name: tool.name,
       description: tool.description,
       status: ToolExecStatus.Executed,
       response: toolResponse,
+      call: toolCall,
     }
   }
 

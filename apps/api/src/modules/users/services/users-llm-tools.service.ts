@@ -19,6 +19,7 @@ export class UsersLlmToolsService {
   getToolDefs(): GetLlmTool[] {
     return [
       {
+        raw: true,
         tool: new DynamicStructuredTool({
           name: 'FindAllUsers',
           description: 'Find all users with pagination and sorting',
@@ -55,6 +56,7 @@ export class UsersLlmToolsService {
         }),
       },
       {
+        raw: true,
         tool: new DynamicStructuredTool({
           name: 'FindOneUser',
           description: 'Find a user by ID',

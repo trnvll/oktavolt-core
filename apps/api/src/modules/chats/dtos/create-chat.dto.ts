@@ -20,7 +20,7 @@ export class CreateChatDto {
 
   @IsOptional()
   @IsBoolean()
-  toolExecRawResponse = true
+  toolExecRawResponse = false
 
   static toEntity(userId: number, dto: CreateChatDto): InsertChat {
     return {
