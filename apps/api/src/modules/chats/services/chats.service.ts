@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { LlmChatService } from '@/core/llm/services/llm-chat.service'
 import path from 'path'
 import fs from 'fs'
@@ -13,7 +13,7 @@ import {
 } from 'database'
 import { CreateChatDto } from '@/modules/chats/dtos/create-chat.dto'
 import { json } from 'shared'
-import { and, desc, eq, gt, cosineDistance, sql } from 'drizzle-orm'
+import { and, desc, eq, gt, cosineDistance, sql, asc } from 'drizzle-orm'
 import {
   AIMessage,
   BaseMessage,
@@ -61,6 +61,7 @@ export class ChatsService {
   // - Store the AI response in the chat table
   // Get the most recent chat response from the database
   // Return the most recent response in the database as well as (if applicable) the tool execution response
+  // If any call fails, delete relevant chat record so that we don't get 400 error 'tool_calls' must be followed by tool messages + return friendly message based off of this
   async chat(user: SelectUser, createChatDto: CreateChatDto) {
     // Create a chat record with the user's query
     // Create an embedding for the query and store that in the embeddings table
@@ -114,15 +115,19 @@ export class ChatsService {
       const historicalChats = await this.getChatHistory(user.userId, 5)
 
       // - Send the tool response to the LLM chat service
-      console.log('tool chat response', json(historicalChats.at(0)))
-      const chatToolResponse = await this.llmChatService.chat(
-        historicalChats.at(0),
-        {
-          history: historicalChats.slice(0),
-          systemPrompt: this.prompts.systemBase,
-          tools,
-        },
-      )
+      const lastChat = historicalChats.at(-1)
+      if (!lastChat) {
+        throw new InternalServerErrorException(
+          'No last chat found from historical chats.',
+        )
+      }
+
+      console.log('tool chat response', json(lastChat))
+      const chatToolResponse = await this.llmChatService.chat(lastChat, {
+        history: historicalChats.slice(0, -1),
+        systemPrompt: this.prompts.systemBase,
+        tools,
+      })
 
       // - Store the AI response in the chat table
       await this.chatsFnsService.createChat(user, {
@@ -212,6 +217,7 @@ export class ChatsService {
   @LogActivity({ level: LogLevelEnum.DEBUG })
   private async getChatHistory(userId: number, limit = 3) {
     const chats = await this.getMostRecentChatsFromDb(userId, limit)
+    console.log('CHAT HISTORY', json(chats.map((chat) => chat.chatId)))
 
     return chats
       .map((chat) =>
@@ -225,13 +231,16 @@ export class ChatsService {
   }
 
   private async getMostRecentChatsFromDb(userId: number, limit = 3) {
-    return this.database.db
+    // FIXME: currently not working as we get an issue with connection of tool calls and responses. idea is to filter it
+    // out: where type is not tool and content is not null
+    const qb = this.database.db
       .select({
         content: Chats.content,
         type: Chats.type,
         chatId: Chats.chatId,
         toolExecData: ToolExecs.executionData,
         toolExecResponse: ToolExecs.response,
+        createdAt: Chats.createdAt,
       })
       .from(Chats)
       .leftJoin(ChatsToToolExecs, eq(ChatsToToolExecs.chatId, Chats.chatId))
@@ -242,6 +251,9 @@ export class ChatsService {
       .where(and(eq(Chats.userId, userId)))
       .orderBy(desc(Chats.createdAt))
       .limit(limit)
+      .as('qb')
+
+    return this.database.db.select().from(qb).orderBy(asc(qb.createdAt))
   }
 
   @LogActivity({ level: LogLevelEnum.DEBUG, logEntry: false })
