@@ -4,12 +4,20 @@ import { timestamps } from '@/utils/timestamps'
 import { ChatTypeEnum } from '@/models/chat/enums'
 import { ToolExecs } from '@/models'
 
-export const Chats = pgTable('chats', {
+export const Conversations = pgTable('conversations', {
   ...timestamps,
-  chatId: serial('chat_id').notNull().primaryKey(),
+  convId: serial('conversation_id').notNull().primaryKey(),
   userId: integer('user_id')
     .notNull()
     .references(() => Users.userId, { onDelete: 'cascade' }),
+})
+
+export const Chats = pgTable('chats', {
+  ...timestamps,
+  chatId: serial('chat_id').notNull().primaryKey(),
+  convId: integer('conversation_id')
+    .notNull()
+    .references(() => Conversations.convId, { onDelete: 'cascade' }),
   type: text('type').notNull().$type<ChatTypeEnum>(),
   content: text('content').notNull(),
 })
@@ -23,6 +31,7 @@ export const ChatsToToolExecs = pgTable(
     toolExecId: integer('tool_exec_id')
       .notNull()
       .references(() => ToolExecs.toolExecId, { onDelete: 'cascade' }),
+    ...timestamps,
   },
   (t) => ({
     pk: primaryKey({ columns: [t.chatId, t.toolExecId] }),

@@ -7,13 +7,13 @@ import {
   Chats,
   ChatsToToolExecs,
   ChatTypeEnum,
-  Embeddings,
+  Conversations,
   SelectUser,
   ToolExecs,
 } from 'database'
 import { CreateChatDto } from '@/modules/chats/dtos/create-chat.dto'
 import { json } from 'shared'
-import { and, desc, eq, gt, cosineDistance, sql, asc } from 'drizzle-orm'
+import { desc, eq, asc } from 'drizzle-orm'
 import {
   AIMessage,
   BaseMessage,
@@ -45,6 +45,7 @@ export class ChatsService {
   }
 
   // Business rules:
+  // Create a new conversation
   // Create a chat record with the user's query
   // Create an embedding for the query and store that in the embeddings table
   // Send an event that the user data has been updated with the new chat record
@@ -63,11 +64,21 @@ export class ChatsService {
   // Return the most recent response in the database as well as (if applicable) the tool execution response
   // If any call fails, delete relevant chat record so that we don't get 400 error 'tool_calls' must be followed by tool messages + return friendly message based off of this
   async chat(user: SelectUser, createChatDto: CreateChatDto) {
+    // Create a new conversation
     // Create a chat record with the user's query
     // Create an embedding for the query and store that in the embeddings table
     // Send an event that the user data has been updated with the new chat record
+    const convsResult = await this.database.db
+      .insert(Conversations)
+      .values({
+        userId: user.userId,
+      })
+      .returning({ convId: Conversations.convId })
+    const convId = convsResult[0].convId
+
     const result = await this.chatsFnsService.createChat(
       user,
+      convId,
       {
         content: createChatDto.message,
         type: createChatDto.type,
@@ -81,7 +92,7 @@ export class ChatsService {
       getToolsFromToolDefs(userToolDefs)
 
     // Get the historical chats for the user and add them into chat history
-    const historicalChats = await this.getChatHistory(user.userId, 5)
+    const historicalChats = await this.getChatHistory(user.userId)
 
     // Send the chat query to the LLM chat service
     const chatResponse = await this.llmChatService.chat(
@@ -96,6 +107,7 @@ export class ChatsService {
     // Create a new chat record with the AI response
     const createChatResponseResult = await this.chatsFnsService.createChat(
       user,
+      convId,
       {
         content: chatResponse?.content as string,
         type: ChatTypeEnum.Assistant,
@@ -107,12 +119,12 @@ export class ChatsService {
       toolExecResponse = await this.handleToolCalling(
         chatResponse,
         userToolDefs,
-        user.userId,
+        convId,
         createChatResponseResult[0].chatId,
       )
 
       // - Get latest historical chats for the user and add them into chat history
-      const historicalChats = await this.getChatHistory(user.userId, 5)
+      const historicalChats = await this.getChatHistory(user.userId)
 
       // - Send the tool response to the LLM chat service
       const lastChat = historicalChats.at(-1)
@@ -130,7 +142,7 @@ export class ChatsService {
       })
 
       // - Store the AI response in the chat table
-      await this.chatsFnsService.createChat(user, {
+      await this.chatsFnsService.createChat(user, convId, {
         content: chatToolResponse?.content as string,
         type: ChatTypeEnum.Assistant,
       })
@@ -143,8 +155,9 @@ export class ChatsService {
     // Return the most recent response in the database as well as (if applicable) the tool execution response
 
     return {
-      chatId: mostRecentChatResponses[0].chatId,
-      message: mostRecentChatResponses[0].content,
+      convId: convId,
+      chatId: mostRecentChatResponses.at(-1)?.chatId,
+      message: mostRecentChatResponses.at(-1)?.content,
       data: toolExecResponse,
     }
   }
@@ -153,7 +166,7 @@ export class ChatsService {
   async handleToolCalling(
     chatResponse: BaseMessageChunk,
     toolDefs: GetLlmTool[],
-    userId: number,
+    convId: number,
     chatId: number,
   ) {
     const toolCall = this.toolExecsFnsService.getCalledTool(chatResponse)
@@ -200,9 +213,9 @@ export class ChatsService {
     const createToolChatResult = await this.database.db
       .insert(Chats)
       .values({
-        content: json(toolResponse) as string,
+        content: JSON.stringify(toolResponse),
         type: ChatTypeEnum.Tool,
-        userId: userId,
+        convId,
       })
       .returning()
 
@@ -231,31 +244,46 @@ export class ChatsService {
   }
 
   private async getMostRecentChatsFromDb(userId: number, limit = 3) {
-    // FIXME: currently not working as we get an issue with connection of tool calls and responses. idea is to filter it
-    // out: where type is not tool and content is not null
-    const qb = this.database.db
+    const recentConversations = await this.database.db
       .select({
-        content: Chats.content,
-        type: Chats.type,
-        chatId: Chats.chatId,
-        toolExecData: ToolExecs.executionData,
-        toolExecResponse: ToolExecs.response,
-        createdAt: Chats.createdAt,
+        convId: Conversations.convId,
+        createdAt: Conversations.createdAt,
       })
-      .from(Chats)
-      .leftJoin(ChatsToToolExecs, eq(ChatsToToolExecs.chatId, Chats.chatId))
-      .leftJoin(
-        ToolExecs,
-        eq(ToolExecs.toolExecId, ChatsToToolExecs.toolExecId),
-      )
-      .where(and(eq(Chats.userId, userId)))
-      .orderBy(desc(Chats.createdAt))
+      .from(Conversations)
+      .where(eq(Conversations.userId, userId))
+      .orderBy(desc(Conversations.createdAt))
       .limit(limit)
-      .as('qb')
 
-    return this.database.db.select().from(qb).orderBy(asc(qb.createdAt))
+    const conversationsWithChats = await Promise.all(
+      recentConversations.map(async (conv) => {
+        const chats = await this.database.db
+          .select({
+            content: Chats.content,
+            type: Chats.type,
+            chatId: Chats.chatId,
+            toolExecData: ToolExecs.executionData,
+            toolExecResponse: ToolExecs.response,
+            createdAt: Chats.createdAt,
+          })
+          .from(Chats)
+          .leftJoin(ChatsToToolExecs, eq(ChatsToToolExecs.chatId, Chats.chatId))
+          .leftJoin(
+            ToolExecs,
+            eq(ToolExecs.toolExecId, ChatsToToolExecs.toolExecId),
+          )
+          .where(eq(Chats.convId, conv.convId))
+          .orderBy(asc(Chats.createdAt))
+
+        return chats
+      }),
+    )
+
+    return conversationsWithChats
+      .flat()
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
   }
 
+  /*
   @LogActivity({ level: LogLevelEnum.DEBUG, logEntry: false })
   private async getRelevantChats(
     embedding: number[],
@@ -284,6 +312,7 @@ export class ChatsService {
       )
       .filter(Boolean) as BaseMessage[]
   }
+   */
 
   private getMessageInstanceFromChatType(
     chatType: ChatTypeEnum,

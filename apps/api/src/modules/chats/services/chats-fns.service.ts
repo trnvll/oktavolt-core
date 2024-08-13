@@ -22,6 +22,7 @@ export class ChatsFnsService {
 
   async createChat(
     user: SelectUser,
+    convId: number,
     createChatDto: {
       content: string
       type: ChatTypeEnum
@@ -33,7 +34,7 @@ export class ChatsFnsService {
       .values({
         content: createChatDto.content,
         type: createChatDto.type,
-        userId: user.userId,
+        convId,
       })
       .returning()
 

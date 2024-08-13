@@ -183,6 +183,20 @@
       "when": 1723375535823,
       "tag": "0025_slow_white_tiger",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1723576272572,
+      "tag": "0026_large_skin",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1723577609463,
+      "tag": "0027_blushing_shockwave",
+      "breakpoints": true
     }
   ]
 }
