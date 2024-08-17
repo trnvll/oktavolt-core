@@ -7,11 +7,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common'
 import { ChatsService } from '@/modules/chats/services/chats.service'
-import { CreateChatDto } from '@/modules/chats/dtos/create-chat.dto'
 import { FindUserByIdPipe } from '@/modules/users/pipes/find-user-by-id.pipe'
 import { SelectUser } from 'database'
 import { AuthGuard } from '@nestjs/passport'
 import { AnalyticsInterceptor } from '@/utils/interceptors/analytics.interceptor'
+import { ConversationDto } from '@/modules/chats/dtos/conversation.dto'
 
 @UseGuards(AuthGuard('jwt'))
 @UseInterceptors(AnalyticsInterceptor)
@@ -22,8 +22,8 @@ export class ChatsController {
   @Post()
   async chat(
     @Param('userId', FindUserByIdPipe) user: SelectUser,
-    @Body() chatDto: CreateChatDto,
+    @Body() convDto: ConversationDto,
   ) {
-    return this.chatService.chat(user, chatDto)
+    return this.chatService.chat(user, convDto)
   }
 }

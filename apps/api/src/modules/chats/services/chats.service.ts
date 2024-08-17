@@ -8,10 +8,10 @@ import {
   ChatsToToolExecs,
   ChatTypeEnum,
   Conversations,
+  SelectConversation,
   SelectUser,
   ToolExecs,
 } from 'database'
-import { CreateChatDto } from '@/modules/chats/dtos/create-chat.dto'
 import { json } from 'shared'
 import { desc, eq, asc } from 'drizzle-orm'
 import {
@@ -32,10 +32,12 @@ import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service
 import { ToolExecsHandlingService } from '@/modules/tool-execs/services/tool-execs-handling.service'
 import { GetLlmTool } from '@/types/tools/get-llm-tools'
 import { ChatsQueryService } from '@/modules/chats/services/chats-query.service'
+import { LlmConversationTypeEnum } from '@/modules/chats/types/llm-conversation-type'
+import { ConversationDto } from '@/modules/chats/dtos/conversation.dto'
 
 @Injectable()
 export class ChatsService {
-  private prompts: Record<'systemBase', string>
+  private prompts: Record<LlmConversationTypeEnum, string>
 
   constructor(
     private readonly database: DatabaseService,
@@ -70,24 +72,28 @@ export class ChatsService {
   // Get the most recent chat response from the database
   // Return the most recent response in the database as well as (if applicable) the tool execution response
   // If any call fails, delete relevant chat record so that we don't get 400 error 'tool_calls' must be followed by tool messages + return friendly message based off of this
-  async chat(user: SelectUser, createChatDto: CreateChatDto) {
+  async chat(user: SelectUser, convDto: ConversationDto) {
     // Create a new conversation
     // Create a chat record with the user's query
     // Create an embedding for the query and store that in the embeddings table
     // Send an event that the user data has been updated with the new chat record
-    const convId = await this.chatsQueryService.createConv(user.userId)
+    const { convType } = convDto
+    const conv = await this.chatsQueryService.createConv(
+      user.userId,
+      convDto.convType,
+    )
 
     const [result, embeddings] = await Promise.all([
       this.chatsFnsService.createChat(
         user,
-        convId,
+        conv.convId,
         {
-          content: createChatDto.message,
-          type: createChatDto.type,
+          content: convDto.message,
+          type: convDto.chatType,
         },
         true,
       ),
-      this.llmEmbeddingsService.generateEmbeddings([createChatDto.message]),
+      this.llmEmbeddingsService.generateEmbeddings([convDto.message]),
     ])
 
     // Get the tool definitions and add them into the chat
@@ -106,7 +112,7 @@ export class ChatsService {
       new HumanMessage(result[0].content),
       {
         history: [relevantContext, ...historicalChats],
-        systemPrompt: this.prompts.systemBase,
+        systemPrompt: this.prompts[convType],
         tools,
       },
     )
@@ -114,7 +120,7 @@ export class ChatsService {
     // Create a new chat record with the AI response
     const createChatResponseResult = await this.chatsFnsService.createChat(
       user,
-      convId,
+      conv.convId,
       {
         content: chatResponse?.content as string,
         type: ChatTypeEnum.Assistant,
@@ -126,11 +132,11 @@ export class ChatsService {
       toolExecResponse = await this.toolExecsHandlingService.handleToolExec({
         chatResponse,
         toolDefs: resourceToolDefs,
-        convId,
+        convId: conv.convId,
         chatId: createChatResponseResult[0].chatId,
       })
 
-      await this.createToolExecResponse(user, convId, tools)
+      await this.createToolExecResponse(user, conv, tools)
     }
     // Get the most recent chat response from the database
     const mostRecentChatResponses = await this.getMostRecentChatsFromDb(
@@ -140,7 +146,7 @@ export class ChatsService {
     // Return the most recent response in the database as well as (if applicable) the tool execution response
 
     return {
-      convId: convId,
+      convId: conv.convId,
       chatId: mostRecentChatResponses.at(-1)?.chatId,
       message: mostRecentChatResponses.at(-1)?.content,
       data: toolExecResponse,
@@ -149,7 +155,7 @@ export class ChatsService {
 
   private async createToolExecResponse(
     user: SelectUser,
-    convId: number,
+    conv: Pick<SelectConversation, 'convId' | 'type'>,
     tools: GetLlmTool['tool'][],
   ) {
     // - Get latest historical chats for the user and add them into chat history
@@ -166,12 +172,12 @@ export class ChatsService {
     console.log('tool chat response', json(lastChat))
     const chatToolResponse = await this.llmChatService.chat(lastChat, {
       history: historicalChats.slice(0, -1),
-      systemPrompt: this.prompts.systemBase,
+      systemPrompt: this.prompts[conv.type],
       tools,
     })
 
     // - Store the AI response in the chat table
-    await this.chatsFnsService.createChat(user, convId, {
+    await this.chatsFnsService.createChat(user, conv.convId, {
       content: chatToolResponse?.content as string,
       type: ChatTypeEnum.Assistant,
     })
@@ -286,12 +292,19 @@ export class ChatsService {
       return path.join(basePath, fileName)
     }
 
-    const systemBasePrompt = fs.readFileSync(
-      getSystemFilePath('base.txt'),
+    const personalPrompt = fs.readFileSync(
+      getSystemFilePath('base-personal.txt'),
       'utf8',
     )
+    const workPrompt = fs.readFileSync(
+      getSystemFilePath('base-work.txt'),
+      'utf8',
+    )
+    const apiPrompt = fs.readFileSync(getSystemFilePath('base-api.txt'), 'utf8')
     this.prompts = {
-      systemBase: systemBasePrompt,
+      [LlmConversationTypeEnum.Personal]: personalPrompt,
+      [LlmConversationTypeEnum.Work]: workPrompt,
+      [LlmConversationTypeEnum.Api]: apiPrompt,
     }
   }
 }

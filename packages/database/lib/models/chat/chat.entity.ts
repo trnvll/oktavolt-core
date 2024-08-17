@@ -1,7 +1,7 @@
 import { integer, pgTable, serial, text, primaryKey } from 'drizzle-orm/pg-core'
 import { Users } from '@/models/user/user.entity'
 import { timestamps } from '@/utils/timestamps'
-import { ChatTypeEnum } from '@/models/chat/enums'
+import { ChatTypeEnum, ConversationTypeEnum } from '@/models/chat/enums'
 import { ToolExecs } from '@/models'
 
 export const Conversations = pgTable('conversations', {
@@ -10,6 +10,7 @@ export const Conversations = pgTable('conversations', {
   userId: integer('user_id')
     .notNull()
     .references(() => Users.userId, { onDelete: 'cascade' }),
+  type: text('type').notNull().$type<ConversationTypeEnum>(),
 })
 
 export const Chats = pgTable('chats', {

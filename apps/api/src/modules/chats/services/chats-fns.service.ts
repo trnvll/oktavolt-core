@@ -21,7 +21,7 @@ export class ChatsFnsService {
   ) {}
 
   async createChat(
-    user: SelectUser,
+    user: Pick<SelectUser, 'userId'>,
     convId: number,
     createChatDto: {
       content: string
@@ -52,7 +52,10 @@ export class ChatsFnsService {
     return result
   }
 
-  createUserDataUpdatedEvent(user: SelectUser, chat: SelectChat) {
+  createUserDataUpdatedEvent(
+    user: Pick<SelectUser, 'userId'>,
+    chat: SelectChat,
+  ) {
     this.eventEmitter.emit(
       EventsEnum.UserDataUpdated,
       new CreateEventUserDataUpdatedDto({

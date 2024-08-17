@@ -4,3 +4,9 @@ export enum ChatTypeEnum {
   Assistant = 'assistant',
   Tool = 'tool',
 }
+
+export enum ConversationTypeEnum {
+  Personal = 'personal',
+  Work = 'work',
+  Api = 'api',
+}
