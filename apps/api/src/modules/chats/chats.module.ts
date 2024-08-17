@@ -13,14 +13,16 @@ import { ChatsEventsConsumer } from '@/modules/chats/consumers/chats-events.cons
 import { SqsService } from '@/core/sqs/sqs.service'
 import { ChatsFnsService } from '@/modules/chats/services/chats-fns.service'
 import { ToolExecsModule } from '@/modules/tool-execs/tool-execs.module'
-import { UsersLlmToolsService } from '@/modules/users/services/users-llm-tools.service'
-import { UsersService } from '@/modules/users/services/users.service'
-import { UsersQueryService } from '@/modules/users/services/queries/users-query.service'
+import { ResourcesLlmToolsService } from '@/modules/resources/services/resources-llm-tools.service'
+import { ResourcesQueryService } from '@/modules/resources/services/resources-query.service'
+import { ResourcesService } from '@/modules/resources/services/resources.service'
+import { ResourcesEventsConsumer } from '@/modules/resources/consumers/resources-events.consumer'
 
 @Module({
   imports: [
     DatabaseModule,
     BullModule.registerQueue({ name: QueueEnum.ChatsEvents }),
+    BullModule.registerQueue({ name: QueueEnum.ResourcesEvents }),
     ToolExecsModule,
   ],
   controllers: [ChatsController],
@@ -34,9 +36,10 @@ import { UsersQueryService } from '@/modules/users/services/queries/users-query.
     LlmEmbeddingsService,
     LlmDataTransformationService,
     SqsService,
-    UsersLlmToolsService,
-    UsersService,
-    UsersQueryService,
+    ResourcesLlmToolsService,
+    ResourcesQueryService,
+    ResourcesService,
+    ResourcesEventsConsumer,
   ],
   exports: [ChatsService, ChatsEmbeddingsService, ChatsFnsService],
 })

@@ -19,16 +19,19 @@ import {
   BaseMessage,
   BaseMessageChunk,
   HumanMessage,
+  SystemMessage,
   ToolMessage,
 } from '@langchain/core/messages'
 import { LogActivity, LogLevelEnum } from 'utils'
 import { ChatsFnsService } from '@/modules/chats/services/chats-fns.service'
 import { getToolsFromToolDefs } from '@/utils/fns/get-tools-from-tool-defs'
-import { UsersLlmToolsService } from '@/modules/users/services/users-llm-tools.service'
 import { ToolExecsFnsService } from '@/modules/tool-execs/services/tool-execs-fns.service'
 import { DynamicStructuredTool } from '@langchain/core/tools'
 import { ToolExecStatus } from '@/patch/enums/external'
 import { GetLlmTool } from '@/types/tools/get-llm-tools'
+import { ResourcesLlmToolsService } from '@/modules/resources/services/resources-llm-tools.service'
+import { ResourcesQueryService } from '@/modules/resources/services/resources-query.service'
+import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
 
 @Injectable()
 export class ChatsService {
@@ -37,9 +40,11 @@ export class ChatsService {
   constructor(
     private readonly database: DatabaseService,
     private readonly llmChatService: LlmChatService,
-    private readonly usersLlmToolsService: UsersLlmToolsService,
+    private readonly resourcesLlmToolsService: ResourcesLlmToolsService,
+    private readonly resourcesQueryService: ResourcesQueryService,
     private readonly chatsFnsService: ChatsFnsService,
     private readonly toolExecsFnsService: ToolExecsFnsService,
+    private readonly llmEmbeddingsService: LlmEmbeddingsService,
   ) {
     this.loadPrompts()
   }
@@ -76,29 +81,35 @@ export class ChatsService {
       .returning({ convId: Conversations.convId })
     const convId = convsResult[0].convId
 
-    const result = await this.chatsFnsService.createChat(
-      user,
-      convId,
-      {
-        content: createChatDto.message,
-        type: createChatDto.type,
-      },
-      true,
-    )
+    const [result, embeddings] = await Promise.all([
+      this.chatsFnsService.createChat(
+        user,
+        convId,
+        {
+          content: createChatDto.message,
+          type: createChatDto.type,
+        },
+        true,
+      ),
+      this.llmEmbeddingsService.generateEmbeddings([createChatDto.message]),
+    ])
 
     // Get the tool definitions and add them into the chat
-    const userToolDefs = this.usersLlmToolsService.getToolDefs()
+    const resourceToolDefs = this.resourcesLlmToolsService.getToolDefs()
     const tools: DynamicStructuredTool<any>[] =
-      getToolsFromToolDefs(userToolDefs)
+      getToolsFromToolDefs(resourceToolDefs)
 
-    // Get the historical chats for the user and add them into chat history
-    const historicalChats = await this.getChatHistory(user.userId)
+    // Get the historical chats for the user and add them into chat history as well as relevant context
+    const [historicalChats, relevantContext] = await Promise.all([
+      this.getChatHistory(user.userId),
+      this.getRelevantResources(embeddings[0], user.userId),
+    ])
 
     // Send the chat query to the LLM chat service
     const chatResponse = await this.llmChatService.chat(
       new HumanMessage(result[0].content),
       {
-        history: historicalChats,
+        history: [relevantContext, ...historicalChats],
         systemPrompt: this.prompts.systemBase,
         tools,
       },
@@ -118,7 +129,7 @@ export class ChatsService {
     if (chatResponse && this.toolExecsFnsService.hasToolCalls(chatResponse)) {
       toolExecResponse = await this.handleToolCalling(
         chatResponse,
-        userToolDefs,
+        resourceToolDefs,
         convId,
         createChatResponseResult[0].chatId,
       )
@@ -283,36 +294,25 @@ export class ChatsService {
       .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
   }
 
-  /*
   @LogActivity({ level: LogLevelEnum.DEBUG, logEntry: false })
-  private async getRelevantChats(
+  private async getRelevantResources(
     embedding: number[],
     userId: number,
     limit = 2,
     minSimilarity = 0.3,
   ) {
-    const similarity = sql<number>`1 - (${cosineDistance(
-      Embeddings.embedding,
+    const resources = await this.resourcesQueryService.findSimilarResources(
       embedding,
-    )})`
+      userId,
+      { limit, minSimilarity },
+    )
 
-    const chats = await this.database.db
-      .select({ similarity, content: Chats.content, type: Chats.type })
-      .from(Embeddings)
-      .innerJoin(Chats, eq(Embeddings.chatId, Chats.chatId))
-      .where(and(eq(Chats.userId, userId), gt(similarity, minSimilarity)))
-      .orderBy((t) => desc(t.similarity))
-      .limit(limit)
+    const context = resources.map((resource) => resource.content).join('\n')
 
-    return chats
-      .map((chat) =>
-        this.getMessageInstanceFromChatType(chat.type, {
-          content: chat.content,
-        }),
-      )
-      .filter(Boolean) as BaseMessage[]
+    return new SystemMessage(
+      `If applicable, use the following context to answer the user's questions: ${context}`,
+    )
   }
-   */
 
   private getMessageInstanceFromChatType(
     chatType: ChatTypeEnum,

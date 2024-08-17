@@ -90,6 +90,7 @@ import { json } from 'shared'
     BullModule.registerQueue({
       name: QueueEnum.ChatsEvents,
     }),
+    BullModule.registerQueue({ name: QueueEnum.ResourcesEvents }),
     AuthzModule,
     UsersModule,
     CommsModule,

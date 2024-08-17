@@ -8,6 +8,7 @@ import {
   ToolExecs,
   ChatsToToolExecs,
   Conversations,
+  Resources,
 } from '@/models'
 
 export const schema = {
@@ -20,4 +21,5 @@ export const schema = {
   toolExecs: ToolExecs,
   chatsToToolExecs: ChatsToToolExecs,
   convs: Conversations,
+  resources: Resources,
 }

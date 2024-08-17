@@ -1,0 +1,1 @@
+ALTER TABLE "resources" ADD COLUMN "resource_id" integer PRIMARY KEY NOT NULL;
