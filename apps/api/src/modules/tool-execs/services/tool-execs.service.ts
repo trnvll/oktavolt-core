@@ -3,7 +3,7 @@ import { DatabaseService } from '@/core/database/database.service'
 import { ChatsToToolExecs, ToolExecs } from 'database'
 import { ToolExecStatus } from '@/patch/enums/external'
 import { desc, eq } from 'drizzle-orm'
-import { UsersLlmToolsService } from '@/modules/users/services/users-llm-tools.service'
+import { UsersLlmApiToolsService } from '@/modules/users/services/users-llm-api-tools.service'
 import { BaseMessageChunk } from '@langchain/core/messages'
 import { ToolExecsFnsService } from '@/modules/tool-execs/services/tool-execs-fns.service'
 import { GetLlmTool } from '@/types/tools/get-llm-tools'
@@ -14,7 +14,7 @@ import { z } from 'zod'
 export class ToolExecsService {
   constructor(
     private readonly database: DatabaseService,
-    private readonly usersLlmToolsService: UsersLlmToolsService,
+    private readonly usersLlmToolsService: UsersLlmApiToolsService,
     private readonly toolExecsFnsService: ToolExecsFnsService,
   ) {}
 

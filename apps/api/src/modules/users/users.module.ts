@@ -13,7 +13,7 @@ import { NotificationsService } from '@/core/notifications/services/notification
 import { SqsService } from '@/core/sqs/sqs.service'
 import { LlmDataTransformationService } from '@/core/llm/services/llm-data-transformation.service'
 import { UsersQueryService } from '@/modules/users/services/queries/users-query.service'
-import { UsersLlmToolsService } from '@/modules/users/services/users-llm-tools.service'
+import { UsersLlmApiToolsService } from '@/modules/users/services/users-llm-api-tools.service'
 
 @Module({
   imports: [
@@ -32,12 +32,12 @@ import { UsersLlmToolsService } from '@/modules/users/services/users-llm-tools.s
     UsersEventsHandler,
     UsersEventsConsumer,
     UsersQueryService,
-    UsersLlmToolsService,
+    UsersLlmApiToolsService,
   ],
   exports: [
     UsersService,
     UserEmbeddingsService,
-    UsersLlmToolsService,
+    UsersLlmApiToolsService,
     UsersQueryService,
   ],
   controllers: [UsersController],

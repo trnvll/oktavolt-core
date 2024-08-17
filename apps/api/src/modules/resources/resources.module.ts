@@ -8,7 +8,9 @@ import { ResourcesService } from '@/modules/resources/services/resources.service
 import { BullModule } from '@nestjs/bull'
 import { QueueEnum } from '@/types/queues/queue.enum'
 import { ResourcesEventsConsumer } from '@/modules/resources/consumers/resources-events.consumer'
-import { ResourcesLlmToolsService } from '@/modules/resources/services/resources-llm-tools.service'
+import { ResourcesLlmPersonalToolsService } from '@/modules/resources/services/resources-llm-personal-tools.service'
+import { ResourcesLlmApiToolsService } from '@/modules/resources/services/resources-llm-api-tools.service'
+import { ResourcesLlmWorkToolsService } from '@/modules/resources/services/resources-llm-work-tools.service'
 
 @Module({
   imports: [
@@ -23,7 +25,9 @@ import { ResourcesLlmToolsService } from '@/modules/resources/services/resources
     ResourcesService,
     ResourcesQueryService,
     ResourcesEventsConsumer,
-    ResourcesLlmToolsService,
+    ResourcesLlmPersonalToolsService,
+    ResourcesLlmApiToolsService,
+    ResourcesLlmWorkToolsService,
   ],
   exports: [ResourcesService, ResourcesQueryService],
 })

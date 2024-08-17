@@ -13,7 +13,7 @@ import {
   ToolExecs,
 } from 'database'
 import { json } from 'shared'
-import { desc, eq, asc } from 'drizzle-orm'
+import { desc, eq, asc, and } from 'drizzle-orm'
 import {
   AIMessage,
   BaseMessage,
@@ -26,7 +26,6 @@ import { ChatsFnsService } from '@/modules/chats/services/chats-fns.service'
 import { getToolsFromToolDefs } from '@/utils/fns/get-tools-from-tool-defs'
 import { ToolExecsFnsService } from '@/modules/tool-execs/services/tool-execs-fns.service'
 import { DynamicStructuredTool } from '@langchain/core/tools'
-import { ResourcesLlmToolsService } from '@/modules/resources/services/resources-llm-tools.service'
 import { ResourcesQueryService } from '@/modules/resources/services/resources-query.service'
 import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
 import { ToolExecsHandlingService } from '@/modules/tool-execs/services/tool-execs-handling.service'
@@ -34,6 +33,7 @@ import { GetLlmTool } from '@/types/tools/get-llm-tools'
 import { ChatsQueryService } from '@/modules/chats/services/chats-query.service'
 import { LlmConversationTypeEnum } from '@/modules/chats/types/llm-conversation-type'
 import { ConversationDto } from '@/modules/chats/dtos/conversation.dto'
+import { ToolExecsLlmToolsService } from '@/modules/tool-execs/services/tool-execs-llm-tools.service'
 
 @Injectable()
 export class ChatsService {
@@ -42,13 +42,13 @@ export class ChatsService {
   constructor(
     private readonly database: DatabaseService,
     private readonly llmChatService: LlmChatService,
-    private readonly resourcesLlmToolsService: ResourcesLlmToolsService,
     private readonly resourcesQueryService: ResourcesQueryService,
     private readonly chatsFnsService: ChatsFnsService,
     private readonly chatsQueryService: ChatsQueryService,
     private readonly toolExecsFnsService: ToolExecsFnsService,
     private readonly llmEmbeddingsService: LlmEmbeddingsService,
     private readonly toolExecsHandlingService: ToolExecsHandlingService,
+    private readonly toolExecsLlmToolsService: ToolExecsLlmToolsService,
   ) {
     this.loadPrompts()
   }
@@ -97,14 +97,14 @@ export class ChatsService {
     ])
 
     // Get the tool definitions and add them into the chat
-    const resourceToolDefs = this.resourcesLlmToolsService.getToolDefs()
+    const resourceToolDefs = this.toolExecsLlmToolsService.getToolDefs(convType)
     const tools: DynamicStructuredTool<any>[] =
       getToolsFromToolDefs(resourceToolDefs)
 
     // Get the historical chats for the user and add them into chat history as well as relevant context
     const [historicalChats, relevantContext] = await Promise.all([
-      this.getChatHistory(user.userId),
-      this.getRelevantResources(embeddings[0], user.userId),
+      this.getChatHistory(user.userId, convType),
+      this.getRelevantResources(embeddings[0], user.userId, convType),
     ])
 
     // Send the chat query to the LLM chat service
@@ -141,6 +141,7 @@ export class ChatsService {
     // Get the most recent chat response from the database
     const mostRecentChatResponses = await this.getMostRecentChatsFromDb(
       user.userId,
+      convType,
       1,
     )
     // Return the most recent response in the database as well as (if applicable) the tool execution response
@@ -159,7 +160,10 @@ export class ChatsService {
     tools: GetLlmTool['tool'][],
   ) {
     // - Get latest historical chats for the user and add them into chat history
-    const historicalChats = await this.getChatHistory(user.userId)
+    const historicalChats = await this.getChatHistory(
+      user.userId,
+      conv.type as any,
+    )
 
     // - Send the tool response to the LLM chat service
     const lastChat = historicalChats.at(-1)
@@ -184,8 +188,12 @@ export class ChatsService {
   }
 
   @LogActivity({ level: LogLevelEnum.DEBUG })
-  private async getChatHistory(userId: number, limit = 3) {
-    const chats = await this.getMostRecentChatsFromDb(userId, limit)
+  private async getChatHistory(
+    userId: number,
+    convType: LlmConversationTypeEnum,
+    limit = 3,
+  ) {
+    const chats = await this.getMostRecentChatsFromDb(userId, convType, limit)
 
     return chats
       .map((chat) =>
@@ -198,14 +206,23 @@ export class ChatsService {
       .filter(Boolean) as BaseMessage[]
   }
 
-  private async getMostRecentChatsFromDb(userId: number, limit = 3) {
+  private async getMostRecentChatsFromDb(
+    userId: number,
+    convType: LlmConversationTypeEnum,
+    limit = 3,
+  ) {
     const recentConversations = await this.database.db
       .select({
         convId: Conversations.convId,
         createdAt: Conversations.createdAt,
       })
       .from(Conversations)
-      .where(eq(Conversations.userId, userId))
+      .where(
+        and(
+          eq(Conversations.userId, userId),
+          eq(Conversations.type, convType as any),
+        ),
+      )
       .orderBy(desc(Conversations.createdAt))
       .limit(limit)
 
@@ -242,12 +259,14 @@ export class ChatsService {
   private async getRelevantResources(
     embedding: number[],
     userId: number,
+    convType: LlmConversationTypeEnum,
     limit = 2,
     minSimilarity = 0.3,
   ) {
     const resources = await this.resourcesQueryService.findSimilarResources(
       embedding,
       userId,
+      convType,
       { limit, minSimilarity },
     )
 

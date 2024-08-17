@@ -225,6 +225,13 @@
       "when": 1723920752950,
       "tag": "0031_next_azazel",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1723921734334,
+      "tag": "0032_square_blackheart",
+      "breakpoints": true
     }
   ]
 }

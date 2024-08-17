@@ -3,6 +3,7 @@ import { DatabaseService } from '@/core/database/database.service'
 import { and, cosineDistance, desc, eq, gt, sql } from 'drizzle-orm'
 import { Resources } from 'database'
 import { LogActivity, LogLevelEnum } from 'utils'
+import { LlmConversationTypeEnum } from '@/modules/chats/types/llm-conversation-type'
 
 @Injectable()
 export class ResourcesQueryService {
@@ -12,6 +13,7 @@ export class ResourcesQueryService {
   async findSimilarResources(
     embedding: number[],
     userId: number,
+    convType: LlmConversationTypeEnum,
     options?: {
       limit?: number
       minSimilarity?: number
@@ -32,6 +34,7 @@ export class ResourcesQueryService {
       .where(
         and(
           eq(Resources.userId, userId),
+          eq(Resources.type, convType as any),
           gt(similarity, options?.minSimilarity ?? 0.2),
         ),
       )

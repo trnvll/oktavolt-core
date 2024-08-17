@@ -8,9 +8,10 @@ import { InjectQueue } from '@nestjs/bull'
 import { QueueEnum } from '@/types/queues/queue.enum'
 import { Queue } from 'bull'
 import { ResourcesEventsConsumerEnum } from '@/modules/resources/consumers/resources-events.consumer'
+import { LlmConversationTypeEnum } from '@/modules/chats/types/llm-conversation-type'
 
 @Injectable()
-export class ResourcesLlmToolsService {
+export class ResourcesLlmWorkToolsService {
   constructor(
     @InjectQueue(QueueEnum.ResourcesEvents)
     private readonly resourceEventsQueue: Queue,
@@ -24,9 +25,9 @@ export class ResourcesLlmToolsService {
     return [
       {
         tool: new DynamicStructuredTool({
-          name: 'StoreRelevantPersonalInformation',
+          name: 'StoreRelevantWorkInformation',
           description:
-            'Stores relevant information about the user to be used in the future for highly personalized experiences. Typical examples include storing relationships, preferences, personal information, activities, insights etc.',
+            'Stores relevant information about the company and its operations for future reference and strategic decision-making, as well as technological tools and resources used in the company.',
           schema: z.object({
             content: z
               .string()
@@ -42,6 +43,7 @@ export class ResourcesLlmToolsService {
                 data: {
                   content: input.content,
                   metadata: input.metadata,
+                  type: LlmConversationTypeEnum.Personal,
                 },
                 userId: 79,
               },

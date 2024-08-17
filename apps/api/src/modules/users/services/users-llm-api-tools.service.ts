@@ -9,7 +9,7 @@ import { UserSortFields } from '@/modules/users/types/user-sort-fields'
 import { GetLlmTool } from '@/types/tools/get-llm-tools'
 
 @Injectable()
-export class UsersLlmToolsService {
+export class UsersLlmApiToolsService {
   constructor(private readonly usersService: UsersService) {}
 
   getTools(): GetLlmTool['tool'][] {

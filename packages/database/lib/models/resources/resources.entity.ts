@@ -1,7 +1,7 @@
 import { integer, jsonb, pgTable, serial, text } from 'drizzle-orm/pg-core'
 import { timestamps } from '@/utils/timestamps'
 import { index, vector } from 'drizzle-orm/pg-core'
-import { Users } from '@/models'
+import { ConversationTypeEnum, Users } from '@/models'
 
 export const Resources = pgTable(
   'resources',
@@ -11,6 +11,7 @@ export const Resources = pgTable(
     userId: integer('user_id').references(() => Users.userId, {
       onDelete: 'cascade',
     }),
+    type: text('type').notNull().$type<ConversationTypeEnum>(),
     content: text('content').notNull(),
     embedding: vector('embedding', { dimensions: 1536 }).notNull(),
     metadata: jsonb('metadata'),

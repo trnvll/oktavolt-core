@@ -112,7 +112,10 @@ export class UsersService {
       }),
     )
 
-    return result
+    return {
+      message: 'User deleted successfully.',
+      result: result,
+    }
   }
 
   async findUserById(userId: number) {

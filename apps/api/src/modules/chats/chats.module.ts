@@ -13,18 +13,14 @@ import { ChatsEventsConsumer } from '@/modules/chats/consumers/chats-events.cons
 import { SqsService } from '@/core/sqs/sqs.service'
 import { ChatsFnsService } from '@/modules/chats/services/chats-fns.service'
 import { ToolExecsModule } from '@/modules/tool-execs/tool-execs.module'
-import { ResourcesLlmToolsService } from '@/modules/resources/services/resources-llm-tools.service'
-import { ResourcesQueryService } from '@/modules/resources/services/resources-query.service'
-import { ResourcesService } from '@/modules/resources/services/resources.service'
-import { ResourcesEventsConsumer } from '@/modules/resources/consumers/resources-events.consumer'
 import { ToolExecsHandlingService } from '@/modules/tool-execs/services/tool-execs-handling.service'
 import { ChatsQueryService } from '@/modules/chats/services/chats-query.service'
+import { ResourcesQueryService } from '@/modules/resources/services/resources-query.service'
 
 @Module({
   imports: [
     DatabaseModule,
     BullModule.registerQueue({ name: QueueEnum.ChatsEvents }),
-    BullModule.registerQueue({ name: QueueEnum.ResourcesEvents }),
     ToolExecsModule,
   ],
   controllers: [ChatsController],
@@ -39,11 +35,8 @@ import { ChatsQueryService } from '@/modules/chats/services/chats-query.service'
     LlmEmbeddingsService,
     LlmDataTransformationService,
     SqsService,
-    ResourcesLlmToolsService,
-    ResourcesQueryService,
-    ResourcesService,
-    ResourcesEventsConsumer,
     ToolExecsHandlingService,
+    ResourcesQueryService,
   ],
   exports: [
     ChatsService,

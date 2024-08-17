@@ -8,7 +8,7 @@ import { UsersService } from '@/modules/users/services/users.service'
 import { DatabaseModule } from '@/core/database/database.module'
 import { DatabaseService } from '@/core/database/database.service'
 import { UsersQueryService } from '@/modules/users/services/queries/users-query.service'
-import { UsersLlmToolsService } from '@/modules/users/services/users-llm-tools.service'
+import { UsersLlmApiToolsService } from '@/modules/users/services/users-llm-api-tools.service'
 import { RelationshipsLlmToolsService } from '@/modules/relationships/services/relationships-llm-tools.service'
 import { RelationshipsService } from '@/modules/relationships/services/relationships.service'
 import { BullModule } from '@nestjs/bull'
@@ -27,7 +27,7 @@ import { ChatsFnsService } from '@/modules/chats/services/chats-fns.service'
     OmniService,
     LlmOpenapiActionsService,
     LlmQueryService,
-    UsersLlmToolsService,
+    UsersLlmApiToolsService,
     LlmChatService,
     UsersService,
     UsersQueryService,
