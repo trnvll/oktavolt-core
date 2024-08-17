@@ -17,7 +17,6 @@ import { desc, eq, asc } from 'drizzle-orm'
 import {
   AIMessage,
   BaseMessage,
-  BaseMessageChunk,
   HumanMessage,
   SystemMessage,
   ToolMessage,
@@ -27,11 +26,12 @@ import { ChatsFnsService } from '@/modules/chats/services/chats-fns.service'
 import { getToolsFromToolDefs } from '@/utils/fns/get-tools-from-tool-defs'
 import { ToolExecsFnsService } from '@/modules/tool-execs/services/tool-execs-fns.service'
 import { DynamicStructuredTool } from '@langchain/core/tools'
-import { ToolExecStatus } from '@/patch/enums/external'
-import { GetLlmTool } from '@/types/tools/get-llm-tools'
 import { ResourcesLlmToolsService } from '@/modules/resources/services/resources-llm-tools.service'
 import { ResourcesQueryService } from '@/modules/resources/services/resources-query.service'
 import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
+import { ToolExecsHandlingService } from '@/modules/tool-execs/services/tool-execs-handling.service'
+import { GetLlmTool } from '@/types/tools/get-llm-tools'
+import { ChatsQueryService } from '@/modules/chats/services/chats-query.service'
 
 @Injectable()
 export class ChatsService {
@@ -43,8 +43,10 @@ export class ChatsService {
     private readonly resourcesLlmToolsService: ResourcesLlmToolsService,
     private readonly resourcesQueryService: ResourcesQueryService,
     private readonly chatsFnsService: ChatsFnsService,
+    private readonly chatsQueryService: ChatsQueryService,
     private readonly toolExecsFnsService: ToolExecsFnsService,
     private readonly llmEmbeddingsService: LlmEmbeddingsService,
+    private readonly toolExecsHandlingService: ToolExecsHandlingService,
   ) {
     this.loadPrompts()
   }
@@ -73,13 +75,7 @@ export class ChatsService {
     // Create a chat record with the user's query
     // Create an embedding for the query and store that in the embeddings table
     // Send an event that the user data has been updated with the new chat record
-    const convsResult = await this.database.db
-      .insert(Conversations)
-      .values({
-        userId: user.userId,
-      })
-      .returning({ convId: Conversations.convId })
-    const convId = convsResult[0].convId
+    const convId = await this.chatsQueryService.createConv(user.userId)
 
     const [result, embeddings] = await Promise.all([
       this.chatsFnsService.createChat(
@@ -127,36 +123,14 @@ export class ChatsService {
 
     let toolExecResponse
     if (chatResponse && this.toolExecsFnsService.hasToolCalls(chatResponse)) {
-      toolExecResponse = await this.handleToolCalling(
+      toolExecResponse = await this.toolExecsHandlingService.handleToolExec({
         chatResponse,
-        resourceToolDefs,
+        toolDefs: resourceToolDefs,
         convId,
-        createChatResponseResult[0].chatId,
-      )
-
-      // - Get latest historical chats for the user and add them into chat history
-      const historicalChats = await this.getChatHistory(user.userId)
-
-      // - Send the tool response to the LLM chat service
-      const lastChat = historicalChats.at(-1)
-      if (!lastChat) {
-        throw new InternalServerErrorException(
-          'No last chat found from historical chats.',
-        )
-      }
-
-      console.log('tool chat response', json(lastChat))
-      const chatToolResponse = await this.llmChatService.chat(lastChat, {
-        history: historicalChats.slice(0, -1),
-        systemPrompt: this.prompts.systemBase,
-        tools,
+        chatId: createChatResponseResult[0].chatId,
       })
 
-      // - Store the AI response in the chat table
-      await this.chatsFnsService.createChat(user, convId, {
-        content: chatToolResponse?.content as string,
-        type: ChatTypeEnum.Assistant,
-      })
+      await this.createToolExecResponse(user, convId, tools)
     }
     // Get the most recent chat response from the database
     const mostRecentChatResponses = await this.getMostRecentChatsFromDb(
@@ -173,75 +147,39 @@ export class ChatsService {
     }
   }
 
-  @LogActivity()
-  async handleToolCalling(
-    chatResponse: BaseMessageChunk,
-    toolDefs: GetLlmTool[],
+  private async createToolExecResponse(
+    user: SelectUser,
     convId: number,
-    chatId: number,
+    tools: GetLlmTool['tool'][],
   ) {
-    const toolCall = this.toolExecsFnsService.getCalledTool(chatResponse)
+    // - Get latest historical chats for the user and add them into chat history
+    const historicalChats = await this.getChatHistory(user.userId)
 
-    if (!toolCall) {
-      throw new Error('No tool call found.')
+    // - Send the tool response to the LLM chat service
+    const lastChat = historicalChats.at(-1)
+    if (!lastChat) {
+      throw new InternalServerErrorException(
+        'No last chat found from historical chats.',
+      )
     }
 
-    const toolDef = toolDefs.find((def) => def.tool.name === toolCall.name)
-
-    if (!toolDef) {
-      throw new Error('Tool not found.')
-    }
-
-    const { tool } = toolDef
-
-    // - Create a tool execution record in the tool execs table and link it to the AI chat record
-    const createToolExecResult = await this.database.db
-      .insert(ToolExecs)
-      .values({
-        toolName: tool.name,
-        executionData: toolCall,
-        status: ToolExecStatus.Approved,
-      })
-      .returning()
-
-    await this.database.db.insert(ChatsToToolExecs).values({
-      chatId,
-      toolExecId: createToolExecResult[0].toolExecId,
+    console.log('tool chat response', json(lastChat))
+    const chatToolResponse = await this.llmChatService.chat(lastChat, {
+      history: historicalChats.slice(0, -1),
+      systemPrompt: this.prompts.systemBase,
+      tools,
     })
 
-    // - Execute the tool call and store the response in the tool execs table, of the previously created record
-    const toolResponse = await tool.func(toolCall.args)
-    await this.database.db
-      .update(ToolExecs)
-      .set({
-        status: ToolExecStatus.Executed,
-        executedAt: new Date(),
-        response: toolResponse,
-      })
-      .where(eq(ToolExecs.toolExecId, createToolExecResult[0].toolExecId))
-
-    // - Create a new tool chat record which links to the same tool execution record
-    const createToolChatResult = await this.database.db
-      .insert(Chats)
-      .values({
-        content: JSON.stringify(toolResponse),
-        type: ChatTypeEnum.Tool,
-        convId,
-      })
-      .returning()
-
-    await this.database.db.insert(ChatsToToolExecs).values({
-      chatId: createToolChatResult[0].chatId,
-      toolExecId: createToolExecResult[0].toolExecId,
+    // - Store the AI response in the chat table
+    await this.chatsFnsService.createChat(user, convId, {
+      content: chatToolResponse?.content as string,
+      type: ChatTypeEnum.Assistant,
     })
-
-    return toolResponse
   }
 
   @LogActivity({ level: LogLevelEnum.DEBUG })
   private async getChatHistory(userId: number, limit = 3) {
     const chats = await this.getMostRecentChatsFromDb(userId, limit)
-    console.log('CHAT HISTORY', json(chats.map((chat) => chat.chatId)))
 
     return chats
       .map((chat) =>

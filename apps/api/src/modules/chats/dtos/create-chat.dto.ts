@@ -22,9 +22,9 @@ export class CreateChatDto {
   @IsBoolean()
   toolExecRawResponse = false
 
-  static toEntity(userId: number, dto: CreateChatDto): InsertChat {
+  static toEntity(convId: number, dto: CreateChatDto): InsertChat {
     return {
-      userId,
+      convId,
       content: dto.message,
       type: dto.type as any,
     }

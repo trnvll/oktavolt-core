@@ -17,6 +17,8 @@ import { ResourcesLlmToolsService } from '@/modules/resources/services/resources
 import { ResourcesQueryService } from '@/modules/resources/services/resources-query.service'
 import { ResourcesService } from '@/modules/resources/services/resources.service'
 import { ResourcesEventsConsumer } from '@/modules/resources/consumers/resources-events.consumer'
+import { ToolExecsHandlingService } from '@/modules/tool-execs/services/tool-execs-handling.service'
+import { ChatsQueryService } from '@/modules/chats/services/chats-query.service'
 
 @Module({
   imports: [
@@ -32,6 +34,7 @@ import { ResourcesEventsConsumer } from '@/modules/resources/consumers/resources
     ChatsEmbeddingsService,
     ChatsEventsConsumer,
     ChatsFnsService,
+    ChatsQueryService,
     LlmChatService,
     LlmEmbeddingsService,
     LlmDataTransformationService,
@@ -40,7 +43,13 @@ import { ResourcesEventsConsumer } from '@/modules/resources/consumers/resources
     ResourcesQueryService,
     ResourcesService,
     ResourcesEventsConsumer,
+    ToolExecsHandlingService,
   ],
-  exports: [ChatsService, ChatsEmbeddingsService, ChatsFnsService],
+  exports: [
+    ChatsService,
+    ChatsEmbeddingsService,
+    ChatsFnsService,
+    ChatsQueryService,
+  ],
 })
 export class ChatsModule {}

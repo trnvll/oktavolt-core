@@ -7,6 +7,7 @@ import { ToolExecsLlmToolsService } from '@/modules/tool-execs/services/tool-exe
 import { UsersService } from '@/modules/users/services/users.service'
 import { UsersQueryService } from '@/modules/users/services/queries/users-query.service'
 import { UsersLlmToolsService } from '@/modules/users/services/users-llm-tools.service'
+import { ToolExecsHandlingService } from '@/modules/tool-execs/services/tool-execs-handling.service'
 
 @Module({
   imports: [DatabaseModule],
@@ -16,10 +17,16 @@ import { UsersLlmToolsService } from '@/modules/users/services/users-llm-tools.s
     ToolExecsService,
     ToolExecsFnsService,
     ToolExecsLlmToolsService,
+    ToolExecsHandlingService,
     UsersService,
     UsersQueryService,
     UsersLlmToolsService,
   ],
-  exports: [ToolExecsService, ToolExecsFnsService, ToolExecsLlmToolsService],
+  exports: [
+    ToolExecsService,
+    ToolExecsFnsService,
+    ToolExecsLlmToolsService,
+    ToolExecsHandlingService,
+  ],
 })
 export class ToolExecsModule {}
