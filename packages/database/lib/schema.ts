@@ -1,7 +1,4 @@
 import {
-  Communications,
-  Preferences,
-  Relationships,
   Users,
   Embeddings,
   Chats,
@@ -13,9 +10,6 @@ import {
 
 export const schema = {
   users: Users,
-  comms: Communications,
-  prefs: Preferences,
-  relations: Relationships,
   embeddings: Embeddings,
   chats: Chats,
   toolExecs: ToolExecs,

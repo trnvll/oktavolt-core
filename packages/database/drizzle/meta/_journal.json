@@ -232,6 +232,13 @@
       "when": 1723921734334,
       "tag": "0032_square_blackheart",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1723926343701,
+      "tag": "0033_huge_nightcrawler",
+      "breakpoints": true
     }
   ]
 }

@@ -1,3 +1,0 @@
-Convert the following structured communication data into a clear, detailed paragraph of text. Include all available information, presenting it in a natural, readable format:
-{data}
-Format the text to read like a natural description of the communication, including its details, context, and significance. Ensure all provided information is incorporated seamlessly, focusing on the content and context of the communication. If the content is lengthy, summarize it appropriately while maintaining key points.

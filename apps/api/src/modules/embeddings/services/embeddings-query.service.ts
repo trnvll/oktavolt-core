@@ -25,9 +25,6 @@ export class EmbeddingsQueryService {
     return this.database.db
       .select({
         userId: Embeddings.userId,
-        prefId: Embeddings.prefId,
-        relationshipId: Embeddings.relationshipId,
-        commId: Embeddings.commId,
         content: Embeddings.content,
         similarity,
       })
