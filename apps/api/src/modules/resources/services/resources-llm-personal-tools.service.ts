@@ -27,13 +27,19 @@ export class ResourcesLlmPersonalToolsService {
         tool: new DynamicStructuredTool({
           name: 'StoreRelevantPersonalInformation',
           description:
-            'Stores relevant information about the user to be used in the future for highly personalized experiences. Typical examples include storing relationships, preferences, personal information, activities, insights etc.',
+            'Stores any potentially relevant information about the user for future personalized experiences. This includes, but is not limited to, relationships, preferences, personal history, activities, goals, insights, and any other personal details shared during conversations. Use this tool proactively and frequently, even for information that seems only slightly relevant.',
           schema: z.object({
             content: z
               .string()
-              .describe('The content of the information or the resource.'),
+              .describe(
+                'The personal information or insight to store for future reference and personalization.',
+              ),
             metadata: z.object({
-              type: z.string().describe('The type of information.'),
+              type: z
+                .string()
+                .describe(
+                  'The type of personal information being stored (e.g., "Relationship", "Preference", "Personal History", "Goal", "Insight", "Activity", etc.).',
+                ),
             }),
           }),
           func: async (input) => {

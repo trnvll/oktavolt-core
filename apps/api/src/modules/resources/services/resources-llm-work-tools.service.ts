@@ -27,13 +27,19 @@ export class ResourcesLlmWorkToolsService {
         tool: new DynamicStructuredTool({
           name: 'StoreRelevantWorkInformation',
           description:
-            'Stores relevant information about the company and its operations for future reference and strategic decision-making, as well as technological tools and resources used in the company.',
+            'Stores any potentially valuable information related to software engineering, startup development, and technical discussions. This includes personal details, project ideas, code snippets, architectural decisions, and any other data that might be useful for future reference or development. Use this tool proactively and frequently, even for information that seems only slightly valuable.',
           schema: z.object({
             content: z
               .string()
-              .describe('The content of the information or the resource.'),
+              .describe(
+                'The content to store, including technical details, personal information, or any potentially useful data.',
+              ),
             metadata: z.object({
-              type: z.string().describe('The type of information.'),
+              type: z
+                .string()
+                .describe(
+                  'The type of information being stored (e.g., "Personal Info", "Project Idea", "Code Snippet", "Architecture Decision", "Technical Discussion", etc.).',
+                ),
             }),
           }),
           func: async (input) => {
@@ -43,7 +49,7 @@ export class ResourcesLlmWorkToolsService {
                 data: {
                   content: input.content,
                   metadata: input.metadata,
-                  type: LlmConversationTypeEnum.Personal,
+                  type: LlmConversationTypeEnum.Work,
                 },
                 userId: 79,
               },
