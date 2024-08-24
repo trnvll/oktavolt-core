@@ -10,6 +10,10 @@ import { Queue } from 'bull'
 import { ResourcesEventsConsumerEnum } from '@/modules/resources/consumers/resources-events.consumer'
 import { LlmConversationTypeEnum } from '@/modules/chats/types/llm-conversation-type'
 
+interface ResourcesLlmPersonalToolsServiceToolDefsParams {
+  userId?: number
+}
+
 @Injectable()
 export class ResourcesLlmPersonalToolsService {
   constructor(
@@ -17,11 +21,15 @@ export class ResourcesLlmPersonalToolsService {
     private readonly resourceEventsQueue: Queue,
   ) {}
 
-  getTools(): GetLlmTool['tool'][] {
-    return this.getToolDefs().map((def) => def.tool)
+  getTools(
+    params: ResourcesLlmPersonalToolsServiceToolDefsParams,
+  ): GetLlmTool['tool'][] {
+    return this.getToolDefs(params).map((def) => def.tool)
   }
 
-  getToolDefs(): GetLlmTool[] {
+  getToolDefs(
+    params?: ResourcesLlmPersonalToolsServiceToolDefsParams,
+  ): GetLlmTool[] {
     return [
       {
         tool: new DynamicStructuredTool({
@@ -51,7 +59,7 @@ export class ResourcesLlmPersonalToolsService {
                   metadata: input.metadata,
                   type: LlmConversationTypeEnum.Personal,
                 },
-                userId: 79,
+                userId: params?.userId ?? 79,
               },
             )
             return await this.resourceEventsQueue.add(

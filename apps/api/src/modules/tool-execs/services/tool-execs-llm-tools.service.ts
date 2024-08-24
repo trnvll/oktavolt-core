@@ -5,6 +5,7 @@ import { ResourcesLlmApiToolsService } from '@/modules/resources/services/resour
 import { ResourcesLlmWorkToolsService } from '@/modules/resources/services/resources-llm-work-tools.service'
 import { ResourcesLlmPersonalToolsService } from '@/modules/resources/services/resources-llm-personal-tools.service'
 import { UsersLlmApiToolsService } from '@/modules/users/services/users-llm-api-tools.service'
+import { ChatsLlmApiToolsService } from '@/modules/chats/services/chats-llm-api-tools.service'
 
 @Injectable()
 export class ToolExecsLlmToolsService {
@@ -13,6 +14,7 @@ export class ToolExecsLlmToolsService {
     private readonly resourcesLlmPersonalToolsService: ResourcesLlmPersonalToolsService,
     private readonly resourcesLlmWorkToolsService: ResourcesLlmWorkToolsService,
     private readonly usersLlmApiToolsService: UsersLlmApiToolsService,
+    private readonly chatsLlmApiToolsService: ChatsLlmApiToolsService,
   ) {}
 
   getTools(llmConvType: LlmConversationTypeEnum): GetLlmTool['tool'][] {
@@ -34,6 +36,7 @@ export class ToolExecsLlmToolsService {
       [LlmConversationTypeEnum.Api]: [
         ...this.resourcesLlmApiToolsService.getToolDefs(),
         ...this.usersLlmApiToolsService.getToolDefs(),
+        ...this.chatsLlmApiToolsService.getToolDefs(),
       ],
     }
   }
