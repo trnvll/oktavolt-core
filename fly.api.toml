@@ -6,6 +6,9 @@
 app = 'oktavolt-core-api'
 primary_region = 'arn'
 
+[build]
+  dockerfile = "apps/api/Dockerfile"
+
 [http_service]
   internal_port = 8080
   force_https = true

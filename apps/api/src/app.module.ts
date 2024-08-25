@@ -56,9 +56,11 @@ import { json } from 'shared'
         configService: ConfigService,
       ): Promise<BullModuleOptions> => {
         const redisConfig = configService.get<RedisConfig>('redis')
-        const { username, port, host, password } = redisConfig ?? {}
+        const { url } = redisConfig ?? {}
 
-        if (!host || !port) {
+        console.log('Redis config:', json(redisConfig))
+
+        if (!url) {
           throw new Error(
             `Redis configuration is missing. Got ${json(redisConfig)}`,
           )
@@ -66,22 +68,15 @@ import { json } from 'shared'
 
         return {
           redis: {
-            username,
-            host,
-            port,
-            password,
+            family: 6,
+            maxRetriesPerRequest: 5,
           },
+          url,
         }
       },
     }),
     BullModule.registerQueue({
       name: QueueEnum.UserEvents,
-    }),
-    BullModule.registerQueue({
-      name: QueueEnum.CommsEvents,
-    }),
-    BullModule.registerQueue({
-      name: QueueEnum.RelationshipsEvents,
     }),
     BullModule.registerQueue({
       name: QueueEnum.ChatsEvents,

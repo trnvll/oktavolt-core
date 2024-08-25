@@ -1,8 +1,5 @@
 export enum QueueEnum {
   UserEvents = 'user-events',
-  CommsEvents = 'comms-events',
-  PrefsEvents = 'prefs-events',
-  RelationshipsEvents = 'relationships-events',
   ChatsEvents = 'chats-events',
   ResourcesEvents = 'resources-events',
 }
