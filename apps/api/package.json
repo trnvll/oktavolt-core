@@ -19,6 +19,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
+    "@aws-sdk/client-sqs": "^3.637.0",
+    "@aws-sdk/credential-providers": "^3.637.0",
     "@fastify/helmet": "^11.1.1",
     "@langchain/core": "^0.2.20",
     "@langchain/openai": "^0.2.5",
