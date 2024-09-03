@@ -21,6 +21,7 @@ import { EmbeddingsModule } from '@/modules/embeddings/embeddings.module'
 import { ChatsModule } from '@/modules/chats/chats.module'
 import { ToolExecsModule } from '@/modules/tool-execs/tool-execs.module'
 import { json } from 'shared'
+import { SlackModule } from '@/modules/slack/slack.module'
 
 @Module({
   imports: [
@@ -40,12 +41,12 @@ import { json } from 'shared'
       {
         name: 'medium',
         ttl: 10_000,
-        limit: 200,
+        limit: 100,
       },
       {
         name: 'long',
         ttl: 60_000,
-        limit: 500,
+        limit: 200,
       },
     ]),
     EventEmitterModule.forRoot(),
@@ -55,8 +56,9 @@ import { json } from 'shared'
       useFactory: async (
         configService: ConfigService,
       ): Promise<BullModuleOptions> => {
-        const redisConfig = configService.get<RedisConfig>('redis')
-        const { url } = redisConfig ?? {}
+        const redisConfig = configService.getOrThrow<RedisConfig>('redis')
+
+        const { url, host, port } = redisConfig
 
         console.log('Redis config:', json(redisConfig))
 
@@ -70,8 +72,10 @@ import { json } from 'shared'
           redis: {
             family: 6,
             maxRetriesPerRequest: 5,
+            port,
+            host,
           },
-          url,
+          // url,
         }
       },
     }),
@@ -91,6 +95,7 @@ import { json } from 'shared'
     EmbeddingsModule,
     ChatsModule,
     ToolExecsModule,
+    SlackModule,
   ],
   providers: [
     {

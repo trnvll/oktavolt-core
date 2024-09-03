@@ -3,7 +3,8 @@ import { LogLevelEnum } from 'utils'
 const getBaseConfig = () => {
   return {
     base: {
-      nodeEnv: process.env.NODE_ENV ?? 'development',
+      nodeEnv:
+        (process.env.NODE_ENV as 'production' | 'development') ?? 'development',
       isTsNode: process.env.IS_TS_NODE === String(true),
       loggingLevels: process.env.LOGGING_LEVELS?.split(',') ?? [
         LogLevelEnum.ERROR,

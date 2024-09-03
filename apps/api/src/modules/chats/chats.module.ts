@@ -13,7 +13,6 @@ import { ChatsEventsConsumer } from '@/modules/chats/consumers/chats-events.cons
 import { SqsService } from '@/core/sqs/sqs.service'
 import { ChatsFnsService } from '@/modules/chats/services/chats-fns.service'
 import { ToolExecsModule } from '@/modules/tool-execs/tool-execs.module'
-import { ToolExecsHandlingService } from '@/modules/tool-execs/services/tool-execs-handling.service'
 import { ChatsQueryService } from '@/modules/chats/services/queries/chats-query.service'
 import { ResourcesQueryService } from '@/modules/resources/services/resources-query.service'
 import { ChatsService } from '@/modules/chats/services/chats.service'
@@ -39,7 +38,6 @@ import { ChatsLlmApiToolsService } from '@/modules/chats/services/chats-llm-api-
     LlmEmbeddingsService,
     LlmDataTransformationService,
     SqsService,
-    ToolExecsHandlingService,
     ResourcesQueryService,
   ],
   exports: [

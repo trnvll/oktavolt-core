@@ -72,7 +72,7 @@ export class ChatsLlmService {
   // Get the most recent chat response from the database
   // Return the most recent response in the database as well as (if applicable) the tool execution response
   // If any call fails, delete relevant chat record so that we don't get 400 error 'tool_calls' must be followed by tool messages + return friendly message based off of this
-  async chat(user: SelectUser, convDto: ConversationDto) {
+  async chat(user: Pick<SelectUser, 'userId'>, convDto: ConversationDto) {
     // Create a new conversation
     // Create a chat record with the user's query
     // Create an embedding for the query and store that in the embeddings table
@@ -155,7 +155,7 @@ export class ChatsLlmService {
   }
 
   private async createToolExecResponse(
-    user: SelectUser,
+    user: Pick<SelectUser, 'userId'>,
     conv: Pick<SelectConversation, 'convId' | 'type'>,
     tools: GetLlmTool['tool'][],
     relevantContext: SystemMessage,
