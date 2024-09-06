@@ -1,23 +1,18 @@
 import { Injectable } from '@nestjs/common'
-import { InjectQueue } from '@nestjs/bull'
-import { QueueEnum } from '@/types/queues/queue.enum'
-import { Queue } from 'bull'
 import { DatabaseService } from '@/core/database/database.service'
 import { Chats, SelectChat, SelectUser } from 'database'
-import { ChatsEventsConsumerEnum } from '@/modules/chats/consumers/chats-events.consumer'
 import { EventsEnum } from '@/core/events/types/events.enum'
 import { CreateEventUserDataUpdatedDto } from '@/core/events/dtos/create-event-user-data-updated.dto'
 import { EntityTypeEnum, EventActionEnum } from 'shared'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { ChatTypeEnum } from '@/patch/enums/external'
+import { CreateEventChatCreatedDto } from '@/modules/chats/dtos/events/create-event-chat-created.dto'
 
 @Injectable()
 export class ChatsFnsService {
   constructor(
     private readonly database: DatabaseService,
     private readonly eventEmitter: EventEmitter2,
-    @InjectQueue(QueueEnum.ChatsEvents)
-    private readonly chatsEventsQueue: Queue,
   ) {}
 
   async createChat(
@@ -39,9 +34,9 @@ export class ChatsFnsService {
       .returning()
 
     if (createChatDto.content.length) {
-      await this.chatsEventsQueue.add(
-        ChatsEventsConsumerEnum.CreateChatsEmbedding,
-        result[0],
+      this.eventEmitter.emit(
+        EventsEnum.ChatCreated,
+        new CreateEventChatCreatedDto({ data: result[0] }),
       )
     }
 

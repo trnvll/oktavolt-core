@@ -11,10 +11,7 @@ import { ToolExecsHandlingService } from '@/modules/tool-execs/services/tool-exe
 import { ResourcesLlmApiToolsService } from '@/modules/resources/services/resources-llm-api-tools.service'
 import { ResourcesLlmPersonalToolsService } from '@/modules/resources/services/resources-llm-personal-tools.service'
 import { ResourcesLlmWorkToolsService } from '@/modules/resources/services/resources-llm-work-tools.service'
-import { QueueEnum } from '@/types/queues/queue.enum'
-import { BullModule } from '@nestjs/bull'
 import { ResourcesQueryService } from '@/modules/resources/services/resources-query.service'
-import { ResourcesEventsConsumer } from '@/modules/resources/consumers/resources-events.consumer'
 import { ResourcesService } from '@/modules/resources/services/resources.service'
 import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
 import { ChatsLlmApiToolsService } from '@/modules/chats/services/chats-llm-api-tools.service'
@@ -22,10 +19,7 @@ import { ChatsService } from '@/modules/chats/services/chats.service'
 import { ChatsQueryService } from '@/modules/chats/services/queries/chats-query.service'
 
 @Module({
-  imports: [
-    DatabaseModule,
-    BullModule.registerQueue({ name: QueueEnum.ResourcesEvents }),
-  ],
+  imports: [DatabaseModule],
   controllers: [],
   providers: [
     DatabaseService,
@@ -40,7 +34,6 @@ import { ChatsQueryService } from '@/modules/chats/services/queries/chats-query.
     ResourcesLlmPersonalToolsService,
     ResourcesLlmWorkToolsService,
     ResourcesQueryService,
-    ResourcesEventsConsumer,
     ResourcesService,
     LlmEmbeddingsService,
     ChatsLlmApiToolsService,

@@ -1,69 +1,96 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { OnEvent } from '@nestjs/event-emitter'
-import { InjectQueue } from '@nestjs/bull'
-import { Queue } from 'bull'
-import {
-  CreateEventUserCreatedDto,
-  CreateEventUserCreatedJob,
-} from '@/core/events/dtos/create-event-user-created.dto'
+import { CreateEventUserCreatedDto } from '@/core/events/dtos/create-event-user-created.dto'
 import { EventsEnum } from '@/core/events/types/events.enum'
-import { QueueEnum } from '@/types/queues/queue.enum'
-import { UserEventsConsumerEnum } from '@/modules/users/consumers/users-events.consumer'
 import { LogActivity } from 'utils'
 import { CreateEventUserDeletedDto } from '@/core/events/dtos/create-event-user-deleted.dto'
-import {
-  CreateEventUserDataUpdatedDto,
-  CreateEventUserDataUpdatedJob,
-} from '@/core/events/dtos/create-event-user-data-updated.dto'
+import { CreateEventUserDataUpdatedDto } from '@/core/events/dtos/create-event-user-data-updated.dto'
 import { DatabaseService } from '@/core/database/database.service'
 import { eq } from 'drizzle-orm'
 import { Users } from 'database'
+import {
+  CreateEventDto,
+  EventOriginEnum,
+  EventTargetEnum,
+  EventTypeEnum,
+  json,
+} from 'shared'
+import { NotificationsService } from '@/core/notifications/services/notifications.service'
+import { UserEmbeddingsService } from '@/modules/users/services/user-embeddings.service'
+import { SqsService } from '@/core/sqs/sqs.service'
 
 @Injectable()
 export class UsersEventsHandler {
   constructor(
     private readonly database: DatabaseService,
-    @InjectQueue(QueueEnum.UserEvents) private readonly userEventsQueue: Queue,
+    private readonly logger: Logger,
+    private readonly notificationService: NotificationsService,
+    private readonly userEmbeddingsService: UserEmbeddingsService,
+    private readonly sqsService: SqsService,
   ) {}
 
   @OnEvent(EventsEnum.UserCreated)
   @LogActivity()
   async handleUserCreatedEvent(event: CreateEventUserCreatedDto) {
+    const { userId, data } = event
     const user = await this.findUserById(event.userId)
-    await Promise.all([
-      this.userEventsQueue.add(UserEventsConsumerEnum.SendWelcomeEmail, user),
-      this.userEventsQueue.add(
-        UserEventsConsumerEnum.CreateUserEmbedding,
-        user,
-      ),
-      this.userEventsQueue.add(
-        UserEventsConsumerEnum.StoreUserCreatedEvent,
-        new CreateEventUserCreatedJob({ user, data: event.data }),
-      ),
-    ])
+
+    await this.notificationService.createOrUpdateSubscriber(user)
+    await this.notificationService.sendEmailNotification({
+      userId,
+      email: user.email,
+      subject: 'Welcome to Oktavolt.',
+      content: 'This is some content.',
+    })
+    await this.userEmbeddingsService.generateAndSaveEmbeddings(user)
+
+    const dto: Omit<CreateEventDto, 'toEntity'> = {
+      userId,
+      data,
+      type: EventTypeEnum.UserCreated,
+      targets: [EventTargetEnum.TimeSeriesDb],
+      origin: EventOriginEnum.Api,
+      timestamp: new Date(),
+    }
+    this.logger.debug(`Sending event to SQS: ${json(dto)}`)
+
+    await this.sqsService.sendMessage(dto)
   }
 
   @OnEvent(EventsEnum.UserDeleted)
   @LogActivity()
   async handleUserDeletedEvent(event: CreateEventUserDeletedDto) {
-    await Promise.all([
-      this.userEventsQueue.add(
-        UserEventsConsumerEnum.StoreUserDeletedEvent,
-        event,
-      ),
-    ])
+    const { userId, data } = event
+
+    const dto: Omit<CreateEventDto, 'toEntity'> = {
+      userId: userId,
+      data,
+      type: EventTypeEnum.UserDeleted,
+      targets: [EventTargetEnum.TimeSeriesDb],
+      origin: EventOriginEnum.Api,
+      timestamp: new Date(),
+    }
+
+    this.logger.debug(`Sending event to SQS: ${json(dto)}`)
+    await this.sqsService.sendMessage(dto)
   }
 
   @OnEvent(EventsEnum.UserDataUpdated)
   @LogActivity()
   async handleUserDataUpdatedEvent(event: CreateEventUserDataUpdatedDto) {
-    const user = await this.findUserById(event.userId)
-    await Promise.all([
-      this.userEventsQueue.add(
-        UserEventsConsumerEnum.StoreUserDataUpdatedEvent,
-        new CreateEventUserDataUpdatedJob({ user, data: event.data }),
-      ),
-    ])
+    const { userId, data } = event
+
+    const dto: Omit<CreateEventDto, 'toEntity'> = {
+      userId,
+      data,
+      type: EventTypeEnum.UserDataUpdated,
+      targets: [EventTargetEnum.TimeSeriesDb],
+      origin: EventOriginEnum.Api,
+      timestamp: new Date(),
+    }
+    this.logger.debug(`Sending event to SQS: ${json(dto)}`)
+
+    await this.sqsService.sendMessage(dto)
   }
 
   private async findUserById(userId: number) {

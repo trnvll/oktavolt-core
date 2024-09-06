@@ -4,11 +4,10 @@ import { DynamicStructuredTool } from '@langchain/core/tools'
 import { z } from 'zod'
 import { validateToolDto } from '@/utils/fns/validate-tool-dto'
 import { HandleCreateResourceJobDto } from '@/modules/resources/dtos/handle-create-resource-job.dto'
-import { InjectQueue } from '@nestjs/bull'
-import { QueueEnum } from '@/types/queues/queue.enum'
-import { Queue } from 'bull'
-import { ResourcesEventsConsumerEnum } from '@/modules/resources/consumers/resources-events.consumer'
 import { LlmConversationTypeEnum } from '@/modules/chats/types/llm-conversation-type'
+import { EventsEnum } from '@/core/events/types/events.enum'
+import { CreateEventResourceCreatedDto } from '@/modules/resources/dtos/events/create-event-resource-created.dto'
+import { EventEmitter2 } from '@nestjs/event-emitter'
 
 interface ResourcesLlmPersonalToolsServiceToolDefsParams {
   userId?: number
@@ -16,10 +15,7 @@ interface ResourcesLlmPersonalToolsServiceToolDefsParams {
 
 @Injectable()
 export class ResourcesLlmPersonalToolsService {
-  constructor(
-    @InjectQueue(QueueEnum.ResourcesEvents)
-    private readonly resourceEventsQueue: Queue,
-  ) {}
+  constructor(private readonly eventEmitter: EventEmitter2) {}
 
   getTools(
     params: ResourcesLlmPersonalToolsServiceToolDefsParams,
@@ -62,9 +58,12 @@ export class ResourcesLlmPersonalToolsService {
                 userId: params?.userId ?? 79,
               },
             )
-            return await this.resourceEventsQueue.add(
-              ResourcesEventsConsumerEnum.CreateResource,
-              createResourceDto,
+            return await this.eventEmitter.emitAsync(
+              EventsEnum.ResourceCreated,
+              new CreateEventResourceCreatedDto({
+                data: createResourceDto.data,
+                userId: createResourceDto.userId,
+              }),
             )
           },
         }),

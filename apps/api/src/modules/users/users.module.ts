@@ -6,9 +6,6 @@ import { DatabaseService } from '@/core/database/database.service'
 import { UserEmbeddingsService } from '@/modules/users/services/user-embeddings.service'
 import { LlmEmbeddingsService } from '@/core/llm/services/llm-embeddings.service'
 import { UsersEventsHandler } from '@/modules/users/handlers/users-events.handler'
-import { UsersEventsConsumer } from '@/modules/users/consumers/users-events.consumer'
-import { BullModule } from '@nestjs/bull'
-import { QueueEnum } from '@/types/queues/queue.enum'
 import { NotificationsService } from '@/core/notifications/services/notifications.service'
 import { SqsService } from '@/core/sqs/sqs.service'
 import { LlmDataTransformationService } from '@/core/llm/services/llm-data-transformation.service'
@@ -16,10 +13,7 @@ import { UsersQueryService } from '@/modules/users/services/queries/users-query.
 import { UsersLlmApiToolsService } from '@/modules/users/services/users-llm-api-tools.service'
 
 @Module({
-  imports: [
-    DatabaseModule,
-    BullModule.registerQueue({ name: QueueEnum.UserEvents }),
-  ],
+  imports: [DatabaseModule],
   providers: [
     Logger,
     NotificationsService,
@@ -30,7 +24,6 @@ import { UsersLlmApiToolsService } from '@/modules/users/services/users-llm-api-
     LlmDataTransformationService,
     DatabaseService,
     UsersEventsHandler,
-    UsersEventsConsumer,
     UsersQueryService,
     UsersLlmApiToolsService,
   ],

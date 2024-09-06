@@ -19,7 +19,12 @@ export class NotificationsService {
     this.novu = new Novu({ apiKey: externalConfig.novuApiKey })
   }
 
-  async createOrUpdateSubscriber(user: SelectUser) {
+  async createOrUpdateSubscriber(
+    user: Pick<
+      SelectUser,
+      'email' | 'firstName' | 'lastName' | 'userId' | 'phone'
+    >,
+  ) {
     await this.novu.subscribers.identify(this.getSubscriberId(user.userId), {
       email: user.email,
       firstName: user.firstName,

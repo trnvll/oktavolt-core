@@ -10,7 +10,6 @@ import { SqsModule } from '@/core/sqs/sqs.module'
 import { LlmModule } from '@/core/llm/llm.module'
 import { NotificationsModule } from '@/core/notifications/notifications.module'
 import { BullModule, BullModuleOptions } from '@nestjs/bull'
-import { QueueEnum } from '@/types/queues/queue.enum'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { baseConfig } from '@/config/base.config'
 import { awsConfig } from '@/config/aws.config'
@@ -79,13 +78,6 @@ import { SlackModule } from '@/modules/slack/slack.module'
         }
       },
     }),
-    BullModule.registerQueue({
-      name: QueueEnum.UserEvents,
-    }),
-    BullModule.registerQueue({
-      name: QueueEnum.ChatsEvents,
-    }),
-    BullModule.registerQueue({ name: QueueEnum.ResourcesEvents }),
     AuthzModule,
     UsersModule,
     EventsModule,
