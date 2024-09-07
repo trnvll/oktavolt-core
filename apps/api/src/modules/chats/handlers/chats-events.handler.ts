@@ -7,13 +7,15 @@ import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class ChatsEventsHandler {
-  constructor(private readonly chatsEmbeddingsService: ChatsEmbeddingsService) {
-    console.log('chatsEmbeddingsService:', this.chatsEmbeddingsService)
-  }
+  constructor(
+    private readonly chatsEmbeddingsService: ChatsEmbeddingsService,
+  ) {}
 
-  @OnEvent(EventsEnum.ChatCreated)
+  @OnEvent(EventsEnum.ChatCreated, { async: true })
   @LogActivity()
   async handleCreateChatEvent(event: CreateEventChatCreatedDto) {
-    await this.chatsEmbeddingsService.generateAndSaveEmbeddings(event.data)
+    return await this.chatsEmbeddingsService.generateAndSaveEmbeddings(
+      event.data,
+    )
   }
 }

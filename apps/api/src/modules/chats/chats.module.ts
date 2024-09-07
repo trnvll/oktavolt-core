@@ -15,6 +15,7 @@ import { ResourcesQueryService } from '@/modules/resources/services/resources-qu
 import { ChatsService } from '@/modules/chats/services/chats.service'
 import { ChatsLlmApiToolsService } from '@/modules/chats/services/chats-llm-api-tools.service'
 import { ChatsEventsHandler } from '@/modules/chats/handlers/chats-events.handler'
+import { ResourcesService } from '@/modules/resources/services/resources.service'
 
 @Module({
   imports: [DatabaseModule, ToolExecsModule],
@@ -33,6 +34,7 @@ import { ChatsEventsHandler } from '@/modules/chats/handlers/chats-events.handle
     LlmDataTransformationService,
     SqsService,
     ResourcesQueryService,
+    ResourcesService,
   ],
   exports: [
     ChatsLlmService,

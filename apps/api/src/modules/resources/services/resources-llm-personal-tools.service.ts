@@ -5,9 +5,7 @@ import { z } from 'zod'
 import { validateToolDto } from '@/utils/fns/validate-tool-dto'
 import { HandleCreateResourceJobDto } from '@/modules/resources/dtos/handle-create-resource-job.dto'
 import { LlmConversationTypeEnum } from '@/modules/chats/types/llm-conversation-type'
-import { EventsEnum } from '@/core/events/types/events.enum'
-import { CreateEventResourceCreatedDto } from '@/modules/resources/dtos/events/create-event-resource-created.dto'
-import { EventEmitter2 } from '@nestjs/event-emitter'
+import { ResourcesService } from '@/modules/resources/services/resources.service'
 
 interface ResourcesLlmPersonalToolsServiceToolDefsParams {
   userId?: number
@@ -15,7 +13,7 @@ interface ResourcesLlmPersonalToolsServiceToolDefsParams {
 
 @Injectable()
 export class ResourcesLlmPersonalToolsService {
-  constructor(private readonly eventEmitter: EventEmitter2) {}
+  constructor(private readonly resourcesService: ResourcesService) {}
 
   getTools(
     params: ResourcesLlmPersonalToolsServiceToolDefsParams,
@@ -58,12 +56,9 @@ export class ResourcesLlmPersonalToolsService {
                 userId: params?.userId ?? 79,
               },
             )
-            return await this.eventEmitter.emitAsync(
-              EventsEnum.ResourceCreated,
-              new CreateEventResourceCreatedDto({
-                data: createResourceDto.data,
-                userId: createResourceDto.userId,
-              }),
+            return await this.resourcesService.create(
+              createResourceDto.userId,
+              createResourceDto.data,
             )
           },
         }),

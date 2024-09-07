@@ -21,6 +21,7 @@ import { ChatsModule } from '@/modules/chats/chats.module'
 import { ToolExecsModule } from '@/modules/tool-execs/tool-execs.module'
 import { json } from 'shared'
 import { SlackModule } from '@/modules/slack/slack.module'
+import { ResourcesModule } from '@/modules/resources/resources.module'
 
 @Module({
   imports: [
@@ -87,6 +88,7 @@ import { SlackModule } from '@/modules/slack/slack.module'
     EmbeddingsModule,
     ChatsModule,
     ToolExecsModule,
+    ResourcesModule,
     SlackModule,
   ],
   providers: [

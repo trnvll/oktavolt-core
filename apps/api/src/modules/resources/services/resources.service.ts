@@ -22,7 +22,12 @@ export class ResourcesService {
     const results = await this.database.db
       .insert(Resources)
       .values(entity)
-      .returning()
+      .returning({
+        resourceId: Resources.resourceId,
+        content: Resources.content,
+        createdAt: Resources.createdAt,
+        updatedAt: Resources.updatedAt,
+      })
 
     return results[0]
   }

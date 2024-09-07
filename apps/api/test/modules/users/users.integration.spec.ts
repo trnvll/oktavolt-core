@@ -17,9 +17,6 @@ import {
   afterAll,
   afterEach,
 } from 'vitest'
-import { QueueEnum } from '@/types/queues/queue.enum'
-import { Queue } from 'bull'
-import { getQueueToken } from '@nestjs/bull'
 import { pruneFlakyVariables } from '../../_utils/test.utils'
 import { setupTestApp } from '../../_setup/app.setup'
 import { plainToInstance } from 'class-transformer'
@@ -32,7 +29,6 @@ describe('UsersController (e2e)', () => {
     notificationService: NotificationsService
     sqsService: SqsService
     userEmbeddingsService: UserEmbeddingsService
-    userEventsQueue: Queue
   }
   let teardown: () => Promise<void>
   let cleanDatabase: () => Promise<void>
@@ -57,7 +53,6 @@ describe('UsersController (e2e)', () => {
       notificationService: setup.resolve(NotificationsService),
       sqsService: setup.resolve(SqsService),
       userEmbeddingsService: setup.resolve(UserEmbeddingsService),
-      userEventsQueue: app.get(getQueueToken(QueueEnum.UserEvents)),
     }
   })
 

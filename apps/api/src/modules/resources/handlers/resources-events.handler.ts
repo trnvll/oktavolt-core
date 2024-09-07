@@ -9,9 +9,9 @@ import { CreateEventResourceCreatedDto } from '@/modules/resources/dtos/events/c
 export class ResourcesEventsHandler {
   constructor(private readonly resourcesService: ResourcesService) {}
 
-  @OnEvent(EventsEnum.ResourceCreated)
+  @OnEvent(EventsEnum.ResourceCreated, { async: true })
   @LogActivity()
   async handleCreateResourceEvent(event: CreateEventResourceCreatedDto) {
-    await this.resourcesService.create(event.userId, event.data)
+    return await this.resourcesService.create(event.userId, event.data)
   }
 }
