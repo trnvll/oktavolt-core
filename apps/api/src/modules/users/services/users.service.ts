@@ -34,7 +34,7 @@ export class UsersService {
     sortDto: SortDto<UserSortFields>,
     searchDto: SearchDto,
   ) {
-    const queryResult = await this.usersQueryService.findAllUsers(
+    const queryResult = await this.usersQueryService.all(
       paginationDto,
       sortDto,
       searchDto,

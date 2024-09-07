@@ -16,6 +16,9 @@ import { ChatsService } from '@/modules/chats/services/chats.service'
 import { ChatsLlmApiToolsService } from '@/modules/chats/services/chats-llm-api-tools.service'
 import { ChatsEventsHandler } from '@/modules/chats/handlers/chats-events.handler'
 import { ResourcesService } from '@/modules/resources/services/resources.service'
+import { LlmRagService } from '@/core/llm/services/llm-rag.service'
+import { ConvsQueryService } from '@/modules/chats/services/queries/convs-query.service'
+import { UsersQueryService } from '@/modules/users/services/queries/users-query.service'
 
 @Module({
   imports: [DatabaseModule, ToolExecsModule],
@@ -35,6 +38,9 @@ import { ResourcesService } from '@/modules/resources/services/resources.service
     SqsService,
     ResourcesQueryService,
     ResourcesService,
+    LlmRagService,
+    ConvsQueryService,
+    UsersQueryService,
   ],
   exports: [
     ChatsLlmService,
@@ -44,6 +50,7 @@ import { ResourcesService } from '@/modules/resources/services/resources.service
     ChatsService,
     ChatsLlmApiToolsService,
     ChatsEventsHandler,
+    ConvsQueryService,
   ],
 })
 export class ChatsModule {}

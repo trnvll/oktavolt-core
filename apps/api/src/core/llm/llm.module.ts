@@ -8,6 +8,8 @@ import { UsersService } from '@/modules/users/services/users.service'
 import { DatabaseModule } from '@/core/database/database.module'
 import { DatabaseService } from '@/core/database/database.service'
 import { UsersQueryService } from '@/modules/users/services/queries/users-query.service'
+import { ResourcesQueryService } from '@/modules/resources/services/resources-query.service'
+import { LlmRagService } from '@/core/llm/services/llm-rag.service'
 
 @Module({
   imports: [DatabaseModule],
@@ -19,7 +21,9 @@ import { UsersQueryService } from '@/modules/users/services/queries/users-query.
     LlmChatService,
     UsersService,
     UsersQueryService,
+    ResourcesQueryService,
     DatabaseService,
+    LlmRagService,
   ],
   exports: [
     LlmEmbeddingsService,
@@ -27,6 +31,7 @@ import { UsersQueryService } from '@/modules/users/services/queries/users-query.
     LlmQueryService,
     LlmOpenapiActionsService,
     LlmChatService,
+    LlmRagService,
   ],
 })
 export class LlmModule {}

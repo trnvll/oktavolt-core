@@ -5,7 +5,7 @@ import {
   SortDto,
   SortOrderEnum,
 } from 'shared'
-import { asc, count, desc, ilike, or, sql, SQL } from 'drizzle-orm'
+import { asc, count, desc, eq, ilike, or, sql, SQL } from 'drizzle-orm'
 import { DatabaseService } from '@/core/database/database.service'
 import { Injectable } from '@nestjs/common'
 import { SelectUser, Users } from 'database'
@@ -15,7 +15,13 @@ import { UserSortFields } from '@/modules/users/types/user-sort-fields'
 export class UsersQueryService {
   constructor(private readonly database: DatabaseService) {}
 
-  async findAllUsers(
+  async one(userId: number) {
+    return this.database.db.query.users.findFirst({
+      where: eq(Users.userId, userId),
+    })
+  }
+
+  async all(
     paginationDto: PaginationDto,
     sortDto: SortDto<UserSortFields>,
     searchDto: SearchDto,

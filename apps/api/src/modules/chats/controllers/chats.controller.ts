@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Req,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common'
@@ -16,6 +17,7 @@ import { ConversationDto } from '@/modules/chats/dtos/conversation.dto'
 import { PaginationDto, SearchDto, SortDto } from 'shared'
 import { ChatSortFields } from '@/modules/chats/types/chat-sort-fields'
 import { ChatsService } from '@/modules/chats/services/chats.service'
+import { AppRequestInterface } from '@/types/app-request.interface'
 
 @UseGuards(AuthGuard('jwt'))
 @UseInterceptors(AnalyticsInterceptor)
@@ -30,8 +32,9 @@ export class ChatsController {
   async chat(
     @Param('userId', FindUserByIdPipe) user: SelectUser,
     @Body() convDto: ConversationDto,
+    @Req() request: AppRequestInterface,
   ) {
-    return this.chatsLlmService.chat(user, convDto)
+    return this.chatsLlmService.chat(user, convDto, request)
   }
 
   @Get()
